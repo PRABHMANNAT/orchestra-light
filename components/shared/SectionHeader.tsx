@@ -2,31 +2,84 @@
 
 import { motion } from "framer-motion";
 
+import { EASE_EXPO, fadeSlideUp, pageContainer } from "@/lib/animations";
+
 interface SectionHeaderProps {
   title: string;
   subtitle: string;
-  badge?: string;
+  label?: string;
+  accentColor?: string;
 }
 
-export function SectionHeader({ title, subtitle, badge }: SectionHeaderProps) {
+function withOpacity(color: string, opacity: number) {
+  if (color.startsWith("var(")) {
+    return `color-mix(in srgb, ${color} ${opacity * 100}%, transparent)`;
+  }
+
+  return color;
+}
+
+export function SectionHeader({ title, subtitle, label, accentColor = "var(--cyan)" }: SectionHeaderProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="mb-8"
-    >
-      {badge ? (
-        <span className="mb-2 block font-mono text-[10px] uppercase tracking-widest text-[#999999]">
-          {badge}
-        </span>
+    <motion.div variants={pageContainer} initial="hidden" animate="show" className="px-8 pb-6 pt-8">
+      {label ? (
+        <motion.div variants={fadeSlideUp} className="font-mono text-[10px] tracking-[0.2em]" style={{ color: accentColor }}>
+          {label} ·
+        </motion.div>
       ) : null}
-      <h1 className="font-title text-[72px] leading-none tracking-tight text-[#111111]">{title}</h1>
-      <div className="mb-2 mt-3 flex items-center gap-2">
-        <div className="h-1 w-10 rounded-full bg-[#111111]" />
-        <div className="h-1 w-4 rounded-full bg-[#d1d5db]" />
-      </div>
-      <p className="mt-2 font-sans text-[15px] text-[#666666]">{subtitle}</p>
+
+      <motion.div
+        variants={fadeSlideUp}
+        style={{
+          fontFamily: "var(--font-display)",
+          fontSize: "clamp(52px, 5vw, 80px)",
+          letterSpacing: "0.01em",
+          color: "var(--text-primary)",
+          lineHeight: 0.95
+        }}
+      >
+        {title}
+      </motion.div>
+
+      <motion.div variants={fadeSlideUp} className="mb-4 mt-3 flex gap-2">
+        <motion.div
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 0.6, ease: EASE_EXPO, delay: 0.12 }}
+          style={{
+            width: 48,
+            height: 2,
+            borderRadius: 1,
+            transformOrigin: "left",
+            background: accentColor
+          }}
+        />
+        <motion.div
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 0.6, ease: EASE_EXPO, delay: 0.18 }}
+          style={{
+            width: 20,
+            height: 2,
+            borderRadius: 1,
+            transformOrigin: "left",
+            background: withOpacity(accentColor, 0.3)
+          }}
+        />
+      </motion.div>
+
+      <motion.div
+        variants={fadeSlideUp}
+        style={{
+          fontFamily: "var(--font-ui)",
+          fontSize: 14,
+          lineHeight: 1.55,
+          color: "var(--text-secondary)",
+          maxWidth: 600
+        }}
+      >
+        {subtitle}
+      </motion.div>
     </motion.div>
   );
 }

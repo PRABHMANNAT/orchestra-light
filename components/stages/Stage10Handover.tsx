@@ -1,104 +1,94 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Download, ExternalLink, RefreshCw } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { CheckCircle2 } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 
+import { approvalBurst, fadeSlideUp, fadeSlideUpFast, pageContainer, scalePop, staggerContainer } from "@/lib/animations";
 import { StageShell } from "@/components/layout/StageShell";
-import { AppIcon } from "@/components/shared/AppIcon";
 import { OrchestraButton } from "@/components/shared/OrchestraButton";
 import { SectionHeader } from "@/components/shared/SectionHeader";
-import { handoverCards, projectMeta } from "@/lib/mockData";
+import { handoverCards } from "@/lib/mockData";
 
 export function Stage10Handover() {
   const router = useRouter();
+  useParams<{ projectId: string }>();
 
   return (
     <StageShell showGrid>
-      <div className="mx-auto max-w-7xl space-y-6">
+      <motion.div variants={pageContainer} initial="hidden" animate="show" className="mx-auto max-w-7xl space-y-8 px-8 py-8">
         <SectionHeader
-          title="HANDOVER HUB"
-          subtitle="Project complete — 8-week engagement · ACME Corp Service Request Platform"
+          label="Done"
+          title="IT SHIPPED."
+          subtitle="Creator Marketplace V1 is live."
+          accentColor="var(--emerald)"
         />
-        <div className="relative mb-8 overflow-hidden rounded-2xl border border-[#bbf7d0] bg-[#f0fdf4] p-10 text-center shadow-sm">
-          <div
-            className="absolute inset-0"
-            style={{
-              background: "radial-gradient(ellipse at 50% 50%, rgba(16,185,129,0.08) 0%, transparent 70%)"
-            }}
-          />
-          <div className="absolute left-0 top-0 h-8 w-8 border-l-[2px] border-t-[2px] border-accent-green/40" />
-          <div className="absolute right-0 top-0 h-8 w-8 border-r-[2px] border-t-[2px] border-accent-green/40" />
-          <div className="absolute bottom-0 left-0 h-8 w-8 border-b-[2px] border-l-[2px] border-accent-green/40" />
-          <div className="absolute bottom-0 right-0 h-8 w-8 border-b-[2px] border-r-[2px] border-accent-green/40" />
 
-          <motion.div
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
-            className="relative z-10"
-          >
-            <AppIcon name="CheckCircle2" size={48} className="mx-auto mb-5 text-[#16a34a]" />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92, y: 30 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="glass-emerald glass-noise rounded-xl px-10 py-12 text-center"
+        >
+          <motion.div variants={approvalBurst} initial="hidden" animate="show" className="mx-auto w-fit" style={{ filter: "drop-shadow(0 0 24px rgba(52,211,153,0.8))" }}>
+            <CheckCircle2 size={48} className="text-[var(--emerald)]" />
           </motion.div>
+          <div className="mt-5 font-mono text-[11px] tracking-[0.2em] text-[var(--emerald)]">CREATOR MARKETPLACE V1</div>
+          <div className="mt-2 font-title text-[72px] leading-[0.9] text-[var(--emerald)]">DELIVERED</div>
+          <div className="mt-3 font-ui text-[14px] text-[var(--text-secondary)]">Tempest AI · Jack</div>
 
-          <h2 className="relative z-10 font-display text-[64px] leading-none text-[#111111]">DELIVERY COMPLETE</h2>
-          <p className="relative z-10 mt-3 font-mono text-[11px] uppercase tracking-[0.1em] text-[#999999]">
-            SERVICE REQUEST PLATFORM V1.0 · SIGNED OFF 14 MARCH 2025
-          </p>
-          <div className="relative z-10 mt-4 flex flex-wrap justify-center gap-3">
-            {["MANAGER APPROVED", "CLIENT APPROVED", "94 JIRA ITEMS CLOSED"].map((badge) => (
-              <span
+          <motion.div variants={staggerContainer(0.08, 0.4)} initial="hidden" animate="show" className="mt-6 flex flex-wrap justify-center gap-3">
+            {["JACK APPROVED ✓", "SARAH CHEN ✓", "QA PASSED ✓"].map((badge) => (
+              <motion.div
                 key={badge}
-                className="rounded-full border border-[#bbf7d0] bg-white px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-[#166534]"
+                variants={scalePop}
+                className={`rounded-lg px-4 py-2 font-mono text-[9px] tracking-[0.12em] ${
+                  badge.startsWith("JACK") ? "glass-blue text-[var(--blue)]" : badge.startsWith("SARAH") ? "glass-cyan text-[var(--cyan)]" : "glass-emerald text-[var(--emerald)]"
+                }`}
               >
-                ✓ {badge}
-              </span>
+                {badge}
+              </motion.div>
             ))}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          {handoverCards.pm.map((card) => (
-            <div key={card.title} className="rounded-2xl border border-[#e8e8e8] bg-white p-5 shadow-sm">
-              <div className="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-[#999999]">
-                <AppIcon
-                  name={card.icon as Parameters<typeof AppIcon>[0]["name"]}
-                  className={
-                    card.tone === "cyan"
-                      ? "text-[#999999]"
-                      : card.tone === "amber"
-                        ? "text-[#854d0e]"
-                        : card.tone === "red"
-                          ? "text-[#991b1b]"
-                          : "text-[#444444]"
-                  }
-                  size={15}
-                />
-                {card.title}
-              </div>
+        <motion.div variants={staggerContainer(0.07, 0.2)} initial="hidden" animate="show" className="grid gap-4 lg:grid-cols-3">
+          {handoverCards.manager.map((group) => (
+            <motion.div
+              key={group.title}
+              variants={fadeSlideUp}
+              className={`glass-hover glass-noise rounded-xl px-5 py-5 ${
+                group.title === "DELIVERABLES" ? "glass-emerald" : group.title === "DOCUMENTATION" ? "glass-violet" : "glass-blue"
+              }`}
+            >
+              <div className="mb-4 font-mono text-[10px] tracking-[0.12em] text-[var(--text-muted)]">{group.title}</div>
               <div className="space-y-2">
-                {card.items.map((item) => (
-                  <div key={item} className="font-sans text-[13px] text-[#444444]">
+                {group.items.map((item) => (
+                  <div key={item} className="font-ui text-[12px] leading-6 text-[var(--text-secondary)]">
                     {item}
                   </div>
                 ))}
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        <div className="flex flex-wrap gap-3">
-          <OrchestraButton variant="primary" icon={Download}>
-            EXPORT HANDOVER PDF
-          </OrchestraButton>
-          <OrchestraButton variant="ghost" icon={ExternalLink} onClick={() => router.push("/client")}>
-            OPEN CLIENT PORTAL
-          </OrchestraButton>
-          <OrchestraButton variant="ghost" icon={RefreshCw} onClick={() => router.push("/pm/1-intake")}>
-            START NEW PROJECT
-          </OrchestraButton>
-        </div>
-      </div>
+        <motion.div variants={staggerContainer(0.06, 0.5)} initial="hidden" animate="show" className="flex flex-wrap gap-4">
+          <motion.div variants={fadeSlideUpFast}>
+            <OrchestraButton variant="primary" onClick={() => router.push("/client")}>
+              Open Client Portal →
+            </OrchestraButton>
+          </motion.div>
+          <motion.div variants={fadeSlideUpFast}>
+            <OrchestraButton variant="secondary">Export Report</OrchestraButton>
+          </motion.div>
+          <motion.div variants={fadeSlideUpFast}>
+            <OrchestraButton variant="ghost" onClick={() => router.push("/pm/dashboard")}>
+              Start New Project
+            </OrchestraButton>
+          </motion.div>
+        </motion.div>
+      </motion.div>
     </StageShell>
   );
 }

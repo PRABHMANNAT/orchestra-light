@@ -1,21 +1,40 @@
-import { cn } from "@/lib/utils";
 import { type UserRole } from "@/lib/roles";
 
-const roleTone: Record<UserRole, string> = {
-  pm: "border-[#111111] bg-[#111111] text-white",
-  developer: "border-[#e0e0e0] bg-[#f5f5f5] text-[#555555]",
-  client: "border-[#e0e0e0] bg-[#fafafa] text-[#666666]"
+const roleMap: Record<UserRole, string> = {
+  pm: "MGR",
+  developer: "DEV",
+  client: "CLIENT"
+};
+
+const toneMap: Record<UserRole, string> = {
+  pm: "rgba(0,229,204,0.25)",
+  developer: "rgba(255,255,255,0.08)",
+  client: "rgba(255,255,255,0.08)"
+};
+
+const colorMap: Record<UserRole, string> = {
+  pm: "#00e5cc",
+  developer: "var(--color-text-secondary)",
+  client: "var(--color-text-secondary)"
 };
 
 export function RoleBadge({ role }: { role: UserRole }) {
   return (
     <span
-      className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em]",
-        roleTone[role]
-      )}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        padding: "2px 7px",
+        borderRadius: 3,
+        border: `1px solid ${toneMap[role]}`,
+        background: "transparent",
+        color: colorMap[role],
+        fontFamily: "var(--font-mono)",
+        fontSize: 9,
+        letterSpacing: "0.14em"
+      }}
     >
-      {role === "pm" ? "MGR" : role === "developer" ? "DEV" : "CLIENT"}
+      {roleMap[role]}
     </span>
   );
 }

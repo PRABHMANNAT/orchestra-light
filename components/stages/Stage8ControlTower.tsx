@@ -1,366 +1,249 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Bar } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip } from "chart.js";
-import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { animate, motion } from "framer-motion";
+import { useParams, useRouter } from "next/navigation";
 
+import { COUNT_UP_DURATION, EASE_EXPO, EASE_IN_OUT_CIRC, alertSlideDown, fadeSlideUp, fadeSlideUpFast, livePulse, pageContainer, progressFill, ringDraw, staggerContainer } from "@/lib/animations";
 import { StageShell } from "@/components/layout/StageShell";
 import { OrchestraButton } from "@/components/shared/OrchestraButton";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { blockerCards, dependencyRiskMatrix, towerMetrics } from "@/lib/mockData";
+import { getStageRoute } from "@/lib/stageConfig";
+import { cn } from "@/lib/utils";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip);
-
-type FeatureProgressItem = {
-  label: string;
-  value: number;
-  deferred?: boolean;
-};
-
-const features: FeatureProgressItem[] = [
-  { label: "Status Tracking", value: 100 },
-  { label: "Authentication & SSO", value: 87 },
-  { label: "Request Submission", value: 75 },
-  { label: "Basic Reporting", value: 52 },
-  { label: "Assignment Engine", value: 38 },
-  { label: "Role Management", value: 33 },
-  { label: "Manager Approval", value: 22 },
-  { label: "Email Notifications", value: 0, deferred: true },
-  { label: "Admin Panel", value: 0, deferred: true },
-  { label: "Billing Integration", value: 0, deferred: true }
-];
+const featureRows = [
+  { label: "Creator Onboarding", value: 87, tone: "on-track" },
+  { label: "Asset Upload Pipeline", value: 82, tone: "on-track" },
+  { label: "Stripe Connect", value: 34, tone: "blocked" },
+  { label: "Search & Filter", value: 75, tone: "on-track" },
+  { label: "Creator Analytics", value: 58, tone: "on-track" },
+  { label: "Revenue Split", value: 62, tone: "on-track" },
+  { label: "AI Recommendations", value: 18, tone: "blocked" },
+  { label: "Game Discovery", value: 64, tone: "on-track" },
+  { label: "Creator Tiers", value: 71, tone: "on-track" },
+  { label: "Payout Dashboard", value: 59, tone: "on-track" }
+] as const;
 
 const riskToneMap = {
-  green: "bg-[#dcfce7]",
-  amber: "bg-[#fef3c7]",
-  red: "bg-[#fee2e2]",
-  muted: "bg-[#f3f4f6]"
-};
+  stable: "text-[var(--emerald)] border-[var(--emerald-border)] bg-[var(--emerald-dim)]",
+  watch: "text-[var(--amber)] border-[var(--amber-border)] bg-[var(--amber-dim)]",
+  blocked: "text-[var(--rose)] border-[var(--rose-border)] bg-[var(--rose-dim)]",
+  deferred: "text-[var(--text-muted)] border-[var(--border-default)] bg-[rgba(255,255,255,0.03)]"
+} as const;
 
 export function Stage8ControlTower() {
   const router = useRouter();
-
-  const sortedFeatures = useMemo(
-    () =>
-      [...features].sort((left, right) => {
-        if (left.deferred && !right.deferred) return 1;
-        if (!left.deferred && right.deferred) return -1;
-        return right.value - left.value;
-      }),
-    []
-  );
-
-  const nonDeferredFeatures = useMemo(
-    () => sortedFeatures.filter((feature) => !feature.deferred),
-    [sortedFeatures]
-  );
-
-  const metrics = useMemo(() => {
-    const onTrack = nonDeferredFeatures.filter((feature) => feature.value > 50).length;
-    const average =
-      nonDeferredFeatures.reduce((total, feature) => total + feature.value, 0) / nonDeferredFeatures.length;
-    const deferred = sortedFeatures.filter((feature) => feature.deferred).length;
-
-    return {
-      onTrack,
-      averageCompletion: Math.round(average),
-      deferred
-    };
-  }, [nonDeferredFeatures, sortedFeatures]);
-
-  const chartData = useMemo(
-    () => ({
-      labels: sortedFeatures.map((feature) => feature.label),
-      datasets: [
-        {
-          data: sortedFeatures.map((feature) => feature.value),
-          backgroundColor: sortedFeatures.map((feature) =>
-            feature.value === 100 ? "#22c55e" : feature.deferred ? "#e5e7eb" : "#111111"
-          ),
-          borderRadius: 6,
-          borderSkipped: false,
-          barThickness: 20
-        }
-      ]
-    }),
-    [sortedFeatures]
-  );
-
-  const chartOptions = useMemo(
-    () => ({
-      indexAxis: "y" as const,
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: false
-        },
-        tooltip: {
-          backgroundColor: "#111111",
-          displayColors: false,
-          titleFont: {
-            family: '"DM Mono", monospace',
-            size: 10
-          },
-          bodyFont: {
-            family: '"DM Mono", monospace',
-            size: 10
-          }
-        }
-      },
-      scales: {
-        x: {
-          min: 0,
-          max: 100,
-          border: {
-            display: false
-          },
-          grid: {
-            color: "rgba(0,0,0,0.04)",
-            drawBorder: false
-          },
-          ticks: {
-            color: "#999999",
-            font: {
-              family: "Inter, sans-serif",
-              size: 11
-            },
-            callback: (value: string | number) => `${value}%`
-          }
-        },
-        y: {
-          border: {
-            display: false
-          },
-          grid: {
-            display: false,
-            drawBorder: false
-          },
-          ticks: {
-            color: "#333333",
-            font: {
-              family: "Inter, sans-serif",
-              size: 12
-            }
-          }
-        }
-      }
-    }),
-    []
-  );
+  const params = useParams<{ projectId: string }>();
+  const projectId = typeof params?.projectId === "string" ? params.projectId : "p1";
 
   return (
     <StageShell showGrid>
-      <div className="mx-auto max-w-7xl space-y-6">
-        <SectionHeader title="CONTROL TOWER" subtitle="Live delivery intelligence · Week 4 of 8 · Against approved scope v1.0" />
-        <div className="grid gap-4 xl:grid-cols-4">
-          <MetricCard title="DELIVERY HEALTH" value={Number(towerMetrics.health)} tone="amber" donut />
-          <MetricCard title="ON TRACK" value={Number(towerMetrics.onTrack)} tone="green" />
-          <MetricCard title="BLOCKED" value={Number(towerMetrics.blocked)} tone="red" />
-          <MetricCard title="AT RISK" value={Number(towerMetrics.atRisk)} tone="amber" />
-        </div>
+      <motion.div variants={pageContainer} initial="hidden" animate="show" className="mx-auto max-w-7xl space-y-6 px-8 py-8">
+        <SectionHeader
+          label="Live"
+          title="HOW ARE WE DOING?"
+          subtitle="Right now. No meetings needed."
+          accentColor="var(--cyan)"
+        />
 
-        <div className="mt-6 rounded-2xl border border-[#e8e8e8] bg-white p-6 shadow-sm">
-          <h3 className="mb-5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-[#999999]">
-            <div className="h-2 w-2 rounded-full bg-[#6ca956]" />
-            FEATURE PROGRESS
-          </h3>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            <FeatureMetricCard label="ON TRACK" value={metrics.onTrack} />
-            <FeatureMetricCard label="AVG COMPLETION" value={metrics.averageCompletion} suffix="%" />
-            <FeatureMetricCard label="DEFERRED" value={metrics.deferred} />
+        <motion.div variants={alertSlideDown} initial="hidden" animate="show" className="glass-cyan glass-noise rounded-xl px-6 py-5">
+          <div className="flex flex-wrap items-center gap-3">
+            <motion.div variants={livePulse} initial="hidden" animate="show" className="h-[6px] w-[6px] rounded-full bg-[var(--accent-cyan)]" />
+            <span className="font-mono text-[10px] tracking-[0.15em] text-[var(--accent-cyan)]">TODAY</span>
+            <span className="ml-auto font-mono text-[9px] tracking-[0.12em] text-[var(--text-muted)]">08 APR 2026 · 09:00</span>
           </div>
-
-          <div className="mt-5 flex flex-wrap gap-4">
+          <div className="mb-3 mt-3 h-px bg-[rgba(0,229,204,0.1)]" />
+          <motion.div variants={staggerContainer(0.06, 0.04)} initial="hidden" animate="show" className="space-y-2">
             {[
-              { color: "#111111", label: "IN PROGRESS" },
-              { color: "#22c55e", label: "COMPLETE" },
-              { color: "#e5e7eb", label: "DEFERRED" }
+              "Jack needs to send his ABN. Chase him.",
+              "Onboarding ships Friday.",
+              "AI recs are V2. Everyone knows."
             ].map((item) => (
-              <div key={item.label} className="flex items-center gap-2">
-                <div className="h-3 w-3 rounded-md" style={{ background: item.color }} />
-                <span className="font-mono text-[10px] tracking-widest text-[#999999]">{item.label}</span>
-              </div>
+              <motion.div key={item} variants={fadeSlideUpFast} className="flex items-start gap-3">
+                <span className="mt-2 h-1 w-1 rounded-full bg-[rgba(0,229,204,0.4)]" />
+                <span className="font-ui text-[12px] leading-6 text-[var(--text-secondary)]">{item}</span>
+              </motion.div>
             ))}
+          </motion.div>
+          <div className="mt-4 flex gap-3">
+            <OrchestraButton variant="primary" size="sm">
+              Generate Standup
+            </OrchestraButton>
+            <OrchestraButton variant="ghost" size="sm">
+              SHARE TO SLACK
+            </OrchestraButton>
+            <OrchestraButton variant="ghost" size="sm">
+              EMAIL TO JACK
+            </OrchestraButton>
           </div>
+        </motion.div>
 
-          <div className="mt-6 h-[360px]">
-            <Bar data={chartData} options={chartOptions} />
+        <motion.div variants={staggerContainer(0.08, 0.1)} initial="hidden" animate="show" className="grid gap-4 xl:grid-cols-4">
+          <HealthMetricCard />
+          <SimpleMetricCard title="ON TRACK" value={towerMetrics.onTrack} tone="green" />
+          <SimpleMetricCard title="BLOCKED" value={towerMetrics.blocked} tone="red" />
+          <SimpleMetricCard title="AT RISK" value={towerMetrics.atRisk} tone="amber" />
+        </motion.div>
+
+        <motion.div variants={fadeSlideUp} initial="hidden" animate="show" className="glass glass-noise rounded-xl px-6 py-6">
+          <div className="font-mono text-[10px] tracking-[0.12em] text-[var(--text-muted)]">FEATURE DELIVERY STATUS</div>
+          <div className="mb-5 mt-1 flex flex-wrap gap-6 font-mono text-[9px] tracking-[0.12em]">
+            <span className="text-[var(--emerald)]">8 ON TRACK</span>
+            <span className="text-[var(--cyan)]">61% AVG COMPLETION</span>
+            <span className="text-[var(--text-muted)]">2 DEFERRED</span>
           </div>
-        </div>
+          <motion.div variants={staggerContainer(0.05, 0.04)} initial="hidden" animate="show" className="space-y-4">
+            {featureRows.map((feature, index) => (
+              <motion.div key={feature.label} variants={fadeSlideUpFast}>
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="font-ui text-[12px] text-[var(--text-secondary)]">{feature.label}</span>
+                  <span className="font-mono text-[10px] tracking-[0.12em] text-[var(--text-muted)]">{feature.value}%</span>
+                </div>
+                <div className="h-[6px] overflow-hidden rounded-full bg-[rgba(255,255,255,0.05)]">
+                  <motion.div
+                    variants={progressFill(feature.value)}
+                    initial="hidden"
+                    animate="show"
+                    transition={{ duration: 1, delay: index * 0.06, ease: EASE_EXPO }}
+                      className={cn(
+                        "h-full rounded-full",
+                        feature.tone === "blocked"
+                        ? "bg-[linear-gradient(90deg,var(--rose),rgba(251,113,133,0.5))]"
+                        : "bg-[linear-gradient(90deg,var(--cyan),rgba(0,229,204,0.6))]"
+                    )}
+                  />
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </motion.div>
 
-        <div className="space-y-3">
-          {blockerCards.map((card) => (
-            <div key={card.title} className="rounded-2xl border border-[#e8e8e8] border-l-4 border-l-[#fca5a5] bg-white p-5 shadow-sm">
-              <div className="font-sans text-[15px] font-semibold text-[#111111]">{card.title}</div>
-              <div className="mt-2 font-sans text-[13px] text-[#444444]">{card.description}</div>
-              <div className="mt-2 font-mono text-[10px] uppercase tracking-widest text-[#999999]">{card.meta}</div>
+        <motion.div variants={staggerContainer(0.08, 0.2)} initial="hidden" animate="show" className="grid gap-4 md:grid-cols-2">
+          {blockerCards.map((blocker) => (
+            <motion.div key={blocker.title} variants={fadeSlideUp} className="glass-rose glass-noise rounded-xl px-5 py-4">
+              <div className="font-mono text-[9px] tracking-[0.12em] text-[var(--rose)]">BLOCKER</div>
+              <div className="mt-2 font-ui text-[13px] font-medium text-[var(--text-primary)]">{blocker.title}</div>
+              <div className="mt-1 font-ui text-[12px] leading-6 text-[var(--text-secondary)]">{blocker.description}</div>
               <div className="mt-3">
-                <OrchestraButton variant="ghost" size="sm">
-                  FLAG FOR REVIEW
-                </OrchestraButton>
+                <span className="glass-sm rounded-sm px-2 py-1 font-mono text-[9px] tracking-[0.12em] text-[var(--text-muted)]">
+                  OWNER · {blocker.owner}
+                </span>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        <div className="rounded-2xl border border-[#e8e8e8] bg-white p-5 shadow-sm">
-          <div className="mb-3 font-mono text-[10px] uppercase tracking-widest text-[#999999]">DEPENDENCY RISK MATRIX</div>
-          <div className="grid grid-cols-6 gap-3">
-            {dependencyRiskMatrix.map((tone, index) => (
-              <div
-                key={`${tone}-${index}`}
-                className={`flex h-9 items-center justify-center rounded-xl font-mono text-[9px] uppercase tracking-[0.12em] text-[#666666] ${riskToneMap[tone]}`}
+        <motion.div variants={fadeSlideUp} initial="hidden" animate="show" className="glass rounded-xl px-5 py-5">
+          <div className="mb-3 font-mono text-[10px] tracking-[0.12em] text-[var(--text-muted)]">DEPENDENCY RISK MATRIX</div>
+          <motion.div variants={staggerContainer(0.06, 0.15)} initial="hidden" animate="show" className="grid gap-3 md:grid-cols-3 xl:grid-cols-6">
+            {dependencyRiskMatrix.map((item) => (
+              <motion.div
+                key={item.id}
+                variants={fadeSlideUpFast}
+                className={cn("rounded-lg border px-3 py-3", riskToneMap[item.tone as keyof typeof riskToneMap])}
               >
-                N{index + 1}
-              </div>
+                <div className="font-mono text-[9px] tracking-[0.12em]">{item.id}</div>
+                <div className="mt-1 font-ui text-[12px]">{item.label}</div>
+              </motion.div>
             ))}
-          </div>
-          <div className="mt-3 font-mono text-[10px] uppercase tracking-widest text-[#999999]">
-            WEEK 4 OF 8 · 50% TIMELINE ELAPSED · 62% SCOPE COMPLETE
-          </div>
-          <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-[#eeeeee]">
-            <div className="relative h-full w-1/2 rounded-full bg-[#111111]">
-              <div className="absolute right-0 top-1/2 h-3 w-3 -translate-y-1/2 translate-x-1/2 rotate-45 bg-white" />
-            </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        <OrchestraButton variant="primary" onClick={() => router.push("/pm/9-updates")}>
-          VIEW STAKEHOLDER UPDATES →
-        </OrchestraButton>
-      </div>
+        <motion.div variants={fadeSlideUp} initial="hidden" animate="show">
+          <OrchestraButton variant="ghost" onClick={() => router.push(getStageRoute(projectId, "9-updates"))}>
+            Open updates
+          </OrchestraButton>
+        </motion.div>
+      </motion.div>
     </StageShell>
   );
 }
 
-function FeatureMetricCard({
-  label,
-  value,
-  suffix = ""
-}: {
-  label: string;
-  value: number;
-  suffix?: string;
-}) {
+function HealthMetricCard() {
+  const circumference = 2 * Math.PI * 30;
+  const pct = towerMetrics.health;
+
   return (
-    <div className="rounded-2xl bg-[#f9fafb] p-4">
-      <div className="font-sans text-[28px] font-medium leading-none text-[#111111]">
-        {value}
-        {suffix}
+    <motion.div variants={fadeSlideUp} className="glass glass-hover glass-noise rounded-xl px-5 py-6">
+      <div className="mb-4 font-mono text-[10px] tracking-[0.12em] text-[var(--text-muted)]">Health</div>
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <CountNumber value={pct} suffix="%" className="font-title text-[40px] leading-none text-[var(--text-primary)]" />
+          <div className="mt-1 font-mono text-[9px] tracking-[0.12em] text-[var(--text-muted)]">OVERALL HEALTH</div>
+        </div>
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="6" />
+          <motion.circle
+            cx="40"
+            cy="40"
+            r="30"
+            fill="none"
+            stroke="#00e5cc"
+            strokeWidth="6"
+            strokeDasharray={circumference}
+            filter="drop-shadow(0 0 8px rgba(0,229,204,0.6))"
+            variants={ringDraw(circumference, pct)}
+            initial="hidden"
+            animate="show"
+            style={{ transformOrigin: "center", rotate: -90, transformBox: "fill-box" }}
+          />
+        </svg>
       </div>
-      <div className="mt-1 font-mono text-[10px] tracking-widest text-[#999999]">{label}</div>
-    </div>
+    </motion.div>
   );
 }
 
-function MetricCard({
+function SimpleMetricCard({
   title,
   value,
-  tone,
-  donut = false
+  tone
 }: {
   title: string;
   value: number;
-  tone: "green" | "amber" | "red";
-  donut?: boolean;
+  tone: "green" | "red" | "amber";
 }) {
-  const backgrounds = {
-    amber: "linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(226,178,13,0.12) 100%)",
-    green: "linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(108,169,86,0.15) 100%)",
-    red: "linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(239,68,68,0.10) 100%)"
+  const colorMap = {
+    green: "text-[var(--emerald)]",
+    red: "text-[var(--rose)]",
+    amber: "text-[var(--amber)]"
   } as const;
 
   return (
-    <div
-      className="glass-card rounded-2xl border border-navy/15 p-6"
-      style={{ background: backgrounds[tone], borderColor: "rgba(52,68,95,0.15)" }}
-    >
-      <div className="font-mono text-[10px] uppercase tracking-widest text-[#999999]">{title}</div>
-      {donut ? (
-        <div className="mt-4 flex items-center justify-between gap-4">
-          <div>
-            <AnimatedNumber value={value} color="text-[#111111]" size="text-[28px]" />
-            <div className="font-mono text-[10px] uppercase tracking-widest text-[#999999]">COMPUTED FROM 26 ACTIVE TASKS</div>
-          </div>
-          <DeliveryHealthRing value={value} />
-        </div>
-      ) : (
-        <div className="mt-3">
-          <AnimatedNumber value={value} color="text-[#111111]" size="text-[28px]" />
-        </div>
-      )}
-    </div>
-  );
-}
-
-function DeliveryHealthRing({ value }: { value: number }) {
-  const radius = 36;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (value / 100) * circumference;
-
-  return (
-    <div className="relative flex h-24 w-24 items-center justify-center">
-      <svg className="h-24 w-24 -rotate-90" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r={radius} fill="none" stroke="rgba(52,68,95,0.12)" strokeWidth="5" />
-        <motion.circle
-          cx="50"
-          cy="50"
-          r={radius}
-          fill="none"
-          stroke="#6ca956"
-          strokeWidth="5"
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          initial={{ strokeDashoffset: circumference }}
-          animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
-        />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <motion.span
-          className="font-sans text-[20px] font-semibold leading-none text-[#111111]"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          {value}
-        </motion.span>
-        <span className="font-mono text-[8px] text-[#999999]">/ 100</span>
+    <motion.div variants={fadeSlideUp} className="glass glass-hover rounded-xl px-5 py-6">
+      <div className="font-mono text-[10px] tracking-[0.12em] text-[var(--text-muted)]">{title}</div>
+      <div className="mt-4">
+        <CountNumber value={value} className={cn("font-title text-[52px] leading-none", colorMap[tone])} />
       </div>
-    </div>
+      <div className="mt-1 font-mono text-[9px] tracking-[0.12em] text-[var(--text-muted)]">features</div>
+    </motion.div>
   );
 }
 
-function AnimatedNumber({
+function CountNumber({
   value,
-  color,
-  size
+  suffix = "",
+  className
 }: {
   value: number;
-  color: string;
-  size: string;
+  suffix?: string;
+  className?: string;
 }) {
   const [displayed, setDisplayed] = useState(0);
 
   useEffect(() => {
-    let start = 0;
-    const step = Math.ceil(value / 30);
-    const timer = window.setInterval(() => {
-      start += step;
-      if (start >= value) {
-        setDisplayed(value);
-        window.clearInterval(timer);
-      } else {
-        setDisplayed(start);
-      }
-    }, 30);
-
-    return () => window.clearInterval(timer);
+    const controls = animate(0, value, {
+      duration: COUNT_UP_DURATION,
+      ease: EASE_EXPO,
+      onUpdate: (current) => setDisplayed(Math.round(current))
+    });
+    return () => controls.stop();
   }, [value]);
 
-  return <span className={`font-display leading-none ${size} ${color}`}>{displayed}</span>;
+  return (
+    <motion.span className={className}>
+      {displayed}
+      {suffix}
+    </motion.span>
+  );
 }

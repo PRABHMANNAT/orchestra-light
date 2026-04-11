@@ -1,214 +1,134 @@
 "use client";
 
 import { useState } from "react";
-import { Download } from "lucide-react";
-import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
+import { useParams, useRouter } from "next/navigation";
 
+import { EASE_EXPO, chipBounce, fadeSlideUp, fadeSlideUpFast, pageContainer, staggerContainer } from "@/lib/animations";
 import { StageShell } from "@/components/layout/StageShell";
 import { OrchestraButton } from "@/components/shared/OrchestraButton";
-import { ProgressBar } from "@/components/shared/ProgressBar";
 import { SectionHeader } from "@/components/shared/SectionHeader";
-import { StatusBadge } from "@/components/shared/StatusBadge";
 import { stakeholderTabs } from "@/lib/mockData";
+import { getStageRoute } from "@/lib/stageConfig";
 import { cn } from "@/lib/utils";
 
-type StakeholderTab = keyof typeof stakeholderTabs;
+const tabs = [
+  { key: "pm", label: "MANAGER" },
+  { key: "cto", label: "CTO" },
+  { key: "exec", label: "EXEC" },
+  { key: "client", label: "CLIENT" }
+] as const;
 
-const ctoRiskRows = [
-  { node: "N7 Assignment Engine", status: "BLOCKED", blocker: "Client permissions sign-off" },
-  { node: "N8 Staff Role Rule", status: "BLOCKED", blocker: "RBAC architecture review" },
-  { node: "N12 Manager Approval", status: "AT RISK", blocker: "Scope not fully defined" }
+const clientBars = [
+  { label: "Creator signup", value: 100 },
+  { label: "Portfolio upload", value: 78 },
+  { label: "Marketplace publish", value: 74 },
+  { label: "Revenue dashboard", value: 58 },
+  { label: "Discovery feed", value: 61 }
 ];
 
-const velocityRows = [
-  { epic: "Auth & Access", done: 5, total: 6 },
-  { epic: "Request Lifecycle", done: 4, total: 10 },
-  { epic: "Reporting", done: 3, total: 8 }
-];
+const tabToneMap = {
+  pm: { panel: "glass-cyan", text: "var(--cyan)" },
+  cto: { panel: "glass-violet", text: "var(--violet)" },
+  exec: { panel: "glass-blue", text: "var(--blue)" },
+  client: { panel: "glass-blue", text: "var(--blue)" }
+} as const;
 
 export function Stage9StakeholderUpdates() {
-  const [tab, setTab] = useState<StakeholderTab>("pm");
+  const [activeTab, setActiveTab] = useState<(typeof tabs)[number]["key"]>("client");
   const router = useRouter();
-  const active = stakeholderTabs[tab];
+  const params = useParams<{ projectId: string }>();
+  const projectId = typeof params?.projectId === "string" ? params.projectId : "p1";
+  const tabContent = stakeholderTabs[activeTab];
+  const activeTone = tabToneMap[activeTab];
 
   return (
     <StageShell showGrid>
-      <div className="mx-auto max-w-6xl space-y-6">
-        <SectionHeader title="STAKEHOLDER UPDATES" subtitle="Automated plain-English updates generated from live project state" />
-        <div className="flex flex-wrap gap-5 border-b border-[#f0f0f0] pb-3">
-          {[
-            ["pm", "MANAGER REPORT"],
-            ["cto", "CTO BRIEF"],
-            ["exec", "EXEC SUMMARY"],
-            ["client", "CLIENT UPDATE"]
-          ].map(([value, label]) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setTab(value as StakeholderTab)}
-              className={cn(
-                "border-b-2 pb-2 font-mono text-[11px] uppercase tracking-[0.1em]",
-                tab === value ? "border-[#111111] text-[#111111]" : "border-transparent text-[#999999]"
-              )}
-            >
-              {label}
+      <motion.div variants={pageContainer} initial="hidden" animate="show" className="mx-auto max-w-7xl space-y-6 px-8 py-8">
+        <SectionHeader
+          label="Updates"
+          title="WHAT DOES EVERYONE NEED TO KNOW?"
+          subtitle="One click. The right update to the right person."
+          accentColor="var(--cyan)"
+        />
+
+        <div className="flex flex-wrap gap-2">
+          {tabs.map((tab) => (
+            <button key={tab.key} type="button" onClick={() => setActiveTab(tab.key)} className="relative overflow-hidden rounded-md px-4 py-2">
+              {activeTab === tab.key ? <motion.div layoutId="tab-indicator" className={cn("absolute inset-0 rounded-md", tabToneMap[tab.key].panel)} /> : null}
+              <span
+                className={cn("relative z-10 font-ui text-[11px] tracking-[0.08em]", activeTab === tab.key ? "" : "text-[var(--text-secondary)]")}
+                style={activeTab === tab.key ? { color: tabToneMap[tab.key].text } : undefined}
+              >
+                {tab.label}
+              </span>
             </button>
           ))}
         </div>
 
-        {tab === "pm" ? (
-          <ReportCard heading={active.heading} subheading={active.subheading} exportButton>
-            {active.sections.map((section) => (
-              <SectionBlock key={section.title} title={section.title} content={section.content} />
-            ))}
-          </ReportCard>
-        ) : null}
-
-        {tab === "cto" ? (
-          <div className="rounded-2xl border border-[#e8e8e8] bg-white p-6 shadow-sm">
-            <div className="mb-5 flex justify-between">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, x: -14 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -14, transition: { duration: 0.15 } }}
+            transition={{ duration: 0.28, delay: 0.04, ease: EASE_EXPO }}
+            className={cn(activeTone.panel, "glass-noise rounded-xl px-6 py-6")}
+          >
+            {activeTab === "client" ? (
               <div>
-                <div className="font-sans text-[15px] font-semibold text-[#111111]">CTO TECHNICAL BRIEF</div>
-                <div className="font-mono text-[10px] uppercase tracking-widest text-[#999999]">
-                  SERVICE REQUEST PLATFORM · WEEK 4
-                </div>
-              </div>
-              <OrchestraButton variant="ghost" icon={Download} size="sm">
-                EXPORT
-              </OrchestraButton>
-            </div>
-
-            <div className="grid gap-6 xl:grid-cols-2">
-              <div>
-                <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-[#999999]">DEPENDENCY RISK</div>
-                {ctoRiskRows.map((row) => (
-                  <div key={row.node} className="flex items-start justify-between gap-3 border-b border-[#f5f5f5] py-3">
-                    <div>
-                      <div className="font-sans text-[13px] text-[#333333]">{row.node}</div>
-                      <div className="mt-0.5 font-mono text-[11px] text-[#999999]">{row.blocker}</div>
-                    </div>
-                    <StatusBadge variant={row.status === "BLOCKED" ? "blocked" : "in-progress"} />
-                  </div>
-                ))}
-              </div>
-              <div>
-                <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-[#999999]">BUILD VELOCITY</div>
-                {velocityRows.map((row) => (
-                  <div key={row.epic} className="mb-4">
-                    <div className="mb-1 flex justify-between">
-                      <span className="font-mono text-[10px] uppercase tracking-widest text-[#999999]">{row.epic}</span>
-                      <span className="font-mono text-[10px] uppercase tracking-widest text-[#111111]">
-                        {row.done}/{row.total}
-                      </span>
-                    </div>
-                    <div className="h-1 overflow-hidden rounded-full bg-[#eeeeee]">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${(row.done / row.total) * 100}%` }}
-                        transition={{ duration: 1.2, ease: "easeOut" }}
-                        className="h-full rounded-full bg-[#111111]"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        ) : null}
-
-        {tab === "exec" ? (
-          <div className="rounded-2xl border border-[#e8e8e8] bg-white p-6 shadow-sm">
-            <div className="mb-5 flex items-start justify-between gap-4">
-              <div>
-                <div className="font-sans text-[15px] font-semibold text-[#111111]">{active.heading}</div>
-                <div className="mt-1 font-mono text-[10px] uppercase tracking-widest text-[#999999]">{active.subheading}</div>
-              </div>
-              <div className="rounded-xl border border-[#e0e0e0] px-3 py-2 font-mono text-[10px] uppercase tracking-widest text-[#999999]">
-                DELIVERY HEALTH 74/100
-              </div>
-            </div>
-            <div className="grid gap-4 xl:grid-cols-3">
-              <div className="rounded-2xl border border-[#e8e8e8] bg-white p-4 shadow-sm">
-                <div className="mb-4 font-mono text-[10px] uppercase tracking-widest text-[#999999]">STATUS</div>
-                <div className="font-sans text-[13px] leading-relaxed text-[#444444]">{active.sections[0]?.content}</div>
-              </div>
-              <div className="rounded-2xl border border-[#e8e8e8] bg-white p-4 shadow-sm">
-                <div className="mb-4 font-mono text-[10px] uppercase tracking-widest text-[#999999]">RISK</div>
-                <div className="font-sans text-[13px] leading-relaxed text-[#444444]">{active.sections[1]?.content}</div>
-              </div>
-              <div className="rounded-2xl border border-[#e8e8e8] bg-white p-4 shadow-sm">
-                <div className="mb-4 font-mono text-[10px] uppercase tracking-widest text-[#999999]">KEY SIGNALS</div>
-                <div className="mt-3 space-y-2">
-                  {["Core auth on track", "Reporting stabilising", "Permissions decision still open"].map((item) => (
-                    <div key={item} className="font-sans text-[13px] text-[#444444]">
-                      {item}
-                    </div>
+                <div className="font-title text-[28px] tracking-[0.04em] text-[var(--blue)]">UPDATE FOR JACK — TEMPEST AI</div>
+                <div className="mb-5 mt-1 font-mono text-[10px] tracking-[0.12em] text-[var(--text-muted)]">08 APR 2026</div>
+                <div className="mb-5 h-px bg-[var(--border-subtle)]" />
+                <motion.div variants={staggerContainer(0.08, 0.08)} initial="hidden" animate="show" className="space-y-4">
+                  {clientBars.map((bar, index) => (
+                    <motion.div key={bar.label} variants={fadeSlideUpFast}>
+                      <div className="mb-2 flex items-center justify-between">
+                        <span className="font-ui text-[12px] text-[var(--text-secondary)]">{bar.label}</span>
+                        <span className="font-mono text-[10px] tracking-[0.12em] text-[var(--text-muted)]">{bar.value}%</span>
+                      </div>
+                      <div className="h-[6px] overflow-hidden rounded-full bg-[rgba(255,255,255,0.05)]">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${bar.value}%` }}
+                          transition={{ duration: 1, ease: EASE_EXPO, delay: index * 0.1 + 0.2 }}
+                          className="h-full rounded-full bg-[linear-gradient(90deg,#00e5cc,rgba(0,229,204,0.7))]"
+                        />
+                      </div>
+                    </motion.div>
                   ))}
+                </motion.div>
+                <div className="glass-emerald mt-5 rounded-lg px-4 py-3">
+                  <div className="font-ui text-[13px] text-[var(--emerald)]">Overall: Sprint 3 of 6 — 61% delivered</div>
+                  <div className="mt-1 font-ui text-[12px] text-[var(--text-secondary)]">On track for 8-week delivery</div>
+                </div>
+                <div className="mt-4 border-l-2 border-[var(--amber-border)] pl-3 font-mono text-[10px] tracking-[0.12em] text-[var(--amber)]">
+                  2 items require your attention — see blockers above
                 </div>
               </div>
-            </div>
-          </div>
-        ) : null}
+            ) : (
+              <div>
+                <div className="font-title text-[28px] tracking-[0.04em] text-[var(--text-primary)]">{tabContent.heading}</div>
+                <div className="mb-5 mt-1 font-mono text-[10px] tracking-[0.12em] text-[var(--text-muted)]">{tabContent.subheading}</div>
+                <motion.div variants={staggerContainer(0.07, 0.08)} initial="hidden" animate="show" className="grid gap-4 md:grid-cols-3">
+                  {tabContent.sections.map((section) => (
+                    <motion.div key={section.title} variants={fadeSlideUp} className="glass-sm rounded-xl px-4 py-4">
+                      <div className="mb-3 font-mono text-[10px] tracking-[0.12em] text-[var(--text-muted)]">{section.title}</div>
+                      <div className="font-ui text-[12px] leading-6 text-[var(--text-secondary)]">{section.content}</div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
 
-        {tab === "client" ? (
-          <ReportCard heading={active.heading} subheading={active.subheading}>
-            <div className="mb-6">
-              <ProgressBar label="Progress Overview" value={62} variant="cyan" />
-            </div>
-            {active.sections.map((section) => (
-              <SectionBlock key={section.title} title={section.title} content={section.content} />
-            ))}
-          </ReportCard>
-        ) : null}
-
-        <div className="flex flex-wrap gap-3">
-          <OrchestraButton variant="primary" onClick={() => router.push("/client")}>
-            VIEW CLIENT PORTAL →
+        <motion.div variants={fadeSlideUp} initial="hidden" animate="show">
+          <OrchestraButton variant="primary" onClick={() => router.push(getStageRoute(projectId, "10-handover"))}>
+            Send Update
           </OrchestraButton>
-          <OrchestraButton variant="ghost" onClick={() => router.push("/pm/10-handover")}>
-            OPEN HANDOVER HUB →
-          </OrchestraButton>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </StageShell>
-  );
-}
-
-function ReportCard({
-  heading,
-  subheading,
-  children,
-  exportButton = false
-}: {
-  heading: string;
-  subheading: string;
-  children: React.ReactNode;
-  exportButton?: boolean;
-}) {
-  return (
-    <div className="rounded-2xl border border-[#e8e8e8] bg-white p-6 shadow-sm">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <div className="font-sans text-[15px] font-semibold text-[#111111]">{heading}</div>
-          <div className="mt-1 font-mono text-[10px] uppercase tracking-widest text-[#999999]">{subheading}</div>
-        </div>
-        {exportButton ? (
-          <OrchestraButton variant="ghost" icon={Download} size="sm">
-            EXPORT PDF
-          </OrchestraButton>
-        ) : null}
-      </div>
-      <div className="mt-6 space-y-6">{children}</div>
-    </div>
-  );
-}
-
-function SectionBlock({ title, content }: { title: string; content: string }) {
-  return (
-    <div>
-      <div className="mb-4 font-mono text-[10px] uppercase tracking-widest text-[#999999]">{title}</div>
-      <div className="font-sans text-[13px] leading-relaxed text-[#444444]">{content}</div>
-    </div>
   );
 }

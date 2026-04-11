@@ -1,7 +1,3 @@
-"use client";
-
-import { motion } from "framer-motion";
-
 import { cn } from "@/lib/utils";
 
 type StatusBadgeVariant =
@@ -9,28 +5,30 @@ type StatusBadgeVariant =
   | "p1"
   | "p2"
   | "p3"
-  | "blocked"
-  | "done"
+  | "todo"
   | "in-progress"
   | "in-review"
-  | "todo"
+  | "done"
+  | "blocked"
   | "deferred"
   | "new"
-  | "revised";
+  | "revised"
+  | "stale";
 
 const variantMap: Record<StatusBadgeVariant, string> = {
-  p0: "border-[#fecaca] bg-[#fee2e2] text-[#991b1b]",
-  p1: "border-[#fef08a] bg-[#fef9c3] text-[#854d0e]",
-  p2: "border-[#bfdbfe] bg-[#dbeafe] text-[#1e40af]",
-  p3: "border-[#bbf7d0] bg-[#f0fdf4] text-[#166534]",
-  blocked: "border-[#fecaca] bg-[#fee2e2] text-[#991b1b]",
-  done: "border-[#bbf7d0] bg-[#f0fdf4] text-[#166534]",
-  "in-progress": "border-[#fef08a] bg-[#fef9c3] text-[#92400e]",
-  "in-review": "border-[#bfdbfe] bg-[#dbeafe] text-[#1e40af]",
-  todo: "border-[#ebebeb] bg-[#f5f5f5] text-[#888888]",
-  deferred: "border-[#ebebeb] bg-[#f5f5f5] text-[#888888]",
-  new: "border-[#bbf7d0] bg-[#f0fdf4] text-[#166534]",
-  revised: "border-[#bfdbfe] bg-[#dbeafe] text-[#1e40af]"
+  p0: "bg-[var(--rose-dim)] border-[var(--rose-border)] text-[var(--rose)]",
+  p1: "bg-[var(--amber-dim)] border-[var(--amber-border)] text-[var(--amber)]",
+  p2: "bg-[rgba(251,191,36,0.04)] border-[rgba(251,191,36,0.12)] text-[rgba(251,191,36,0.75)]",
+  p3: "bg-[var(--violet-dim)] border-[var(--violet-border)] text-[var(--violet)]",
+  todo: "bg-[rgba(255,255,255,0.03)] border-[rgba(255,255,255,0.08)] text-[var(--text-muted)]",
+  "in-progress": "bg-[var(--cyan-dim)] border-[var(--cyan-border)] text-[var(--cyan)]",
+  "in-review": "bg-[var(--violet-dim)] border-[var(--violet-border)] text-[var(--violet)]",
+  done: "bg-[var(--emerald-dim)] border-[var(--emerald-border)] text-[var(--emerald)]",
+  blocked: "bg-[var(--rose-dim)] border-[var(--rose-border)] text-[var(--rose)]",
+  deferred: "bg-[rgba(255,255,255,0.03)] border-[rgba(255,255,255,0.08)] text-[rgba(100,100,120,1)]",
+  new: "bg-[var(--cyan-dim)] border-[var(--cyan-border)] text-[var(--cyan)]",
+  revised: "bg-[var(--violet-dim)] border-[var(--violet-border)] text-[var(--violet)]",
+  stale: "bg-[rgba(255,255,255,0.02)] border-[rgba(255,255,255,0.06)] text-[var(--text-muted)] line-through"
 };
 
 export function StatusBadge({
@@ -38,7 +36,7 @@ export function StatusBadge({
   children
 }: {
   variant: StatusBadgeVariant;
-  children?: string;
+  children?: React.ReactNode;
 }) {
   const label =
     children ??
@@ -50,26 +48,28 @@ export function StatusBadge({
           ? "P2"
           : variant === "p3"
             ? "P3"
-          : variant === "in-progress"
-            ? "IN PROGRESS"
-            : variant === "in-review"
-              ? "IN REVIEW"
-            : variant === "done"
-              ? "DONE"
-              : variant === "blocked"
-                ? "BLOCKED"
-                : variant === "todo"
-                  ? "TODO"
-                : variant === "new"
-                  ? "NEW"
-                  : variant === "revised"
-                    ? "REVISED"
-                    : "DEFERRED");
+            : variant === "in-progress"
+              ? "IN PROGRESS"
+              : variant === "in-review"
+                ? "IN REVIEW"
+                : variant === "done"
+                  ? "DONE"
+                  : variant === "blocked"
+                    ? "BLOCKED"
+                    : variant === "deferred"
+                      ? "DEFERRED"
+                      : variant === "new"
+                        ? "NEW"
+                        : variant === "revised"
+                          ? "REVISED"
+                          : variant === "stale"
+                            ? "STALE"
+                          : "TODO");
 
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.1em]",
+        "inline-flex items-center rounded-[3px] border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em]",
         variantMap[variant]
       )}
     >

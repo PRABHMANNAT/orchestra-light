@@ -8,14 +8,14 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   if (!ready || !user) {
     return (
-      <div className="flex h-full items-center justify-center font-mono text-[11px] uppercase tracking-[0.18em] text-text-muted">
+      <div className="theme-app main-bg flex h-full items-center justify-center font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
         Loading client portal...
       </div>
     );
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="theme-app main-bg flex h-screen flex-col overflow-hidden">
       <ClientHeader user={user} />
       <main className="flex-1 overflow-hidden">{children}</main>
     </div>

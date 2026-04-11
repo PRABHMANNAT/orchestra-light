@@ -1,5 +1,4 @@
 import { type UserRole } from "@/lib/roles";
-import { cn } from "@/lib/utils";
 
 interface UserAvatarProps {
   initials: string;
@@ -8,18 +7,30 @@ interface UserAvatarProps {
 }
 
 const sizeMap = {
-  sm: "h-6 w-6 text-[9px]",
-  md: "h-8 w-8 text-[10px]",
-  lg: "h-10 w-10 text-[12px]"
-};
+  sm: 26,
+  md: 30,
+  lg: 40
+} as const;
 
-export function UserAvatar({ initials, role: _role, size = "md" }: UserAvatarProps) {
+export function UserAvatar({ initials, role, size = "md" }: UserAvatarProps) {
+  const dimension = sizeMap[size];
+  const isManager = role === "pm";
+
   return (
     <div
-      className={cn(
-        "flex items-center justify-center rounded-lg border border-[#dddddd] bg-[#f0f0f0] font-mono text-[#333333]",
-        sizeMap[size]
-      )}
+      style={{
+        width: dimension,
+        height: dimension,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: "50%",
+        background: isManager ? "rgba(0,229,204,0.1)" : "rgba(255,255,255,0.04)",
+        border: isManager ? "1px solid rgba(0,229,204,0.2)" : "1px solid rgba(255,255,255,0.08)",
+        color: isManager ? "#00e5cc" : "var(--color-text-primary)",
+        fontFamily: "var(--font-mono)",
+        fontSize: size === "lg" ? 12 : 11
+      }}
     >
       {initials}
     </div>

@@ -2,19 +2,23 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Bell, ChevronLeft, ChevronRight, Monitor, RotateCcw, Search, Smartphone, Tablet } from "lucide-react";
-
 import {
-  dashboardStats,
-  detailTimeline,
-  prototypeScreens,
-  reportsBars,
-  reportsCategories,
-  requestTableRows
-} from "@/lib/mockData";
+  ChevronLeft,
+  ChevronRight,
+  Compass,
+  DollarSign,
+  Monitor,
+  Search,
+  Smartphone,
+  Sparkles,
+  Tablet,
+  UploadCloud,
+  UserRoundPlus
+} from "lucide-react";
+
+import { fadeIn, scalePop } from "@/lib/animations";
+import { prototypeScreens } from "@/lib/mockData";
 import { cn } from "@/lib/utils";
-import { OrchestraButton } from "@/components/shared/OrchestraButton";
-import { StatusBadge } from "@/components/shared/StatusBadge";
 
 interface PrototypeFrameProps {
   activeIndex: number;
@@ -32,21 +36,22 @@ export function PrototypeFrame({
   const [device, setDevice] = useState<"mac" | "ipad" | "iphone">("mac");
   const currentScreen = prototypeScreens[activeIndex];
   const isStudio = variant === "studio";
+
   const renderScreenContent = () => (
     <AnimatePresence mode="wait">
       <motion.div
         key={currentScreen.id}
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -20 }}
-        transition={{ duration: 0.28, ease: "easeOut" }}
-        className="h-full"
+        variants={fadeIn}
+        initial="hidden"
+        animate="show"
+        exit="hidden"
+        className="h-full px-4 py-4"
       >
-        {activeIndex === 0 ? <LoginScreen /> : null}
-        {activeIndex === 1 ? <DashboardScreen /> : null}
-        {activeIndex === 2 ? <SubmitScreen /> : null}
-        {activeIndex === 3 ? <DetailScreen /> : null}
-        {activeIndex === 4 ? <ReportsScreen /> : null}
+        {activeIndex === 0 ? <CreatorSignupScreen /> : null}
+        {activeIndex === 1 ? <PortfolioUploadScreen /> : null}
+        {activeIndex === 2 ? <MarketplaceScreen /> : null}
+        {activeIndex === 3 ? <RevenueDashboardScreen /> : null}
+        {activeIndex === 4 ? <DiscoveryFeedScreen /> : null}
       </motion.div>
     </AnimatePresence>
   );
@@ -56,13 +61,15 @@ export function PrototypeFrame({
       {isStudio ? (
         <>
           <div className="flex items-center gap-2">
-            <div className="flex gap-1 rounded-full border border-white/70 bg-white/60 p-1 shadow-glass-sm backdrop-blur-md">
+            <div className="glass-sm flex gap-1 rounded-md p-1">
               <button
                 type="button"
                 onClick={() => setDevice("mac")}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-[11px] tracking-wider transition-all",
-                  device === "mac" ? "bg-white text-[#111111] shadow-sm" : "text-[#999999] hover:text-[#555555]"
+                  "flex items-center gap-1.5 rounded-md px-3 py-1.5 font-ui text-[11px] tracking-[0.08em] transition-all",
+                  device === "mac"
+                    ? "glass-blue text-[var(--blue)]"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 )}
               >
                 <Monitor size={12} />
@@ -72,8 +79,10 @@ export function PrototypeFrame({
                 type="button"
                 onClick={() => setDevice("ipad")}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-[11px] tracking-wider transition-all",
-                  device === "ipad" ? "bg-white text-[#111111] shadow-sm" : "text-[#999999] hover:text-[#555555]"
+                  "flex items-center gap-1.5 rounded-md px-3 py-1.5 font-ui text-[11px] tracking-[0.08em] transition-all",
+                  device === "ipad"
+                    ? "glass-blue text-[var(--blue)]"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 )}
               >
                 <Tablet size={12} />
@@ -83,15 +92,17 @@ export function PrototypeFrame({
                 type="button"
                 onClick={() => setDevice("iphone")}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-[11px] tracking-wider transition-all",
-                  device === "iphone" ? "bg-white text-[#111111] shadow-sm" : "text-[#999999] hover:text-[#555555]"
+                  "flex items-center gap-1.5 rounded-md px-3 py-1.5 font-ui text-[11px] tracking-[0.08em] transition-all",
+                  device === "iphone"
+                    ? "glass-blue text-[var(--blue)]"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 )}
               >
                 <Smartphone size={12} />
                 IPHONE
               </button>
             </div>
-            <span className="ml-2 font-mono text-[10px] tracking-widest text-[#999999]">
+            <span className="ml-2 font-mono text-[10px] tracking-[0.14em] text-[var(--text-muted)]">
               SCREEN {activeIndex + 1} OF {prototypeScreens.length} · {currentScreen.label}
             </span>
           </div>
@@ -108,17 +119,17 @@ export function PrototypeFrame({
               >
                 {device === "mac" ? (
                   <div className="mx-auto w-full max-w-[680px]">
-                    <div className="flex items-center gap-2 rounded-t-[2.5rem] bg-[#e8e8e8] px-4 py-3">
+                    <div className="glass flex items-center gap-2 rounded-t-xl px-4 py-3">
                       <div className="flex gap-1.5">
                         <div className="h-3 w-3 rounded-full bg-[#ff5f57]" />
                         <div className="h-3 w-3 rounded-full bg-[#febc2e]" />
                         <div className="h-3 w-3 rounded-full bg-[#28c840]" />
                       </div>
-                      <div className="mx-4 flex-1 rounded-xl bg-white px-3 py-1 text-center font-mono text-[11px] text-[#999999]">
+                      <div className="mx-4 flex-1 rounded-md border border-[var(--border-default)] bg-[rgba(255,255,255,0.03)] px-3 py-1 text-center font-mono text-[11px] text-[var(--text-muted)]">
                         {currentScreen.url}
                       </div>
                     </div>
-                    <div className="overflow-hidden rounded-b-[2.5rem] bg-[#f5f5f7]" style={{ height: "420px" }}>
+                    <div className="overflow-hidden rounded-b-[2.5rem] border border-[var(--border-default)] border-t-0 bg-[var(--bg-bg-2)]" style={{ height: "420px" }}>
                       {renderScreenContent()}
                     </div>
                   </div>
@@ -126,24 +137,24 @@ export function PrototypeFrame({
 
                 {device === "ipad" ? (
                   <div className="mx-auto" style={{ width: "420px" }}>
-                    <div className="flex aspect-[4/3] flex-col rounded-[3rem] bg-[#1d1d1f] p-4">
-                      <div className="mx-auto mb-2 h-2 w-2 rounded-full bg-[#3a3a3c]" />
-                      <div className="w-full flex-1 overflow-hidden rounded-[2.5rem] bg-[#f5f5f7]">
+                    <div className="glass flex aspect-[4/3] flex-col rounded-[3rem] p-4">
+                      <div className="mx-auto mb-2 h-2 w-2 rounded-full bg-[rgba(255,255,255,0.18)]" />
+                      <div className="w-full flex-1 overflow-hidden rounded-[2.5rem] bg-[var(--bg-bg-2)]">
                         {renderScreenContent()}
                       </div>
-                      <div className="mx-auto mt-2 h-1 w-16 rounded-full bg-[#3a3a3c]" />
+                      <div className="mx-auto mt-2 h-1 w-16 rounded-full bg-[rgba(255,255,255,0.18)]" />
                     </div>
                   </div>
                 ) : null}
 
                 {device === "iphone" ? (
                   <div className="mx-auto" style={{ width: "220px" }}>
-                    <div className="flex aspect-[9/19.5] flex-col rounded-[4rem] bg-[#1d1d1f] p-3">
-                      <div className="mx-auto mb-2 h-4 w-16 rounded-full bg-[#111111]" />
-                      <div className="w-full flex-1 overflow-hidden rounded-[3rem] bg-[#f5f5f7]">
+                    <div className="glass flex aspect-[9/19.5] flex-col rounded-[4rem] p-3">
+                      <div className="mx-auto mb-2 h-4 w-16 rounded-full bg-[rgba(255,255,255,0.06)]" />
+                      <div className="w-full flex-1 overflow-hidden rounded-[3rem] bg-[var(--bg-bg-2)]">
                         {renderScreenContent()}
                       </div>
-                      <div className="mx-auto mt-2 h-1 w-12 rounded-full bg-[#3a3a3c]" />
+                      <div className="mx-auto mt-2 h-1 w-12 rounded-full bg-[rgba(255,255,255,0.18)]" />
                     </div>
                   </div>
                 ) : null}
@@ -152,21 +163,18 @@ export function PrototypeFrame({
           </div>
         </>
       ) : (
-        <div>
-          <div className="browser-frame relative">
-            <div className="browser-chrome">
-              <span className="h-2.5 w-2.5 bg-accent-red" style={{ borderRadius: 999 }} />
-              <span className="h-2.5 w-2.5 bg-accent-amber" style={{ borderRadius: 999 }} />
-              <span className="h-2.5 w-2.5 bg-accent-green" style={{ borderRadius: 999 }} />
-              <div className="ml-2 flex items-center gap-2 text-[#333333]">
-                <ChevronLeft size={13} strokeWidth={1.5} />
-                <ChevronRight size={13} strokeWidth={1.5} />
-                <RotateCcw size={13} strokeWidth={1.5} />
-              </div>
-              <div className="url-bar">{currentScreen.url}</div>
+        <div className="browser-frame glass glass-noise relative overflow-hidden rounded-xl">
+          <div className="browser-chrome">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+            <div className="ml-2 flex items-center gap-2 text-[var(--text-muted)]">
+              <ChevronLeft size={13} strokeWidth={1.5} />
+              <ChevronRight size={13} strokeWidth={1.5} />
             </div>
-            <div className="h-[440px] bg-[#f5f5f7]">{renderScreenContent()}</div>
+            <div className="url-bar">{currentScreen.url}</div>
           </div>
+          <div className="h-[440px] bg-[var(--bg-bg-2)]">{renderScreenContent()}</div>
         </div>
       )}
 
@@ -179,17 +187,17 @@ export function PrototypeFrame({
                 type="button"
                 onClick={() => onChange(index)}
                 className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-xl border font-mono text-[10px] uppercase tracking-[0.12em] transition-all",
+                  "flex h-8 w-8 items-center justify-center rounded-md border font-mono text-[10px] uppercase tracking-[0.12em] transition-all",
                   index === activeIndex
-                    ? "border-[#111111] bg-[#111111] text-white"
-                    : "border-[#e0e0e0] text-[#999999] hover:border-[#111111] hover:text-[#111111]"
+                    ? "glass-blue text-[var(--blue)]"
+                    : "glass-sm text-[var(--text-muted)] hover:border-[var(--blue-border)] hover:text-[var(--blue)]"
                 )}
               >
                 {String(index + 1).padStart(2, "0")}
               </button>
             ))}
           </div>
-          <div className="mt-2 text-center font-mono text-[10px] uppercase tracking-widest text-[#999999]">
+          <div className="mt-2 text-center font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">
             {currentScreen.label}
           </div>
         </div>
@@ -201,10 +209,8 @@ export function PrototypeFrame({
               type="button"
               onClick={() => onChange(index)}
               className={cn(
-                "rounded-xl border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em]",
-                index === activeIndex
-                  ? "border-[#111111] bg-[#111111] text-white"
-                  : "border-[#e0e0e0] text-[#999999]"
+                "rounded-md border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em]",
+                index === activeIndex ? "glass-blue text-[var(--blue)]" : "glass-sm text-[var(--text-muted)]"
               )}
             >
               {screen.shortLabel} · {screen.label}
@@ -216,317 +222,195 @@ export function PrototypeFrame({
   );
 }
 
-function LoginScreen() {
+function CreatorSignupScreen() {
   return (
-    <div className="mx-auto mt-10 max-w-[320px] border border-border bg-[#0a0a0a] p-7">
-      <div className="font-display text-[18px] tracking-[0.1em] text-white">SERVICE REQUEST</div>
-      <div className="font-mono text-[9px] uppercase tracking-[0.14em] text-text-muted">
-        ENTERPRISE OPERATIONS PLATFORM
-      </div>
-      <div className="my-5 border-t border-border" />
-      <Label>EMAIL ADDRESS</Label>
-      <Input value="sarah.chen@acmecorp.com" />
-      <Label className="mt-3">PASSWORD</Label>
-      <Input value="••••••••••" />
-      <button type="button" className="mt-5 w-full bg-accent-cyan py-2.5 font-ui text-[11px] font-bold uppercase tracking-[0.15em] text-black">
-        SIGN IN
-      </button>
-      <div className="mt-3 text-center font-mono text-[10px] text-accent-cyan">SIGN IN WITH SSO →</div>
-      <div className="mt-6 text-center font-mono text-[9px] uppercase tracking-[0.1em] text-text-muted">
-        SECURED BY ACTIVE DIRECTORY · ACME CORP
-      </div>
-    </div>
-  );
-}
-
-function DashboardScreen() {
-  return (
-    <div className="h-full">
-      <div className="flex h-11 items-center justify-between border-b border-border bg-[#0a0a0a] px-4">
-        <div className="flex items-center">
-          <span className="font-display text-[15px] text-white">DASHBOARD</span>
-          <span className="ml-3 font-mono text-[9px] uppercase tracking-[0.12em] text-text-muted">WEEK 14 · Q1 2025</span>
-        </div>
-        <div className="flex items-center gap-3 text-text-muted">
-          <Bell size={14} strokeWidth={1.5} />
-          <Search size={14} strokeWidth={1.5} />
-          <div className="flex h-6 w-6 items-center justify-center rounded border border-border bg-bg-3 font-mono text-[9px] text-white">
-            SC
-          </div>
-        </div>
-      </div>
-      <div className="flex h-[396px]">
-        <div className="w-[120px] border-r border-[#111111] px-2 py-3">
-          {["Overview", "My Requests", "Assigned", "Reports", "Settings"].map((label, index) => (
-            <div
-              key={label}
-              className={cn(
-                "mb-1 flex h-9 items-center px-3 font-ui text-[11px]",
-                index === 0 ? "border-l-2 border-accent-cyan bg-[rgba(0,212,255,0.05)] text-white" : "text-text-muted"
-              )}
-            >
-              {label}
-            </div>
-          ))}
-        </div>
-        <div className="flex-1 px-4 py-4">
-          <div className="grid grid-cols-4 gap-3">
-            {dashboardStats.map((stat) => (
-              <div key={stat.label} className="border border-[#161616] bg-[#0a0a0a] p-3">
-                <div
-                  className={cn(
-                    "font-display text-[28px]",
-                    stat.tone === "amber"
-                      ? "text-accent-amber"
-                      : stat.tone === "red"
-                        ? "text-accent-red"
-                        : stat.tone === "green"
-                          ? "text-accent-green"
-                          : "text-white"
-                  )}
-                >
-                  {stat.value}
-                </div>
-                <div className="font-mono text-[9px] uppercase tracking-[0.12em] text-text-muted">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 border border-[#161616] bg-[#0a0a0a]">
-            <div className="grid grid-cols-[80px_1.5fr_110px_90px_70px] gap-3 border-b border-[#161616] px-4 py-3 font-mono text-[9px] uppercase tracking-[0.14em] text-text-muted">
-              <span>ID</span>
-              <span>TITLE</span>
-              <span>STATUS</span>
-              <span>ASSIGNEE</span>
-              <span>UPDATED</span>
-            </div>
-            {requestTableRows.map((row) => (
-              <div key={row.id} className="grid grid-cols-[80px_1.5fr_110px_90px_70px] gap-3 border-b border-[#111111] px-4 py-3 font-ui text-[11px] text-white last:border-b-0">
-                <span>{row.id}</span>
-                <span>{row.title}</span>
-                <span>
-                  <StatusBadge variant={row.status as "in-progress" | "p1" | "done"} />
-                </span>
-                <span>{row.assignee}</span>
-                <span>{row.updated}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function SubmitScreen() {
-  return (
-    <div className="px-5 py-4">
-      <div className="font-mono text-[9px] uppercase tracking-[0.14em] text-text-muted">DASHBOARD / REQUESTS / NEW</div>
-      <div className="mt-1 font-display text-[22px] text-white">NEW SERVICE REQUEST</div>
-      <div className="mt-4 space-y-3">
-        <div>
-          <Label>REQUEST TITLE</Label>
-          <Input value="Describe your request..." muted />
+    <div className="glass-sm h-full rounded-xl p-5">
+      <div className="mb-5 flex items-center gap-3">
+        <div className="glass-blue flex h-9 w-9 items-center justify-center rounded-md">
+          <UserRoundPlus size={16} className="text-[var(--blue)]" />
         </div>
         <div>
-          <Label>CATEGORY</Label>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {["IT Support", "Facilities", "HR", "Finance"].map((label, index) => (
-              <span
-                key={label}
-                className={cn(
-                  "border px-3 py-1.5 font-ui text-[11px]",
-                  index === 0 ? "border-accent-cyan bg-[rgba(0,212,255,0.08)] text-accent-cyan" : "border-border text-text-muted"
-                )}
-              >
-                {label}
-              </span>
-            ))}
-          </div>
-        </div>
-        <div>
-          <Label>PRIORITY</Label>
-          <div className="mt-2 flex gap-2">
-            {["LOW", "MEDIUM", "HIGH", "URGENT"].map((label) => (
-              <span
-                key={label}
-                className={cn(
-                  "border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em]",
-                  label === "HIGH" ? "border-[rgba(245,158,11,0.45)] bg-[rgba(245,158,11,0.08)] text-accent-amber" : "border-border text-text-muted"
-                )}
-              >
-                {label}
-                {label === "HIGH" ? " ✓" : ""}
-              </span>
-            ))}
-          </div>
-        </div>
-        <div>
-          <Label>DESCRIPTION</Label>
-          <div className="mt-1 min-h-[84px] rounded-xl border border-border bg-[#0a0a0a] px-3 py-2 font-ui text-[12px] text-text-muted">
-            Provide details, context, and any urgency reasons...
-          </div>
-        </div>
-        <div>
-          <Label>ATTACHMENTS</Label>
-          <div className="mt-1 flex h-12 items-center justify-center rounded-xl border border-dashed border-border bg-[#0a0a0a] font-mono text-[10px] uppercase tracking-[0.12em] text-text-muted">
-            Drop files here · PDF · IMG · DOCX
-          </div>
-        </div>
-        <OrchestraButton variant="primary">SUBMIT REQUEST</OrchestraButton>
-      </div>
-    </div>
-  );
-}
-
-function DetailScreen() {
-  return (
-    <div className="px-5 py-4">
-      <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-accent-cyan">REQ-0241</div>
-      <div className="mt-0.5 font-display text-[17px] text-white">
-        Network access required for new hire — Design team
-      </div>
-      <div className="mt-4 flex gap-4">
-        <div className="flex-1">
-          {detailTimeline.map((item) => (
-            <div key={item.title} className="mb-4 flex items-start gap-3">
-              <div className="mt-1.5 h-2 w-2" style={{ borderRadius: 999, background: item.tone === "done" ? "#10b981" : item.tone === "in-progress" ? "#00d4ff" : item.tone === "p1" ? "#f59e0b" : "#4a4a4a" }} />
-              <div>
-                <div className={cn("font-ui text-[11px]", item.tone === "p1" ? "text-accent-amber" : item.tone === "deferred" ? "text-text-muted" : "text-white")}>
-                  {item.title} — {item.detail}
-                </div>
-                {item.meta ? <div className="font-mono text-[9px] uppercase tracking-[0.12em] text-text-muted">{item.meta}</div> : null}
-              </div>
-            </div>
-          ))}
-          <div className="mt-4">
-            <div className="font-ui text-[11px] text-text-secondary">
-              <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-text-muted">MT</span> Mike Torres:
-            </div>
-            <div className="font-ui text-[11px] text-white">
-              Need AD admin approval to provision. Escalating now.
-            </div>
-            <div className="font-mono text-[9px] uppercase tracking-[0.12em] text-text-muted">11:04</div>
-          </div>
-        </div>
-        <div className="w-[120px] rounded-xl border border-[#161616] bg-[#0a0a0a] p-3">
-          <SidebarRow label="STATUS">
-            <StatusBadge variant="in-progress" />
-          </SidebarRow>
-          <SidebarRow label="ASSIGNEE">M. Torres</SidebarRow>
-          <SidebarRow label="PRIORITY">HIGH</SidebarRow>
-          <SidebarRow label="SLA">
-            <span className="text-accent-amber">Due 3h 22m</span>
-          </SidebarRow>
-          <SidebarRow label="CREATED">Today 09:41</SidebarRow>
+          <div className="font-title text-[28px] leading-none tracking-[0.06em] text-[var(--text-primary)]">CREATOR SIGNUP</div>
+          <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">Tempest AI · supply-side onboarding</div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function ReportsScreen() {
-  return (
-    <div className="px-5 py-4">
-      <div className="font-display text-[22px] text-white">REPORTING OVERVIEW</div>
-      <div className="mt-2 flex gap-2">
-        {["TODAY", "7D", "30D", "CUSTOM"].map((label) => (
-          <span
-            key={label}
+      <div className="grid gap-3">
+        {["Studio name", "Creator email", "Primary genre"].map((item) => (
+          <div key={item} className="glass-sm rounded-lg px-4 py-3">
+            <div className="font-mono text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{item}</div>
+            <div className="mt-1 font-ui text-[12px] text-[var(--text-primary)]">
+              {item === "Studio name" ? "Nebula Forge" : item === "Creator email" ? "creator@tempest.ai" : "Adventure · RPG"}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-5 flex gap-2">
+        {["Free", "Pro", "Studio"].map((tier) => (
+          <motion.div
+            key={tier}
+            variants={scalePop}
+            initial="hidden"
+            animate="show"
             className={cn(
-              "rounded-full border px-3 py-1 font-mono text-[9px] uppercase tracking-[0.12em]",
-              label === "30D" ? "border-accent-cyan bg-[rgba(0,212,255,0.08)] text-accent-cyan" : "border-border text-text-muted"
+              "rounded-md px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em]",
+              tier === "Pro" ? "glass-blue text-[var(--blue)]" : "glass-sm text-[var(--text-secondary)]"
             )}
           >
-            {label}
-            {label === "30D" ? " ✓" : ""}
-          </span>
+            {tier}
+          </motion.div>
         ))}
       </div>
-      <div className="mt-3 grid grid-cols-4 gap-2">
-        {[
-          ["142", "TOTAL"],
-          ["94%", "RESOLVED"],
-          ["2.4h", "AVG RESOLUTION"],
-          ["98%", "SLA MET"]
-        ].map(([value, label]) => (
-          <div key={label} className="rounded-xl border border-[#161616] bg-[#0a0a0a] p-3">
-            <div className="font-display text-[18px] text-white">{value}</div>
-            <div className="font-mono text-[8px] uppercase tracking-[0.12em] text-text-muted">{label}</div>
-          </div>
-        ))}
-      </div>
-      <div className="mt-4 grid grid-cols-[1fr_170px] gap-4">
-        <div className="rounded-xl border border-[#161616] bg-[#0a0a0a] p-3">
-          <svg viewBox="0 0 220 110" className="h-[120px] w-full">
-            {reportsBars.map((height, index) => (
-              <g key={index}>
-                <rect x={12 + index * 30} y={100 - height} width={24} height={height} fill="rgba(0,212,255,0.72)" />
-                <text x={24 + index * 30} y={108} textAnchor="middle" fill="#4a4a4a" style={{ fontFamily: "var(--font-mono)", fontSize: 8 }}>
-                  {["M", "T", "W", "T", "F", "S", "S"][index]}
-                </text>
-              </g>
-            ))}
-          </svg>
+    </div>
+  );
+}
+
+function PortfolioUploadScreen() {
+  return (
+    <div className="grid h-full gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+      <div className="glass-sm rounded-xl p-4">
+        <div className="mb-3 flex items-center gap-2">
+          <UploadCloud size={15} className="text-[var(--blue)]" />
+          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">Portfolio upload</span>
         </div>
-        <div className="rounded-xl border border-[#161616] bg-[#0a0a0a] p-3">
-          <div className="font-mono text-[9px] uppercase tracking-[0.12em] text-text-muted">CATEGORY</div>
-          <div className="mt-2 space-y-2">
-            {[
-              ["IT", "42%"],
-              ["Facilities", "28%"],
-              ["HR", "18%"],
-              ["Finance", "12%"]
-            ].map(([label, value]) => (
-              <div key={label} className="flex items-center justify-between font-ui text-[11px] text-white">
-                <span>{label}</span>
-                <span>{value}</span>
+        <div className="space-y-3">
+          {["Gameplay trailer.mp4", "Marketplace preview.png", "Build notes.txt"].map((file, index) => (
+            <div key={file} className="glass-sm rounded-lg px-4 py-3">
+              <div className="flex items-center justify-between">
+                <span className="font-ui text-[12px] text-[var(--text-primary)]">{file}</span>
+                <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                  {index === 0 ? "uploaded" : "queued"}
+                </span>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
-      <div className="mt-4 overflow-hidden rounded-2xl border border-[#161616] bg-[#0a0a0a]">
-        <div className="grid grid-cols-4 gap-3 border-b border-[#161616] px-4 py-3 font-mono text-[9px] uppercase tracking-[0.14em] text-text-muted">
-          <span>CATEGORY</span>
-          <span>COUNT</span>
-          <span>% RESOLVED</span>
-          <span>AVG TIME</span>
+      <div className="glass-sm rounded-xl p-4">
+        <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">Linked games</div>
+        <div className="grid gap-3">
+          {["Dungeons of Tempest", "Starfall Cartographer", "Warden's Loop"].map((game) => (
+            <div key={game} className="glass-sm flex items-center justify-between rounded-lg px-4 py-3">
+              <span className="font-ui text-[12px] text-[var(--text-primary)]">{game}</span>
+                <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[var(--blue)]">linked</span>
+            </div>
+          ))}
         </div>
-        {reportsCategories.map((row) => (
-          <div key={row.category} className="grid grid-cols-4 gap-3 border-b border-[#111111] px-4 py-3 font-ui text-[11px] text-white last:border-b-0">
-            <span>{row.category}</span>
-            <span>{row.count}</span>
-            <span>{row.resolved}</span>
-            <span>{row.time}</span>
-          </div>
-        ))}
       </div>
     </div>
   );
 }
 
-function Label({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <div className={cn("mb-1 font-mono text-[9px] uppercase tracking-[0.14em] text-text-muted", className)}>{children}</div>;
-}
-
-function Input({ value, muted = false }: { value: string; muted?: boolean }) {
+function MarketplaceScreen() {
   return (
-    <div
-      className={cn(
-        "rounded-xl border border-border bg-[#0f0f0f] px-3 py-2 font-ui text-[12px]",
-        muted ? "text-text-muted" : "text-white"
-      )}
-    >
-      {value}
+    <div className="grid h-full gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="glass-sm rounded-xl p-4">
+        <div className="mb-3 flex items-center gap-2">
+          <Search size={15} className="text-[var(--blue)]" />
+          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">Marketplace inventory</span>
+        </div>
+        <div className="grid gap-3 md:grid-cols-2">
+          {["Animated tavern pack", "RPG inventory UI", "Quest dialogue kit", "Dungeon tileset"].map((asset) => (
+            <div key={asset} className="glass-sm rounded-lg p-3">
+              <div className="h-20 rounded-md bg-[rgba(255,255,255,0.04)]" />
+              <div className="mt-3 font-ui text-[12px] text-[var(--text-primary)]">{asset}</div>
+              <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]">Tags · preview · publish-ready</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="glass-sm rounded-xl p-4">
+        <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">Publish summary</div>
+        <div className="space-y-3">
+          {[
+            ["Listing status", "Ready to publish"],
+            ["Visibility", "Featured creator feed"],
+            ["Revenue split", "70 / 30 default"]
+          ].map(([label, value]) => (
+            <div key={label} className="glass-sm rounded-lg px-4 py-3">
+              <div className="font-mono text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{label}</div>
+              <div className="mt-1 font-ui text-[12px] text-[var(--text-primary)]">{value}</div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
 
-function SidebarRow({ label, children }: { label: string; children: React.ReactNode }) {
+function RevenueDashboardScreen() {
   return (
-    <div className="mb-3">
-      <div className="mb-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-text-muted">{label}</div>
-      <div className="font-ui text-[11px] text-white">{children}</div>
+    <div className="grid h-full gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+      <div className="glass-sm rounded-xl p-4">
+        <div className="mb-3 flex items-center gap-2">
+          <DollarSign size={15} className="text-[var(--blue)]" />
+          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">Payout status</span>
+        </div>
+        <div className="glass-blue rounded-lg px-4 py-4">
+          <div className="font-title text-[34px] leading-none text-[var(--text-primary)]">$12.4K</div>
+          <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]">available for payout</div>
+        </div>
+        <div className="mt-3 space-y-3">
+          {["Stripe verification pending", "ABN required", "Banking details awaiting founder"].map((row) => (
+            <div key={row} className="glass-sm rounded-lg px-4 py-3 font-ui text-[12px] text-[var(--text-secondary)]">
+              {row}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="glass-sm rounded-xl p-4">
+        <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">Revenue split preview</div>
+        <div className="grid gap-3 md:grid-cols-3">
+          {[
+            ["Creator share", "70%"],
+            ["Tempest share", "30%"],
+            ["Pro creator target", "80 / 20"]
+          ].map(([label, value]) => (
+            <div key={label} className="glass-sm rounded-lg px-4 py-4">
+              <div className="font-title text-[32px] leading-none text-[var(--text-primary)]">{value}</div>
+              <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]">{label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DiscoveryFeedScreen() {
+  return (
+    <div className="grid h-full gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="glass-sm rounded-xl p-4">
+        <div className="mb-3 flex items-center gap-2">
+          <Compass size={15} className="text-[var(--blue)]" />
+          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">Discovery feed</span>
+        </div>
+        <div className="space-y-3">
+          {["Trending this week", "Featured creators", "AI picks (V2)", "Adventure spotlight"].map((module, index) => (
+            <div key={module} className="glass-sm rounded-lg px-4 py-3">
+              <div className="flex items-center justify-between">
+                <span className="font-ui text-[12px] text-[var(--text-primary)]">{module}</span>
+                <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                  {index === 2 ? "deferred" : "active"}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="glass-sm rounded-xl p-4">
+        <div className="mb-3 flex items-center gap-2">
+          <Sparkles size={15} className="text-[var(--blue)]" />
+          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">Featured game cards</span>
+        </div>
+        <div className="space-y-3">
+          {["Tides of Auren", "Hexlight Hollow", "Clockwork Caverns"].map((game) => (
+            <div key={game} className="glass-sm rounded-lg p-3">
+              <div className="h-16 rounded-md bg-[rgba(255,255,255,0.04)]" />
+              <div className="mt-3 font-ui text-[12px] text-[var(--text-primary)]">{game}</div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

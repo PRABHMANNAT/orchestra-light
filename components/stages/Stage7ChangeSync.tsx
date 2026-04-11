@@ -1,201 +1,156 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { AlertTriangle, RefreshCw, X } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { AlertTriangle, CheckCircle2 } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 
+import { EASE_EXPO, alertSlideDown, approvalBurst, fadeSlideUp, fadeSlideUpFast, livePulse, pageContainer, staggerContainer, terminalLine } from "@/lib/animations";
 import { StageShell } from "@/components/layout/StageShell";
 import { OrchestraButton } from "@/components/shared/OrchestraButton";
 import { SectionHeader } from "@/components/shared/SectionHeader";
-import { StatusBadge } from "@/components/shared/StatusBadge";
 import { TerminalOutput } from "@/components/shared/TerminalOutput";
 import { changeApplyLines, changePanels, changeSyncLines } from "@/lib/mockData";
+import { getStageRoute } from "@/lib/stageConfig";
 
 export function Stage7ChangeSync() {
-  const [started, setStarted] = useState(false);
-  const [ready, setReady] = useState(false);
   const [applying, setApplying] = useState(false);
   const [applied, setApplied] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setStarted(true);
-    }, 500);
-
-    return () => window.clearTimeout(timer);
-  }, []);
+  const params = useParams<{ projectId: string }>();
+  const projectId = typeof params?.projectId === "string" ? params.projectId : "p1";
 
   return (
     <StageShell showGrid>
-      <div className="mx-auto max-w-7xl space-y-6">
+      <motion.div variants={pageContainer} initial="hidden" animate="show" className="mx-auto max-w-7xl space-y-6 px-8 py-8">
+        <motion.div variants={alertSlideDown} initial="hidden" animate="show" className="sticky top-0 z-40 flex items-center gap-3 bg-[rgba(245,158,11,0.05)] px-8 py-2.5">
+          <motion.div variants={livePulse} initial="hidden" animate="show" className="h-[6px] w-[6px] rounded-full bg-[var(--amber)]" />
+          <span className="font-mono text-[10px] tracking-[0.15em] text-[var(--amber)]">+2 weeks · delivery recalculated</span>
+        </motion.div>
+
         <SectionHeader
-          title="CHANGE SYNC"
-          subtitle="SRS updated mid-project — Orchestra detects, diffs, and proposes plan updates"
+          label="Change"
+          title="JACK CHANGED HIS MIND."
+          subtitle="Jack added something. Here&apos;s what it costs."
+          accentColor="var(--amber)"
         />
 
-        <div className="rounded-2xl border border-[#fef08a] bg-[#fffbea] px-5 py-4 shadow-sm">
-          <div className="flex items-start gap-3">
-          <AlertTriangle size={18} strokeWidth={1.5} className="mt-0.5 text-[#854d0e]" />
-          <div>
-            <div className="font-sans text-[15px] font-semibold text-[#111111]">SCOPE CHANGE DETECTED</div>
-            <div className="mt-1 font-sans text-[13px] text-[#444444]">
-              Client has added a new requirement: managers must approve all requests before assignment can proceed.
-            </div>
-            <div className="mt-2 font-mono text-[10px] uppercase tracking-widest text-[#854d0e]">
-              RECEIVED: ServiceRequest_SRS_v3.pdf · TODAY 14:22
-            </div>
+        <motion.div
+          initial={{ opacity: 0, x: -22, borderLeftWidth: "0px" }}
+          animate={{ opacity: 1, x: 0, borderLeftWidth: "3px" }}
+          transition={{ duration: 0.5, ease: EASE_EXPO }}
+          className="glass-amber glass-noise rounded-xl px-6 py-5"
+        >
+          <div className="flex items-center gap-3 font-mono text-[11px] tracking-[0.12em] text-[var(--amber)]">
+            <AlertTriangle size={16} className="text-[var(--amber)]" />
+            Change
           </div>
+          <div className="mt-3 font-ui text-[13px] leading-6 text-[rgba(200,180,140,0.85)]">
+            You asked for a Pro subscription on Tuesday. That means a $29/month plan, an 80/20 split, and priority placement.
           </div>
-        </div>
+          <div className="mt-2 font-mono text-[10px] tracking-[0.12em] text-[rgba(120,100,60,0.7)]">
+            TEMPESTAI_PROCREATORPLAN_CHANGEREQUEST.PDF · Tuesday 14:22
+          </div>
+        </motion.div>
 
-        {started && !ready && !applying && !applied ? (
-          <TerminalOutput
-            label="CHANGE SYNC ENGINE — DIFF ANALYSIS"
-            lines={changeSyncLines}
-            onComplete={() => setReady(true)}
-          />
+        <motion.div variants={fadeSlideUp} initial="hidden" animate="show" className="glass-sm glass-noise rounded-xl px-5 py-4">
+          <div className="mb-3 font-mono text-[10px] tracking-[0.15em] text-[var(--amber)]">What changed</div>
+          {changeSyncLines.map((line, index) => (
+            <motion.div
+              key={line.text}
+              variants={terminalLine}
+              initial="hidden"
+              animate="show"
+              transition={{ delay: index * 0.1 }}
+              className="font-mono text-[11px] leading-7 text-[var(--text-primary)]"
+            >
+              <span className="text-[var(--text-muted)]">&gt; </span>
+              <span className="text-[var(--amber)]">
+                {line.text.split(/(done|✓)/g).map((segment, segmentIndex) => (
+                  <span key={`${line.text}-${segmentIndex}`} className={segment === "done" || segment === "✓" ? "text-[var(--emerald)]" : ""}>
+                    {segment}
+                  </span>
+                ))}
+              </span>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        <motion.div variants={staggerContainer(0.1, 0.2)} initial="hidden" animate="show" className="grid gap-4 lg:grid-cols-3">
+          <ImpactPanel title="What changes" items={changePanels.dag} />
+          <ImpactPanel title="Task impact" items={changePanels.tasks} />
+          <ImpactPanel title="Delivery impact" items={changePanels.delivery} />
+        </motion.div>
+
+        {!applying && !applied ? (
+          <div className="flex flex-wrap gap-3">
+            <OrchestraButton variant="primary" onClick={() => setApplying(true)}>Apply Changes</OrchestraButton>
+            <OrchestraButton variant="ghost">Defer to V2</OrchestraButton>
+          </div>
         ) : null}
 
-        {ready && !applying && !applied ? (
-          <>
-            <div className="grid gap-4 xl:grid-cols-3">
-              <ImpactPanel title="PRODUCT FLOWCHART UPDATES" tone="amber">
-                <div className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#999999]">NEW DEPENDENCY PATH</div>
-                <div className="my-3 flex items-center gap-1">
-                  <div className="mr-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#999999]">BEFORE</div>
-                  {["N7 Assign", "N9 Status"].map((item, index, arr) => (
-                    <div key={item} className="flex items-center gap-1">
-                      <div className="rounded-full border border-[#e0e0e0] px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#333333]">
-                        {item}
-                      </div>
-                      {index < arr.length - 1 ? <span className="font-mono text-[10px] text-[#999999]">→</span> : null}
-                    </div>
-                  ))}
-                </div>
-                <div className="my-2 flex items-center gap-1">
-                  <div className="mr-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#999999]">AFTER</div>
-                  {["N7 Assign", "N12 Approval", "N9 Status"].map((item, index, arr) => (
-                    <div key={item} className="flex items-center gap-1">
-                      <div
-                        className={
-                          item === "N12 Approval"
-                            ? "rounded-full border border-[#fef08a] bg-[#fff7cc] px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#854d0e]"
-                            : "rounded-full border border-[#e0e0e0] px-2.5 py-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#333333]"
-                        }
-                      >
-                        {item}
-                      </div>
-                      {index < arr.length - 1 ? (
-                        <span className={`font-mono text-[10px] ${item === "N7 Assign" ? "text-[#854d0e]" : "text-[#999999]"}`}>
-                          →
-                        </span>
-                      ) : null}
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-4 space-y-3">
-                  {changePanels.dag.map((item) => (
-                    <div key={item} className="font-sans text-[13px] text-[#444444]">
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              </ImpactPanel>
-
-              <ImpactPanel title="TASK CHANGES" tone="amber">
-                <div className="space-y-3">
-                  {changePanels.tasks.map((item, index) => (
-                    <div key={item} className="border-b border-[#f5f5f5] pb-3 last:border-b-0">
-                      <div className="font-sans text-[13px] text-[#111111]">{item}</div>
-                      <div className="mt-2">
-                        <StatusBadge variant={index >= 3 ? "new" : "revised"} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </ImpactPanel>
-
-              <ImpactPanel title="DELIVERY IMPACT" tone="red">
-                <div className="font-mono text-[10px] uppercase tracking-widest text-[#991b1b]">TIMELINE RISK DETECTED</div>
-                <div className="mt-4 space-y-3">
-                  {changePanels.delivery.map((item) => (
-                    <div key={item} className="font-sans text-[13px] text-[#444444]">
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              </ImpactPanel>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <OrchestraButton
-                variant="primary"
-                icon={RefreshCw}
-                onClick={() => {
-                  setApplying(true);
-                  setReady(false);
-                }}
-              >
-                APPLY ALL CHANGES TO PLAN + FLOWCHART
-              </OrchestraButton>
-              <OrchestraButton variant="ghost">REVIEW CHANGES MANUALLY</OrchestraButton>
-              <OrchestraButton variant="ghost" icon={X}>
-                REJECT — KEEP ORIGINAL SCOPE
-              </OrchestraButton>
-            </div>
-          </>
-        ) : null}
-
-        {applying && !applied ? (
+        {applying ? (
           <TerminalOutput
-            label="CHANGE SYNC ENGINE — APPLYING"
+            label="PLAN UPDATE"
             lines={changeApplyLines}
             onComplete={() => {
-              setApplied(true);
               setApplying(false);
-              toast("Change sync complete — plan aligned with SRS v3");
+              setApplied(true);
             }}
           />
         ) : null}
 
-        {applied ? (
-          <div className="space-y-5">
-            <div className="rounded-2xl border border-[#bbf7d0] bg-[#f0fdf4] p-5 shadow-sm">
-              <div className="font-sans text-[15px] font-semibold text-[#111111]">PLAN ALIGNED WITH SRS v3</div>
-              <div className="mt-2 flex gap-2">
-                <StatusBadge variant="new" />
-                <StatusBadge variant="revised" />
+        <AnimatePresence>
+          {applied ? (
+            <motion.div key="applied" variants={fadeSlideUp} initial="hidden" animate="show" exit="hidden" className="glass-emerald glass-noise rounded-xl px-8 py-8 text-center">
+              <motion.div variants={approvalBurst} initial="hidden" animate="show" className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-[var(--emerald-border)]">
+                <CheckCircle2 size={28} className="text-[var(--emerald)]" />
+              </motion.div>
+              <div className="font-title text-[36px] tracking-[0.06em] text-[var(--emerald)]">CHANGES APPLIED</div>
+              <div className="mt-2 font-ui text-[13px] text-[var(--text-secondary)]">New delivery: Week 8.</div>
+              <div className="mt-5 space-y-2">
+                {changeApplyLines.map((line, index) => (
+                  <motion.div
+                    key={line.text}
+                    variants={terminalLine}
+                    initial="hidden"
+                    animate="show"
+                    transition={{ delay: index * 0.08 }}
+                    className="font-mono text-[11px] text-[var(--text-primary)]"
+                  >
+                    {line.text}
+                  </motion.div>
+                ))}
               </div>
-            </div>
-            <OrchestraButton variant="primary" onClick={() => router.push("/pm/8-tower")}>
-              VIEW CONTROL TOWER →
-            </OrchestraButton>
-          </div>
-        ) : null}
-      </div>
+              <div className="mt-6">
+                <OrchestraButton variant="ghost" onClick={() => router.push(getStageRoute(projectId, "8-tower"))}>
+                  Open live view
+                </OrchestraButton>
+              </div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </motion.div>
     </StageShell>
   );
 }
 
-function ImpactPanel({
-  title,
-  tone,
-  children
-}: {
-  title: string;
-  tone: "amber" | "red";
-  children: React.ReactNode;
-}) {
+function ImpactPanel({ title, items }: { title: string; items: string[] }) {
   return (
-    <div
-      className={`min-h-[380px] rounded-2xl border bg-white p-5 shadow-sm ${
-        tone === "amber" ? "border-[#fef08a]" : "border-[#fecaca]"
-      }`}
-    >
-      <div className="mb-4 font-mono text-[10px] uppercase tracking-widest text-[#999999]">{title}</div>
-      <div className="mt-3">{children}</div>
-    </div>
+    <motion.div variants={fadeSlideUp} className="glass glass-hover rounded-xl px-5 py-5">
+      <div className="mb-3 font-mono text-[10px] tracking-[0.12em] text-[var(--amber)]">{title}</div>
+      <motion.div variants={staggerContainer(0.05, 0.05)} initial="hidden" animate="show" className="space-y-2">
+        {items.map((item) => (
+          <motion.div
+            key={item}
+            variants={fadeSlideUpFast}
+            className="font-ui text-[12px] leading-6"
+            style={{ color: item.includes("+2 weeks") || item.includes("MEDIUM RISK") ? "var(--rose)" : "var(--text-secondary)" }}
+          >
+            {item}
+          </motion.div>
+        ))}
+      </motion.div>
+    </motion.div>
   );
 }

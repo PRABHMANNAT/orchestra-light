@@ -16,7 +16,7 @@ export const MOCK_USERS: OrchestraUser[] = [
     role: "pm",
     name: "Sarah Chen",
     title: "Project Manager",
-    email: "sarah@acmecorp.com",
+    email: "sarah@orchestra.io",
     password: "demo",
     avatar: "SC"
   },
@@ -25,18 +25,18 @@ export const MOCK_USERS: OrchestraUser[] = [
     role: "developer",
     name: "Mike Torres",
     title: "Senior Engineer",
-    email: "mike@acmecorp.com",
+    email: "mike@orchestra.io",
     password: "demo",
     avatar: "MT"
   },
   {
     id: "u3",
     role: "client",
-    name: "James Whitfield",
-    title: "Director of Operations",
-    email: "james@acmecorp.com",
+    name: "Jack",
+    title: "Founder, Tempest AI",
+    email: "jack@tempest.ai",
     password: "demo",
-    avatar: "JW"
+    avatar: "J"
   }
 ];
 
@@ -62,7 +62,7 @@ export function clearUserFromStorage() {
 export function getRouteForRole(role: UserRole): string {
   switch (role) {
     case "pm":
-      return "/pm/1-intake";
+      return "/pm/dashboard";
     case "developer":
       return "/dev";
     case "client":

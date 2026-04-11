@@ -5,536 +5,23 @@ export interface TerminalLine {
 
 export interface ClarificationQuestionSpec {
   id: string;
-  question: string;
-  options: string[];
-  answer: string;
-  briefField: string;
-}
-
-export const CLARIFICATION_QUESTIONS: ClarificationQuestionSpec[] = [
-  {
-    id: "q1",
-    question: "Who is the primary user V1 must serve most effectively?",
-    options: ["Requester (submitting staff)", "Manager (approving)", "System Admin", "All roles equally"],
-    answer: "Requester (submitting staff)",
-    briefField: "PRIMARY USER"
-  },
-  {
-    id: "q2",
-    question: "Which single workflow must the first prototype demonstrate end-to-end?",
-    options: ["Submit → Assign → Resolve", "Submit → Approve → Resolve", "Admin setup flow", "Reporting dashboard"],
-    answer: "Submit → Assign → Resolve",
-    briefField: "CORE JOURNEY"
-  },
-  {
-    id: "q3",
-    question: "What is the minimum required for the client to say 'yes, this is correct'?",
-    options: ["Core request lifecycle only", "Requests + notifications", "Full platform with admin", "Requests + reporting"],
-    answer: "Core request lifecycle only",
-    briefField: "MVP PROOF POINT"
-  },
-  {
-    id: "q4",
-    question: "Which integrations are mandatory for V1 vs. deferred?",
-    options: ["SSO now, email later", "Email now, SSO later", "Both integrations in V1", "Neither in V1"],
-    answer: "SSO now, email later",
-    briefField: "INTEGRATIONS (V1)"
-  },
-  {
-    id: "q5",
-    question: "What is fixed vs. flexible in this engagement?",
-    options: ["Timeline fixed, scope flexible", "Scope fixed, timeline flexible", "Both fixed", "Both negotiable"],
-    answer: "Timeline fixed, scope flexible",
-    briefField: "CONSTRAINTS"
-  },
-  {
-    id: "q6",
-    question: "Who must sign off on prototype approval before build begins?",
-    options: ["Manager only", "Client only", "Both Manager + Client required", "Engineering lead"],
-    answer: "Both Manager + Client required",
-    briefField: "SIGN-OFF"
-  }
-];
-
-export const CLARIFIED_BRIEF = {
-  primaryUser: "Requester (submitting staff)",
-  coreJourney: "Submit → Assign → Resolve",
-  mvpProofPoint: "Core request lifecycle works end-to-end",
-  integrationsV1: "SSO / Active Directory",
-  integrationsLater: "Email SMTP · Webhooks · CSV Export",
-  constraints: "Timeline fixed · 8-week delivery",
-  signOff: "Manager + Client both required",
-  inScope: [
-    "Service request submission",
-    "Assignment workflow",
-    "Status tracking",
-    "Basic reporting",
-    "Role-based access (SSO)"
-  ],
-  outOfScope: [
-    "Manager approval gate",
-    "Advanced analytics",
-    "Audit logging",
-    "Admin panel",
-    "Billing integration",
-    "Role management",
-    "Mobile app"
-  ],
-  openDecisions: ["Notification trigger rules", "SLA policy thresholds", "Approval hierarchy depth"],
-  risks: ["SSO integration complexity", "Approval logic depth", "Report performance at scale"]
-};
-
-export interface DagNode {
-  id: string;
-  label: string;
-  type: "capability" | "screen" | "integration" | "data" | "rule" | "decision" | "flow";
-  priority: "P0" | "P1" | "P2";
-  inMVP: boolean;
-  position: { x: number; y: number };
-}
-
-export const DAG_NODES: DagNode[] = [
-  { id: "N1", label: "User Authentication", type: "capability", priority: "P0", inMVP: true, position: { x: 80, y: 200 } },
-  { id: "N2", label: "Account Creation", type: "screen", priority: "P0", inMVP: true, position: { x: 280, y: 90 } },
-  { id: "N3", label: "Login Screen", type: "screen", priority: "P0", inMVP: true, position: { x: 280, y: 290 } },
-  { id: "N4", label: "SSO Integration", type: "integration", priority: "P0", inMVP: true, position: { x: 80, y: 50 } },
-  { id: "N5", label: "Submit Request Form", type: "screen", priority: "P0", inMVP: true, position: { x: 500, y: 200 } },
-  { id: "N6", label: "Request Entity (DB)", type: "data", priority: "P0", inMVP: true, position: { x: 500, y: 380 } },
-  { id: "N7", label: "Assignment Engine", type: "flow", priority: "P0", inMVP: true, position: { x: 720, y: 130 } },
-  { id: "N8", label: "Staff Role Rule", type: "rule", priority: "P0", inMVP: true, position: { x: 720, y: 300 } },
-  { id: "N9", label: "Status Tracking View", type: "screen", priority: "P0", inMVP: true, position: { x: 940, y: 200 } },
-  { id: "N10", label: "Basic Reporting", type: "screen", priority: "P0", inMVP: true, position: { x: 1160, y: 200 } },
-  { id: "N11", label: "Email Notifications", type: "integration", priority: "P1", inMVP: false, position: { x: 720, y: 460 } },
-  { id: "N12", label: "Manager Approval Gate", type: "decision", priority: "P1", inMVP: false, position: { x: 940, y: 380 } },
-  { id: "N13", label: "Notification Prefs", type: "screen", priority: "P1", inMVP: false, position: { x: 940, y: 520 } },
-  { id: "N14", label: "Advanced Analytics", type: "screen", priority: "P2", inMVP: false, position: { x: 1160, y: 380 } },
-  { id: "N15", label: "Audit Logging", type: "capability", priority: "P2", inMVP: false, position: { x: 1160, y: 500 } },
-  { id: "N16", label: "Admin Panel", type: "screen", priority: "P2", inMVP: false, position: { x: 1380, y: 200 } },
-  { id: "N17", label: "Billing Integration", type: "integration", priority: "P2", inMVP: false, position: { x: 1380, y: 380 } },
-  { id: "N18", label: "Role Management", type: "screen", priority: "P2", inMVP: false, position: { x: 1380, y: 500 } }
-];
-
-export interface DagEdge {
-  id: string;
-  source: string;
-  target: string;
-  label: string;
-  critical: boolean;
-}
-
-export const DAG_EDGES: DagEdge[] = [
-  { id: "e1", source: "N4", target: "N1", label: "requires", critical: true },
-  { id: "e2", source: "N1", target: "N2", label: "unlocks", critical: true },
-  { id: "e3", source: "N1", target: "N3", label: "unlocks", critical: true },
-  { id: "e4", source: "N3", target: "N5", label: "requires", critical: true },
-  { id: "e5", source: "N5", target: "N6", label: "writes to", critical: true },
-  { id: "e6", source: "N5", target: "N7", label: "unlocks", critical: true },
-  { id: "e7", source: "N8", target: "N7", label: "required for", critical: false },
-  { id: "e8", source: "N7", target: "N9", label: "unlocks", critical: true },
-  { id: "e9", source: "N6", target: "N9", label: "reads from", critical: true },
-  { id: "e10", source: "N9", target: "N10", label: "feeds", critical: true },
-  { id: "e11", source: "N7", target: "N11", label: "triggers", critical: false },
-  { id: "e12", source: "N9", target: "N12", label: "enables", critical: false },
-  { id: "e13", source: "N11", target: "N13", label: "requires", critical: false },
-  { id: "e14", source: "N10", target: "N14", label: "extends to", critical: false },
-  { id: "e15", source: "N9", target: "N15", label: "enables", critical: false },
-  { id: "e16", source: "N8", target: "N16", label: "requires", critical: false },
-  { id: "e17", source: "N6", target: "N17", label: "enables", critical: false },
-  { id: "e18", source: "N8", target: "N18", label: "extends to", critical: false },
-  { id: "e19", source: "N2", target: "N5", label: "unlocks", critical: false },
-  { id: "e20", source: "N10", target: "N16", label: "extends to", critical: false },
-  { id: "e21", source: "N12", target: "N9", label: "gates", critical: false }
-];
-
-export interface ExecutionTask {
-  id: string;
-  title: string;
-  dag: string[];
-  priority: "P0" | "P1" | "P2";
-  deps: string[];
-  ac: string;
-}
-
-export interface ExecutionEpic {
-  id: string;
-  name: string;
-  priority: "P0" | "P1" | "P2";
-  taskCount: number;
-  tasks: ExecutionTask[];
-}
-
-export const EXECUTION_PLAN: ExecutionEpic[] = [
-  {
-    id: "E1",
-    name: "Authentication & Access",
-    priority: "P0",
-    taskCount: 6,
-    tasks: [
-      {
-        id: "T1.1",
-        title: "Implement SSO integration (Active Directory)",
-        dag: ["N4", "N1"],
-        priority: "P0",
-        deps: [],
-        ac: "SSO login completes with valid token · RBAC roles assigned on first login"
-      },
-      {
-        id: "T1.2",
-        title: "Build login screen + all error states",
-        dag: ["N3"],
-        priority: "P0",
-        deps: ["T1.1"],
-        ac: "All error states render correctly · Redirect to dashboard on success"
-      },
-      {
-        id: "T1.3",
-        title: "Account creation flow",
-        dag: ["N2"],
-        priority: "P0",
-        deps: ["T1.1"],
-        ac: "New user can create account · Role assigned on creation"
-      },
-      {
-        id: "T1.4",
-        title: "Session management + token refresh",
-        dag: ["N1"],
-        priority: "P0",
-        deps: ["T1.1", "T1.2"],
-        ac: "Session persists across page reload · Token refreshes before expiry"
-      },
-      {
-        id: "T1.5",
-        title: "Role assignment on first login",
-        dag: ["N8"],
-        priority: "P0",
-        deps: ["T1.1"],
-        ac: "Role correctly assigned from SSO claims · Default fallback role applied"
-      },
-      {
-        id: "T1.6",
-        title: "Authentication integration tests",
-        dag: ["N1"],
-        priority: "P0",
-        deps: ["T1.1", "T1.2", "T1.3", "T1.4", "T1.5"],
-        ac: "All auth flows pass end-to-end test suite"
-      }
-    ]
-  },
-  {
-    id: "E2",
-    name: "Request Lifecycle",
-    priority: "P0",
-    taskCount: 10,
-    tasks: [
-      {
-        id: "T2.1",
-        title: "Request submission form (all field types, validation)",
-        dag: ["N5"],
-        priority: "P0",
-        deps: ["T1.1"],
-        ac: "All field types render · Validation prevents invalid submission"
-      },
-      {
-        id: "T2.2",
-        title: "Request entity schema + DB migrations",
-        dag: ["N6"],
-        priority: "P0",
-        deps: [],
-        ac: "Schema matches all field types · Migration runs cleanly"
-      },
-      {
-        id: "T2.3",
-        title: "Assignment engine (manual selection + auto-suggest)",
-        dag: ["N7"],
-        priority: "P0",
-        deps: ["T2.1", "T2.2", "T1.5"],
-        ac: "Manual assignment works · Auto-suggest shows top 3 matches"
-      },
-      {
-        id: "T2.4",
-        title: "Status state machine (submitted→assigned→in-progress→resolved)",
-        dag: ["N9"],
-        priority: "P0",
-        deps: ["T2.3"],
-        ac: "All state transitions work · Invalid transitions blocked"
-      },
-      {
-        id: "T2.5",
-        title: "Request detail view (read + update)",
-        dag: ["N9"],
-        priority: "P0",
-        deps: ["T2.4"],
-        ac: "All fields visible · Status update persists correctly"
-      },
-      {
-        id: "T2.6",
-        title: "Staff assignment dashboard",
-        dag: ["N7"],
-        priority: "P0",
-        deps: ["T2.3"],
-        ac: "Assigned requests visible · Staff can update status"
-      },
-      {
-        id: "T2.7",
-        title: "Requester tracking view (read-only status)",
-        dag: ["N9"],
-        priority: "P0",
-        deps: ["T2.4"],
-        ac: "Requester can see live status · Cannot modify assignment"
-      },
-      {
-        id: "T2.8",
-        title: "Priority classification + SLA countdown",
-        dag: ["N9"],
-        priority: "P0",
-        deps: ["T2.1"],
-        ac: "Priority correctly sets SLA · Countdown renders accurately"
-      },
-      {
-        id: "T2.9",
-        title: "Basic email notification trigger (deferred — placeholder only)",
-        dag: ["N11"],
-        priority: "P1",
-        deps: ["T2.4"],
-        ac: "Trigger fires on status change · Email content templated"
-      },
-      {
-        id: "T2.10",
-        title: "Request lifecycle integration tests",
-        dag: ["N5", "N6", "N7", "N9"],
-        priority: "P0",
-        deps: ["T2.1", "T2.2", "T2.3", "T2.4", "T2.5"],
-        ac: "Full lifecycle passes end-to-end · Edge cases covered"
-      }
-    ]
-  },
-  {
-    id: "E3",
-    name: "Reporting",
-    priority: "P0",
-    taskCount: 8,
-    tasks: [
-      {
-        id: "T3.1",
-        title: "Report data aggregation service",
-        dag: ["N10"],
-        priority: "P0",
-        deps: ["T2.4"],
-        ac: "Aggregates by period, category, status · Sub-200ms query time"
-      },
-      {
-        id: "T3.2",
-        title: "Volume by period chart (bar)",
-        dag: ["N10"],
-        priority: "P0",
-        deps: ["T3.1"],
-        ac: "7-day and 30-day views render · Data matches aggregation"
-      },
-      {
-        id: "T3.3",
-        title: "Resolution rate calculation",
-        dag: ["N10"],
-        priority: "P0",
-        deps: ["T3.1"],
-        ac: "Percentage accurate to 1 decimal · Updates in real time"
-      },
-      {
-        id: "T3.4",
-        title: "Average handle time metric",
-        dag: ["N10"],
-        priority: "P0",
-        deps: ["T3.1"],
-        ac: "Calculated from status transition timestamps · Displays in hours"
-      },
-      {
-        id: "T3.5",
-        title: "SLA compliance rate",
-        dag: ["N10"],
-        priority: "P0",
-        deps: ["T3.1", "T2.8"],
-        ac: "Percentage of requests resolved within SLA · Breakdowns by category"
-      },
-      {
-        id: "T3.6",
-        title: "Category breakdown table",
-        dag: ["N10"],
-        priority: "P0",
-        deps: ["T3.1"],
-        ac: "All 4 categories shown · Sortable by column"
-      },
-      {
-        id: "T3.7",
-        title: "Date range filter",
-        dag: ["N10"],
-        priority: "P0",
-        deps: ["T3.2"],
-        ac: "Today, 7D, 30D, and custom range work · All charts update on change"
-      },
-      {
-        id: "T3.8",
-        title: "Export to CSV",
-        dag: ["N10"],
-        priority: "P1",
-        deps: ["T3.1"],
-        ac: "CSV downloads correctly · Matches visible data"
-      }
-    ]
-  }
-];
-
-export const FEATURE_PROGRESS = [
-  { label: "Authentication & SSO", value: 87, variant: "green", status: "on-track" },
-  { label: "Request Submission Form", value: 75, variant: "cyan", status: "on-track" },
-  { label: "Assignment Engine", value: 38, variant: "amber", status: "blocked" },
-  { label: "Status Tracking", value: 100, variant: "green", status: "done" },
-  { label: "Basic Reporting", value: 52, variant: "cyan", status: "on-track" },
-  { label: "Email Notifications", value: 0, variant: "muted", status: "deferred" },
-  { label: "Manager Approval Gate", value: 22, variant: "amber", status: "at-risk" },
-  { label: "Admin Panel", value: 0, variant: "muted", status: "deferred" },
-  { label: "Billing Integration", value: 0, variant: "muted", status: "deferred" },
-  { label: "Role Management", value: 33, variant: "amber", status: "at-risk" }
-] as const;
-
-export const BLOCKERS = [
-  {
-    title: "Assignment Engine",
-    severity: "blocked",
-    desc: "Awaiting client sign-off on permissions hierarchy. T2.3, T2.5, T2.6 stalled.",
-    dag: "N7, N8",
-    blocking: "N9, N10",
-    stalledDays: 2
-  },
-  {
-    title: "Role Management",
-    severity: "blocked",
-    desc: "RBAC schema requires architecture review from CTO before implementation.",
-    dag: "N8",
-    blocking: "N16, N18",
-    stalledDays: 1
-  },
-  {
-    title: "Manager Approval Gate",
-    severity: "at-risk",
-    desc: "New requirement from SRS v3. Approval hierarchy depth still unresolved open decision.",
-    dag: "N12 (new)",
-    blocking: "N9 (indirect)",
-    stalledDays: 0
-  }
-] as const;
-
-export const DEV_TASKS = [
-  {
-    id: "T1.1",
-    title: "Implement SSO integration (Active Directory)",
-    epic: "E1 — Authentication & Access",
-    dag: "N4, N1",
-    jira: "PROJ-4",
-    status: "in-progress",
-    priority: "P0",
-    progress: 82,
-    deps: [] as string[],
-    ac: "SSO login completes · RBAC roles assigned · Token issued",
-    started: "11 Mar",
-    estimate: "15 Mar",
-    subtasksRemaining: 2
-  },
-  {
-    id: "T2.3",
-    title: "Assignment Engine",
-    epic: "E2 — Request Lifecycle",
-    dag: "N7",
-    jira: "PROJ-18",
-    status: "blocked",
-    priority: "P0",
-    progress: 0,
-    blocker: "Awaiting client sign-off on permissions hierarchy",
-    deps: ["T1.5"],
-    ac: "Manual assignment works · Auto-suggest shows top 3"
-  },
-  {
-    id: "T1.4",
-    title: "Session management + token refresh",
-    epic: "E1",
-    dag: "N1",
-    jira: "PROJ-7",
-    status: "in-progress",
-    priority: "P0",
-    progress: 40,
-    deps: ["T1.1", "T1.2"],
-    ac: "Session persists across reload · Token refreshes before expiry"
-  },
-  {
-    id: "T2.4",
-    title: "Status State Machine",
-    epic: "E2",
-    dag: "N9",
-    jira: "PROJ-19",
-    status: "todo",
-    priority: "P0",
-    progress: 0,
-    deps: ["T2.3"],
-    ac: "All transitions work · Invalid transitions blocked",
-    note: "Updated: includes pending-approval state from SRS change sync"
-  },
-  {
-    id: "T2.5",
-    title: "Request detail view (read + update)",
-    epic: "E2",
-    dag: "N9",
-    jira: "PROJ-20",
-    status: "todo",
-    priority: "P0",
-    progress: 0,
-    deps: ["T2.4"]
-  },
-  {
-    id: "T1.6",
-    title: "Authentication integration tests",
-    epic: "E1",
-    dag: "N1",
-    jira: "PROJ-9",
-    status: "todo",
-    priority: "P0",
-    progress: 0,
-    deps: ["T1.1", "T1.2", "T1.3", "T1.4", "T1.5"]
-  }
-] as const;
-
-const demoValueByNode: Record<string, number> = {
-  N1: 5,
-  N2: 3,
-  N3: 5,
-  N4: 5,
-  N5: 5,
-  N6: 4,
-  N7: 5,
-  N8: 4,
-  N9: 5,
-  N10: 4,
-  N11: 3,
-  N12: 4,
-  N13: 2,
-  N14: 2,
-  N15: 2,
-  N16: 1,
-  N17: 1,
-  N18: 2
-};
-
-export interface ClarificationQuestion {
   q: string;
   options: string[];
   answer: string;
+  briefField: string;
+  briefValue: string;
 }
 
 export interface DagNodeData {
   id: string;
   label: string;
-  nodeType: "capability" | "screen" | "integration" | "data" | "rule" | "decision" | "flow" | "async";
-  priority: "P0" | "P1" | "P2";
+  nodeType: "screen" | "capability" | "integration" | "data" | "flow" | "rule" | "decision" | "async";
+  priority: "P0" | "P1" | "P2" | "P3";
   inMVP: boolean;
-  position: { x: number; y: number };
+  description: string;
+  owner: string;
   demoValue: number;
+  position: { x: number; y: number };
 }
 
 export interface DagEdgeData {
@@ -545,715 +32,2130 @@ export interface DagEdgeData {
   critical: boolean;
 }
 
+export interface ExecutionTask {
+  id: string;
+  title: string;
+  dag: string[];
+  priority: "P0" | "P1" | "P2" | "P3";
+  dependencies: string[];
+  acceptance: string[];
+  assignee: string;
+  status: "todo" | "in-progress" | "in-review" | "done";
+}
+
+export interface ExecutionEpic {
+  id: string;
+  title: string;
+  priority: "P0" | "P1" | "P2";
+  tasks: ExecutionTask[];
+}
+
 export const projectMeta = {
-  version: "v0.9.1 — DEMO BUILD",
-  client: "ACME Corp",
-  project: "Service Request Platform",
-  activeWindow: "ACTIVE — WEEK 4 OF 8",
-  handoverDate: "14 MARCH 2025"
+  version: "Creator Marketplace V1",
+  project: "Tempest AI — Creator Marketplace V1",
+  client: "Jack · Tempest AI",
+  activeWindow: "Sprint 3 of 6",
+  health: "61% delivery health"
 };
 
 export const roleCardContent = [
   {
-    role: "pm",
-    title: "PROJECT MANAGER",
+    role: "pm" as const,
+    title: "Manager Workspace",
     name: "Sarah Chen",
-    access: "Full platform access — all workflow stages"
+    access: "Full Tempest AI orchestration access"
   },
   {
-    role: "developer",
-    title: "DEVELOPER",
+    role: "developer" as const,
+    title: "Engineering View",
     name: "Mike Torres",
-    access: "Assigned work · Sprint board · Task details"
+    access: "Sprint board + task ownership"
   },
   {
-    role: "client",
-    title: "CLIENT",
-    name: "James Whitfield",
-    access: "Prototype review · Approvals · Progress updates"
+    role: "client" as const,
+    title: "Client Portal",
+    name: "Jack",
+    access: "Review, approvals, handover"
   }
-] as const;
+];
 
 export const intakeUploadFile = {
-  name: "ServiceRequest_SRS_v2.pdf",
-  size: "2.4 MB · PDF · Uploaded 09:41:22"
+  name: "TempestAI_CreatorMarketplaceV1_Brief.pdf",
+  size: "2.4 MB"
 };
-
-export const intakeAnalysisLines: TerminalLine[] = [
-  { text: "loading document: ServiceRequest_SRS_v2.pdf ... done", delay: 100 },
-  { text: "document validated: 2.4MB · 22 pages · PDF/A compliant", delay: 220 },
-  { text: "chunking sections ... 12 sections identified", delay: 220 },
-  { text: "extracting actors and user roles ... done", delay: 220 },
-  { text: "mapping feature requirements ... 34 requirements found", delay: 220 },
-  { text: "identifying constraints and integrations ... done", delay: 220 },
-  { text: "flagging ambiguous requirements ... 6 flagged", delay: 220 },
-  { text: "computing risk surface ... done", delay: 220 },
-  { text: "classifying dependency-bearing capabilities ... done", delay: 220 },
-  { text: "generating structured brief ... done", delay: 220 },
-  { text: "cross-checking ambiguity clusters ... done", delay: 220 },
-  { text: "analysis complete ✓", delay: 260 }
-];
 
 export const intakeCards = [
   {
-    title: "PRODUCT SUMMARY",
-    icon: "Layers",
-    tone: "cyan",
-    content:
-      "A web platform for managing service requests, approvals, status tracking, and multi-level reporting for enterprise operations teams."
+    step: "01",
+    title: "Orchestra reads it",
+    description: "Parses Jack's brief, PRD, and Slack context into a single structured intake."
   },
   {
-    title: "USER ROLES",
-    icon: "Users",
-    tone: "default",
-    items: ["Requester", "Staff Assignee", "Manager", "System Admin"]
+    step: "02",
+    title: "Extracts requirements",
+    description: "Pulls the monetisation, marketplace, payout, and discovery requirements into delivery themes."
   },
   {
-    title: "CORE FEATURES",
-    icon: "ListTodo",
-    tone: "default",
-    items: [
-      "Service request submission",
-      "Assignment workflow",
-      "Status tracking",
-      "Manager approval gates",
-      "Notifications",
-      "Reporting dashboard",
-      "Admin controls",
-      "Audit logging",
-      "SLA tracking"
-    ]
-  },
-  {
-    title: "CONSTRAINTS",
-    icon: "Settings",
-    tone: "default",
-    content:
-      "Must integrate with existing SSO. Mobile-responsive required. Sub-2s load time. WCAG 2.1 AA compliance."
-  },
-  {
-    title: "INTEGRATIONS",
-    icon: "Plug",
-    tone: "default",
-    items: ["SSO / Active Directory", "Email (SMTP)", "Webhook support", "Export to CSV/PDF"]
-  },
-  {
-    title: "UNCLEAR AREAS",
-    icon: "AlertTriangle",
-    tone: "red",
-    content:
-      "6 ambiguous requirements flagged — approval hierarchy depth, notification triggers, report scheduling frequency, mobile scope, SLA policy, data retention rules"
-  },
-  {
-    title: "LIKELY RISKS",
-    icon: "ShieldAlert",
-    tone: "amber",
-    content: "SSO integration complexity · Approval logic depth · Report performance at scale"
+    step: "03",
+    title: "Asks the right questions",
+    description: "Surfaces the hidden decisions Jack has not fully articulated before the agency starts build."
   }
 ];
 
-export const clarificationQuestions: ClarificationQuestion[] = CLARIFICATION_QUESTIONS.map((item) => ({
-  q: item.question,
-  options: item.options,
-  answer: item.answer
-}));
-
-export const clarifiedBriefRows = [
-  { label: "PRIMARY USER", value: CLARIFIED_BRIEF.primaryUser },
-  { label: "CORE JOURNEY", value: CLARIFIED_BRIEF.coreJourney },
-  { label: "MVP PROOF POINT", value: CLARIFIED_BRIEF.mvpProofPoint },
-  { label: "INTEGRATIONS (V1)", value: CLARIFIED_BRIEF.integrationsV1 },
-  { label: "INTEGRATIONS (LATER)", value: CLARIFIED_BRIEF.integrationsLater },
-  { label: "CONSTRAINTS", value: CLARIFIED_BRIEF.constraints },
-  { label: "SIGN-OFF REQUIRED", value: CLARIFIED_BRIEF.signOff }
+export const intakeAnalysisLines: TerminalLine[] = [
+  { text: "reading Jack's creator marketplace brief ........ done", delay: 240 },
+  { text: "extracting platform, payout, and discovery signals ... done", delay: 220 },
+  { text: "mapping founder pain points to delivery stages ....... done", delay: 220 },
+  { text: "flagging open decisions for Sarah Chen ............... done", delay: 220 },
+  { text: "Tempest AI intake ready for clarification ............ done", delay: 220 }
 ];
 
-export const dagNodes: DagNodeData[] = DAG_NODES.map((node) => ({
-  id: node.id,
-  label: node.label,
-  nodeType: node.type,
-  priority: node.priority,
-  inMVP: node.inMVP,
-  position: node.position,
-  demoValue: demoValueByNode[node.id] ?? 3
+export const clarificationQuestions: ClarificationQuestionSpec[] = [
+  {
+    id: "q1",
+    q: "Who is the primary user Creator Marketplace V1 must serve?",
+    options: ["Game creators (supply side)", "Players (demand side)", "Both equally", "Internal team first"],
+    answer: "Game creators (supply side)",
+    briefField: "PRIMARY USER",
+    briefValue: "Game creators publishing browser-native RPG and adventure content through Tempest AI."
+  },
+  {
+    id: "q2",
+    q: "Which single flow must the prototype demonstrate end-to-end?",
+    options: [
+      "Creator signup → asset upload → publish",
+      "Player browse → purchase → play",
+      "Payout flow → dashboard",
+      "Admin moderation flow"
+    ],
+    answer: "Creator signup → asset upload → publish",
+    briefField: "CORE JOURNEY",
+    briefValue: "Creator signup → asset upload → publish is the flow Jack needs to feel launch-ready."
+  },
+  {
+    id: "q3",
+    q: "What's the minimum for Jack to say 'yes, this is the right direction'?",
+    options: [
+      "Onboarding + marketplace UI only",
+      "Full monetisation flow",
+      "Analytics dashboard",
+      "Everything in V1"
+    ],
+    answer: "Onboarding + marketplace UI only",
+    briefField: "MVP PROOF POINT",
+    briefValue: "The prototype only needs onboarding and marketplace UX to earn sign-off before build expands."
+  },
+  {
+    id: "q4",
+    q: "Which integrations are V1 vs deferred?",
+    options: ["Stripe now, analytics later", "Analytics now, Stripe later", "Both in V1", "Neither in V1"],
+    answer: "Stripe now, analytics later",
+    briefField: "INTEGRATIONS (V1)",
+    briefValue: "Stripe Connect ships in V1. Advanced analytics ingestion and recommendations are deferred."
+  },
+  {
+    id: "q5",
+    q: "What is fixed vs flexible?",
+    options: ["Timeline fixed, scope flexible", "Scope fixed, timeline flexible", "Both fixed", "Both flexible"],
+    answer: "Timeline fixed, scope flexible",
+    briefField: "CONSTRAINTS",
+    briefValue: "The 6-week delivery window is fixed. Edge-case monetisation scope can flex around the deadline."
+  },
+  {
+    id: "q6",
+    q: "Who signs off on prototype — Jack only, dev lead only, or both?",
+    options: ["Jack only", "Dev lead only", "Both required", "Product committee"],
+    answer: "Jack only",
+    briefField: "SIGN-OFF REQUIRED",
+    briefValue: "Jack is the sole approver for the prototype slice and phase-one scope."
+  }
+];
+
+export const clarifiedBriefRows = clarificationQuestions.map((item) => ({
+  label: item.briefField,
+  value: item.briefValue
 }));
 
-export const dagEdges: DagEdgeData[] = DAG_EDGES.map((edge) => ({ ...edge }));
+export const clarifiedBrief = {
+  title: "Clarified Brief — v1.0",
+  generatedAt: "08 APR 2026 · 09:24",
+  rows: clarifiedBriefRows
+};
+
+export const dagNodes: DagNodeData[] = [
+  {
+    id: "N1",
+    label: "Creator Identity Layer",
+    nodeType: "capability",
+    priority: "P0",
+    inMVP: true,
+    description: "The account foundation every creator workflow depends on.",
+    owner: "Mike Torres",
+    demoValue: 5,
+    position: { x: 520, y: 80 }
+  },
+  {
+    id: "N2",
+    label: "Creator Signup",
+    nodeType: "screen",
+    priority: "P1",
+    inMVP: true,
+    description: "First-touch creator signup flow used in the prototype.",
+    owner: "Priya Kapoor",
+    demoValue: 5,
+    position: { x: 240, y: 210 }
+  },
+  {
+    id: "N3",
+    label: "Profile Setup",
+    nodeType: "screen",
+    priority: "P1",
+    inMVP: true,
+    description: "Studio info, creator type, and linked game metadata.",
+    owner: "Mike Torres",
+    demoValue: 5,
+    position: { x: 520, y: 210 }
+  },
+  {
+    id: "N4",
+    label: "Auth Provider",
+    nodeType: "integration",
+    priority: "P0",
+    inMVP: true,
+    description: "Tempest's auth boundary and session handling.",
+    owner: "Platform",
+    demoValue: 4,
+    position: { x: 800, y: 80 }
+  },
+  {
+    id: "N5",
+    label: "Portfolio Upload",
+    nodeType: "flow",
+    priority: "P1",
+    inMVP: true,
+    description: "Upload showcase assets and connect creator games.",
+    owner: "Priya Kapoor",
+    demoValue: 5,
+    position: { x: 800, y: 210 }
+  },
+  {
+    id: "N6",
+    label: "Creator Profile Record",
+    nodeType: "data",
+    priority: "P1",
+    inMVP: true,
+    description: "Persistent creator data model powering the dashboard.",
+    owner: "Data Team",
+    demoValue: 4,
+    position: { x: 1080, y: 210 }
+  },
+  {
+    id: "N7",
+    label: "Listing Composer",
+    nodeType: "screen",
+    priority: "P0",
+    inMVP: true,
+    description: "Create marketplace listings with previews, pricing, and tags.",
+    owner: "Mike Torres",
+    demoValue: 5,
+    position: { x: 1360, y: 210 }
+  },
+  {
+    id: "N8",
+    label: "Creator Tier Rules",
+    nodeType: "rule",
+    priority: "P1",
+    inMVP: true,
+    description: "Free / Pro / Studio logic that now influences monetisation scope.",
+    owner: "Sarah Chen",
+    demoValue: 4,
+    position: { x: 1360, y: 360 }
+  },
+  {
+    id: "N9",
+    label: "Publish Dashboard",
+    nodeType: "screen",
+    priority: "P0",
+    inMVP: true,
+    description: "Launch panel for getting assets live in the creator marketplace.",
+    owner: "Priya Kapoor",
+    demoValue: 5,
+    position: { x: 1640, y: 210 }
+  },
+  {
+    id: "N10",
+    label: "Marketplace Feed",
+    nodeType: "screen",
+    priority: "P1",
+    inMVP: true,
+    description: "Public-facing feed showing featured and newly published content.",
+    owner: "Growth",
+    demoValue: 4,
+    position: { x: 1640, y: 420 }
+  },
+  {
+    id: "N11",
+    label: "Onboarding Email Sequence",
+    nodeType: "async",
+    priority: "P3",
+    inMVP: false,
+    description: "Lifecycle email nudges after signup.",
+    owner: "Growth",
+    demoValue: 2,
+    position: { x: 240, y: 420 }
+  },
+  {
+    id: "N12",
+    label: "Revenue Split Engine",
+    nodeType: "decision",
+    priority: "P1",
+    inMVP: false,
+    description: "Applies default 70/30 split and upcoming Pro adjustments.",
+    owner: "Sarah Chen",
+    demoValue: 4,
+    position: { x: 800, y: 420 }
+  },
+  {
+    id: "N13",
+    label: "Stripe Connect",
+    nodeType: "integration",
+    priority: "P0",
+    inMVP: false,
+    description: "Payout plumbing for creator withdrawals.",
+    owner: "Jack",
+    demoValue: 4,
+    position: { x: 1080, y: 420 }
+  },
+  {
+    id: "N14",
+    label: "Payout Dashboard",
+    nodeType: "screen",
+    priority: "P1",
+    inMVP: false,
+    description: "Shows available balance, payout history, and verification state.",
+    owner: "Mike Torres",
+    demoValue: 3,
+    position: { x: 1360, y: 560 }
+  },
+  {
+    id: "N15",
+    label: "Analytics Capture",
+    nodeType: "data",
+    priority: "P2",
+    inMVP: false,
+    description: "Gameplay and revenue event ingestion for creator analytics.",
+    owner: "Data Team",
+    demoValue: 3,
+    position: { x: 520, y: 560 }
+  },
+  {
+    id: "N16",
+    label: "Creator Analytics",
+    nodeType: "screen",
+    priority: "P2",
+    inMVP: false,
+    description: "Per-asset revenue and play count dashboard.",
+    owner: "Priya Kapoor",
+    demoValue: 3,
+    position: { x: 800, y: 560 }
+  },
+  {
+    id: "N17",
+    label: "Discovery Ranking",
+    nodeType: "flow",
+    priority: "P1",
+    inMVP: false,
+    description: "Determines what gets featured, trending, and promoted.",
+    owner: "Growth",
+    demoValue: 3,
+    position: { x: 1080, y: 560 }
+  },
+  {
+    id: "N18",
+    label: "AI Recommendations",
+    nodeType: "capability",
+    priority: "P2",
+    inMVP: false,
+    description: "Personalised recommendations using player behaviour after beta launch.",
+    owner: "Engineering",
+    demoValue: 2,
+    position: { x: 1640, y: 560 }
+  }
+];
+
+export const dagEdges: DagEdgeData[] = [
+  { id: "e1", source: "N4", target: "N1", label: "auth", critical: true },
+  { id: "e2", source: "N1", target: "N2", label: "starts", critical: true },
+  { id: "e3", source: "N2", target: "N3", label: "unlocks", critical: true },
+  { id: "e4", source: "N3", target: "N5", label: "requires", critical: true },
+  { id: "e5", source: "N5", target: "N6", label: "writes", critical: false },
+  { id: "e6", source: "N6", target: "N7", label: "hydrates", critical: true },
+  { id: "e7", source: "N8", target: "N7", label: "constrains", critical: false },
+  { id: "e8", source: "N7", target: "N9", label: "publishes", critical: true },
+  { id: "e9", source: "N9", target: "N10", label: "feeds", critical: true },
+  { id: "e10", source: "N11", target: "N3", label: "follows", critical: false },
+  { id: "e11", source: "N9", target: "N12", label: "triggers", critical: false },
+  { id: "e12", source: "N12", target: "N13", label: "settles", critical: false },
+  { id: "e13", source: "N13", target: "N14", label: "shows in", critical: false },
+  { id: "e14", source: "N10", target: "N17", label: "ranks", critical: false },
+  { id: "e15", source: "N15", target: "N16", label: "powers", critical: false },
+  { id: "e16", source: "N10", target: "N15", label: "emits", critical: false },
+  { id: "e17", source: "N15", target: "N18", label: "trains", critical: false },
+  { id: "e18", source: "N8", target: "N17", label: "reshapes", critical: false },
+  { id: "e19", source: "N12", target: "N17", label: "influences", critical: false },
+  { id: "e20", source: "N17", target: "N10", label: "reorders", critical: false },
+  { id: "e21", source: "N5", target: "N7", label: "feeds", critical: true }
+];
 
 export const prototypeScreens = [
-  { id: "screen-1", label: "LOGIN", shortLabel: "01", url: "app.orchestra.io/login" },
-  { id: "screen-2", label: "DASHBOARD", shortLabel: "02", url: "app.orchestra.io/dashboard" },
-  { id: "screen-3", label: "SUBMIT", shortLabel: "03", url: "app.orchestra.io/requests/new" },
-  { id: "screen-4", label: "DETAIL", shortLabel: "04", url: "app.orchestra.io/requests/REQ-0241" },
-  { id: "screen-5", label: "REPORTS", shortLabel: "05", url: "app.orchestra.io/reports" }
-];
-
-export const prototypeNodeChips = [
-  "N1 Auth",
-  "N2 Account",
-  "N3 Login",
-  "N5 Submit",
-  "N6 Request",
-  "N7 Assign",
-  "N8 Role",
-  "N9 Status",
-  "N10 Reports"
-];
+  { id: "signup", label: "Creator Signup", shortLabel: "01", url: "app.tempest.ai/creator/signup", route: "creator-signup" },
+  { id: "portfolio", label: "Portfolio Upload", shortLabel: "02", url: "app.tempest.ai/creator/portfolio", route: "portfolio-upload" },
+  { id: "marketplace", label: "Asset Marketplace", shortLabel: "03", url: "app.tempest.ai/creator/marketplace", route: "asset-marketplace" },
+  { id: "revenue", label: "Revenue Dashboard", shortLabel: "04", url: "app.tempest.ai/creator/revenue", route: "revenue-dashboard" },
+  { id: "discovery", label: "Discovery Feed", shortLabel: "05", url: "app.tempest.ai/discovery", route: "discovery-feed" }
+] as const;
 
 export const prototypeScope = {
   included: [
-    "Login + SSO auth",
-    "Request submission",
-    "Assignment workflow",
-    "Status tracking",
-    "Basic reporting"
+    "Creator signup and studio profile setup",
+    "Portfolio upload with linked games",
+    "Asset listing UI with preview and publish state",
+    "Marketplace feed with tags and featured slots"
   ],
   mocked: [
-    "Email notifications (simulated)",
-    "Data persistence (local state)",
-    "SSO handshake (bypassed for demo)",
-    "Role permissions (simplified)"
+    "Stripe onboarding state",
+    "Revenue dashboard balances",
+    "Featured placement rules",
+    "Creator analytics cards"
   ],
-  deferred: [
-    "Manager approval gate",
-    "Advanced analytics",
-    "Audit logging",
-    "Admin panel",
-    "Billing integration",
-    "Role management"
-  ]
+  deferred: ["AI recommendations", "Creator subscription upgrades", "Weekly digest email", "Mobile creator tools"]
 };
 
-export const dashboardStats = [
-  { label: "OPEN", value: "24", tone: "white" },
-  { label: "ASSIGNED", value: "8", tone: "amber" },
-  { label: "OVERDUE", value: "3", tone: "red" },
-  { label: "RESOLVED", value: "142", tone: "green" }
-];
-
-export const requestTableRows = [
-  { id: "REQ-0241", title: "Network access required for new hire", status: "in-progress", assignee: "Mike Torres", updated: "2h ago" },
-  { id: "REQ-0240", title: "Laptop replacement request", status: "p1", assignee: "—", updated: "4h ago" },
-  { id: "REQ-0238", title: "VPN access for remote contractor", status: "done", assignee: "A. Kim", updated: "1d ago" }
-];
-
-export const detailTimeline = [
-  { title: "SUBMITTED", detail: "Sarah Chen · 2h ago", meta: "Requester", tone: "done" },
-  { title: "ASSIGNED", detail: "Mike Torres · 1h ago", meta: "Staff Assignee", tone: "in-progress" },
-  { title: "IN PROGRESS", detail: "Mike Torres · 45min ago", meta: "Active now", tone: "p1" },
-  { title: "RESOLVED", detail: "Pending", meta: "", tone: "deferred" }
-];
-
-export const reportsBars = [42, 58, 66, 51, 74, 61, 69];
-
-export const reportsCategories = [
-  { category: "IT Support", count: "42%", resolved: "96%", time: "2.1h" },
-  { category: "Facilities", count: "28%", resolved: "91%", time: "3.0h" },
-  { category: "HR", count: "18%", resolved: "97%", time: "1.9h" },
-  { category: "Finance", count: "12%", resolved: "89%", time: "4.2h" }
-];
+export const prototypeNodeChips = ["N2", "N3", "N5", "N7", "N9", "N10"];
 
 export const approvalApprovers = [
-  {
-    avatar: "SC",
-    name: "Sarah Chen",
-    role: "Project Manager",
-    status: "APPROVED ✓",
-    tone: "done",
-    timestamp: "Today · 11:30"
-  },
-  {
-    avatar: "JW",
-    name: "James Whitfield",
-    role: "Director of Ops · ACME Corp",
-    status: "AWAITING REVIEW",
-    tone: "p1",
-    timestamp: "Pending"
-  }
+  { name: "Sarah Chen", role: "Project Manager", status: "REVIEWED ✓" },
+  { name: "Jack", role: "Founder · Tempest AI", status: "Waiting for you, Jack." }
 ];
 
 export const scopeSummary = {
   inScope: [
-    "Employee login using your existing company SSO",
-    "Service request submission form",
-    "Automatic assignment to the right staff member",
-    "Real-time status tracking for requesters",
-    "Management reporting dashboard"
+    "Creator signup + profile setup",
+    "Portfolio upload + game linking",
+    "Asset listing UI with tags and previews",
+    "Search and filter system",
+    "Featured games carousel",
+    "Revenue split engine foundation"
   ],
   outOfScope: [
-    "Manager approval step",
-    "Advanced analytics",
-    "Billing flows",
-    "Full admin panel",
-    "Audit logging",
-    "Notification preferences"
-  ],
-  delivery: "8 weeks · Fixed timeline",
-  signoff: "MANAGER ✓ · Client ⏳"
+    "AI recommendation engine",
+    "Weekly creator digest email",
+    "Mobile creator app",
+    "Full subscription billing automation"
+  ]
 };
 
-export const executionEpics = EXECUTION_PLAN.map((epic) => ({
-  id: epic.id,
-  title: epic.name,
-  priority: epic.priority.toLowerCase(),
-  countLabel: `${epic.taskCount} TASKS`,
-  tasks: epic.tasks.map((task) => ({
-    id: task.id,
-    title: task.title,
-    dag: task.dag,
-    priority: task.priority.toLowerCase(),
-    dependencies: task.deps.length ? task.deps : ["none"],
-    acceptance: task.ac.split(" · ")
-  }))
-}));
+export const executionEpics: ExecutionEpic[] = [
+  {
+    id: "E1",
+    title: "Creator Onboarding Flow",
+    priority: "P1",
+    tasks: [
+      {
+        id: "E1-T1",
+        title: "Creator signup + profile setup",
+        dag: ["N2", "N3"],
+        priority: "P1",
+        dependencies: [],
+        acceptance: ["Signup validates email and studio name", "Profile setup persists creator tier", "Success state routes to portfolio flow"],
+        assignee: "Mike Torres",
+        status: "done"
+      },
+      {
+        id: "E1-T2",
+        title: "Portfolio upload + game linking",
+        dag: ["N5", "N6"],
+        priority: "P2",
+        dependencies: ["E1-T1"],
+        acceptance: ["Creators upload showcase assets", "Linked games show on profile", "Uploads retry cleanly on bad connections"],
+        assignee: "Priya Kapoor",
+        status: "in-review"
+      },
+      {
+        id: "E1-T3",
+        title: "Creator tier system (Free / Pro / Studio)",
+        dag: ["N8"],
+        priority: "P1",
+        dependencies: ["E1-T1"],
+        acceptance: ["Tier copy is visible during onboarding", "Limits map to upload permissions", "Tier state persists on account"],
+        assignee: "Sarah Chen",
+        status: "in-progress"
+      },
+      {
+        id: "E1-T4",
+        title: "Onboarding email sequence integration",
+        dag: ["N11"],
+        priority: "P3",
+        dependencies: ["E1-T1"],
+        acceptance: ["Welcome email fires after signup", "Follow-up content references publish milestone", "Templates are editable without code changes"],
+        assignee: "Growth",
+        status: "todo"
+      }
+    ]
+  },
+  {
+    id: "E2",
+    title: "Asset Marketplace",
+    priority: "P0",
+    tasks: [
+      {
+        id: "E2-T1",
+        title: "Asset listing UI with tags and previews",
+        dag: ["N7", "N9"],
+        priority: "P1",
+        dependencies: ["E1-T2"],
+        acceptance: ["Listing form supports tags and preview media", "Preview matches live marketplace card", "Draft state saves automatically"],
+        assignee: "Mike Torres",
+        status: "in-review"
+      },
+      {
+        id: "E2-T2",
+        title: "Asset upload pipeline + CDN integration",
+        dag: ["N5", "N7"],
+        priority: "P0",
+        dependencies: ["E1-T2"],
+        acceptance: ["Uploads return CDN URL payloads", "Asset preview renders fast in browser", "Failed uploads can resume"],
+        assignee: "Priya Kapoor",
+        status: "in-progress"
+      },
+      {
+        id: "E2-T3",
+        title: "Search and filter system",
+        dag: ["N10", "N17"],
+        priority: "P1",
+        dependencies: ["E2-T1"],
+        acceptance: ["Players filter by tag, genre, and format", "Search returns relevant marketplace items", "Filter state persists in feed"],
+        assignee: "Growth",
+        status: "todo"
+      },
+      {
+        id: "E2-T4",
+        title: "Asset versioning and update flow",
+        dag: ["N7", "N9"],
+        priority: "P2",
+        dependencies: ["E2-T1"],
+        acceptance: ["Creators can publish revisions", "Previous version remains recoverable", "Version badge is visible in dashboard"],
+        assignee: "Priya Kapoor",
+        status: "todo"
+      }
+    ]
+  },
+  {
+    id: "E3",
+    title: "Revenue & Payouts",
+    priority: "P0",
+    tasks: [
+      {
+        id: "E3-T1",
+        title: "Stripe Connect integration for creator payouts",
+        dag: ["N12", "N13"],
+        priority: "P0",
+        dependencies: ["E2-T1"],
+        acceptance: ["Creator onboarding opens Stripe verification", "Verification state returns to the dashboard", "Tempest test payouts complete end-to-end"],
+        assignee: "Mike Torres",
+        status: "in-progress"
+      },
+      {
+        id: "E3-T2",
+        title: "Revenue split engine (70/30 default)",
+        dag: ["N12"],
+        priority: "P1",
+        dependencies: ["E3-T1"],
+        acceptance: ["Default split stores against creator account", "Split updates map to payout preview", "Future Pro override is extensible"],
+        assignee: "Sarah Chen",
+        status: "todo"
+      },
+      {
+        id: "E3-T3",
+        title: "Payout dashboard for creators",
+        dag: ["N14"],
+        priority: "P1",
+        dependencies: ["E3-T1"],
+        acceptance: ["Current balance, history, and verification state display clearly", "Creators see payout timing expectations", "Empty state matches Tempest tone"],
+        assignee: "Priya Kapoor",
+        status: "todo"
+      },
+      {
+        id: "E3-T4",
+        title: "Tax form collection",
+        dag: ["N13"],
+        priority: "P3",
+        dependencies: ["E3-T1"],
+        acceptance: ["Tax form prompt is visible when required", "Creators can upload missing tax docs", "Completion status feeds payout readiness"],
+        assignee: "Finance Ops",
+        status: "todo"
+      }
+    ]
+  },
+  {
+    id: "E4",
+    title: "Creator Analytics",
+    priority: "P1",
+    tasks: [
+      {
+        id: "E4-T1",
+        title: "Game play count + session tracking",
+        dag: ["N15"],
+        priority: "P1",
+        dependencies: ["E2-T1"],
+        acceptance: ["Play count events fire on sessions", "Session length is captured", "Data quality checks flag malformed events"],
+        assignee: "Data Team",
+        status: "in-progress"
+      },
+      {
+        id: "E4-T2",
+        title: "Revenue analytics per asset",
+        dag: ["N16"],
+        priority: "P1",
+        dependencies: ["E4-T1", "E3-T2"],
+        acceptance: ["Revenue chart breaks down by asset", "Filters support date ranges", "Creator sees clear payout implications"],
+        assignee: "Priya Kapoor",
+        status: "todo"
+      },
+      {
+        id: "E4-T3",
+        title: "Creator leaderboard",
+        dag: ["N16", "N17"],
+        priority: "P2",
+        dependencies: ["E4-T1"],
+        acceptance: ["Leaderboard ranks creators fairly", "Featured logic can consume leaderboard signals", "Tie-breaking rules are defined"],
+        assignee: "Growth",
+        status: "todo"
+      },
+      {
+        id: "E4-T4",
+        title: "Weekly creator digest email",
+        dag: ["N11", "N16"],
+        priority: "P3",
+        dependencies: ["E4-T2"],
+        acceptance: ["Digest content pulls from analytics source of truth", "Email renders correctly in key clients", "Creators can opt out cleanly"],
+        assignee: "Growth",
+        status: "todo"
+      }
+    ]
+  },
+  {
+    id: "E5",
+    title: "Game Discovery",
+    priority: "P1",
+    tasks: [
+      {
+        id: "E5-T1",
+        title: "Featured games carousel",
+        dag: ["N10", "N17"],
+        priority: "P1",
+        dependencies: ["E2-T1"],
+        acceptance: ["Featured cards display key marketplace metadata", "Editorial picks are easy to manage", "Carousel works on desktop and tablet"],
+        assignee: "Priya Kapoor",
+        status: "done"
+      },
+      {
+        id: "E5-T2",
+        title: "Tag-based discovery feed",
+        dag: ["N10", "N17"],
+        priority: "P1",
+        dependencies: ["E2-T3"],
+        acceptance: ["Discovery feed groups games by meaningful tags", "Sorting feels relevant for launch inventory", "Performance is acceptable for beta traffic"],
+        assignee: "Growth",
+        status: "in-progress"
+      },
+      {
+        id: "E5-T3",
+        title: "AI-recommended games per player",
+        dag: ["N18"],
+        priority: "P2",
+        dependencies: ["E4-T1"],
+        acceptance: ["Recommendation logic has enough data to test relevance", "Fallback states exist when data is sparse", "Model assumptions are documented"],
+        assignee: "Engineering",
+        status: "todo"
+      },
+      {
+        id: "E5-T4",
+        title: "Trending this week algorithm",
+        dag: ["N17"],
+        priority: "P2",
+        dependencies: ["E4-T1"],
+        acceptance: ["Trending logic weighs newness and engagement", "Abuse and spam cases are documented", "Ranking output feeds discovery cards"],
+        assignee: "Growth",
+        status: "todo"
+      }
+    ]
+  }
+];
 
 export const boardSyncChecklist = [
-  "3 epics with descriptions",
-  "24 tasks with acceptance criteria",
-  "67 subtasks",
-  "18 dependency links preserved",
-  "Product flowchart node IDs embedded in task descriptions",
-  "Link to approved scope v1.0 in each epic"
+  "5 epics ready",
+  "20 tasks structured",
+  "47 subtasks mapped",
+  "Sprint 3 boundaries locked"
 ];
 
 export const boardSyncLines: TerminalLine[] = [
-  { text: "authenticating with Jira API ... done", delay: 100 },
-  { text: "creating project: ACME-SRP ... PROJ-0 created", delay: 180 },
-  { text: "pushing epic: Authentication & Access ... PROJ-1 ✓", delay: 180 },
-  { text: "pushing epic: Request Lifecycle ... PROJ-2 ✓", delay: 180 },
-  { text: "pushing epic: Reporting ... PROJ-3 ✓", delay: 180 },
-  { text: "writing 24 tasks with acceptance criteria ... done", delay: 180 },
-  { text: "generating 67 subtasks ... done", delay: 180 },
-  { text: "mapping 18 dependency links ... done", delay: 180 },
-  { text: "embedding product flowchart node references (N1-N10) ... done", delay: 180 },
-  { text: "attaching approved scope reference: v1.0-2024-03-14 ... done", delay: 180 },
-  { text: "verifying sync integrity ... 94 items confirmed", delay: 180 },
-  { text: "SYNC COMPLETE ✓ — 94 items written to Jira", delay: 220 }
+  { text: "5 epics created.", delay: 180 },
+  { text: "20 tasks distributed across Mike and Priya.", delay: 170 },
+  { text: "Sprint 3 boundaries set.", delay: 170 },
+  { text: "Board is live. ✓", delay: 170 }
 ];
 
 export const changeSyncLines: TerminalLine[] = [
-  { text: "loading revised document: ServiceRequest_SRS_v3.pdf", delay: 100 },
-  { text: "comparing against locked scope: v1.0-approved", delay: 180 },
-  { text: "diff analysis running ...", delay: 180 },
-  { text: "ADDED: Manager approval gate before assignment (R35)", delay: 180 },
-  { text: "ADDED: Approval notification to requester (R36)", delay: 180 },
-  { text: "MODIFIED: Assignment flow now requires approval state (R7)", delay: 180 },
-  { text: "NO CHANGES: Authentication · Submission · Reporting (R1–R20)", delay: 180 },
-  { text: "computing product flowchart impact ...", delay: 180 },
-  { text: "AFFECTED NODES: N7, N9, N10", delay: 180 },
-  { text: "NEW NODES REQUIRED: N12 (Manager Approval Gate) · N19 (Approval Notification)", delay: 180 },
-  { text: "AFFECTED TASKS: T2.3 · T2.4 · T2.8 · T3.1", delay: 180 },
-  { text: "CHANGE IMPACT SUMMARY READY ✓", delay: 220 }
+  { text: "Jack added a subscription model.", delay: 180 },
+  { text: "3 epics are affected.", delay: 180 },
+  { text: "+12 tasks. +2 weeks.", delay: 180 },
+  { text: "Still under budget.", delay: 180 }
 ];
 
 export const changeApplyLines: TerminalLine[] = [
-  { text: "updating product flowchart: adding N12, N19 ... done", delay: 100 },
-  { text: "updating edges: N7→N12→N9 ... done", delay: 180 },
-  { text: "revising T2.3, T2.4, T2.8 ... done", delay: 180 },
-  { text: "creating T2.11, T2.12 ... done", delay: 180 },
-  { text: "pushing updates to Jira: 6 items modified, 2 items created ... done", delay: 180 },
-  { text: "updating Brief to v1.1 ... done", delay: 180 },
-  { text: "PLAN ALIGNED WITH SRS v3 ✓", delay: 220 }
+  { text: "Plan updated.", delay: 180 },
+  { text: "Sprint 3 adjusted.", delay: 180 },
+  { text: "Mike knows.", delay: 180 },
+  { text: "New delivery: Week 8. ✓", delay: 180 }
 ];
 
 export const changePanels = {
   dag: [
-    "NEW NODE: N12 Manager Approval Gate",
-    "Inserted between N7 (Assign) and N9 (Status)",
-    "NEW NODE: N19 Approval Notification",
-    "Triggered by N12",
-    "MODIFIED EDGE: N7 → N9 now routes through N12 first"
+    "Insert Creator Tier Rules ahead of Revenue Split Engine so Pro eligibility is explicit.",
+    "Discovery ranking now depends on creator tier and premium placement metadata.",
+    "Stripe payout assumptions stay intact, but payout preview now needs tier-aware messaging."
   ],
   tasks: [
-    "T2.3 Assignment Engine — needs revision",
-    "T2.4 Status State Machine — needs revision",
-    "T2.8 Notification triggers — needs revision",
-    "NEW TASK: T2.11 Manager Approval UI",
-    "NEW TASK: T2.12 Approval notification service"
+    "+ Create Pro plan entitlement model",
+    "+ Add 80/20 split override logic",
+    "+ Add premium placement admin controls",
+    "+ Rewrite discovery ranking assumptions",
+    "± Refactor payout dashboard copy",
+    "± Update creator onboarding messaging"
   ],
   delivery: [
-    "Estimated additional effort: +4–6 days",
-    "Tasks affected: 4 existing + 2 new",
-    "Prototype affected: Screen 4 requires approval step",
-    "Board: 6 Jira items need updating"
+    "Original delivery window: 6 weeks",
+    "Reforecasted delivery window: 8 weeks",
+    "Affected epics: Asset Marketplace, Revenue & Payouts, Game Discovery"
   ]
 };
 
 export const towerMetrics = {
-  health: "74",
-  onTrack: "18",
-  blocked: "3",
-  atRisk: "5",
-  scopeComplete: 62
+  health: 74,
+  onTrack: 8,
+  blocked: 2,
+  atRisk: 3,
+  overallCompletion: 61
 };
 
-export const featureProgress = FEATURE_PROGRESS.map((item) => ({
-  label: item.label,
-  value: item.value,
-  variant: item.variant,
-  deferred: item.status === "deferred"
-}));
-
-export const blockerCards = BLOCKERS.map((item) => ({
-  title:
-    item.severity === "blocked"
-      ? `${item.title.toUpperCase()} — BLOCKED`
-      : `${item.title.toUpperCase()} — AT RISK`,
-  description: item.desc,
-  meta: `FLOWCHART: ${item.dag} · BLOCKING: ${item.blocking}${item.stalledDays > 0 ? ` · STALLED: ${item.stalledDays} DAY${item.stalledDays === 1 ? "" : "S"}` : ""}`,
-  tone: item.severity === "blocked" ? "blocked" : "p1"
-}));
+export const blockerCards = [
+  {
+    title: "Stripe Connect verification",
+    description: "Jack still needs to submit Tempest AI's ABN and banking details before payout testing can clear.",
+    owner: "Jack",
+    meta: "OWNER · JACK · FOLLOW UP TODAY"
+  },
+  {
+    title: "AI model dataset",
+    description: "The recommendation engine does not have enough player data until the beta launch creates real usage volume.",
+    owner: "Engineering",
+    meta: "OWNER · ENGINEERING · DEFER TO V2"
+  }
+];
 
 export const dependencyRiskMatrix = [
-  "green",
-  "green",
-  "green",
-  "green",
-  "green",
-  "green",
-  "red",
-  "red",
-  "green",
-  "green",
-  "muted",
-  "amber",
-  "muted",
-  "muted",
-  "muted",
-  "muted",
-  "muted",
-  "amber"
-] as const;
+  { id: "N8", label: "Tier Rules", tone: "stable" },
+  { id: "N12", label: "Revenue Split", tone: "watch" },
+  { id: "N13", label: "Stripe Connect", tone: "blocked" },
+  { id: "N16", label: "Analytics", tone: "watch" },
+  { id: "N17", label: "Discovery", tone: "watch" },
+  { id: "N18", label: "Recommendations", tone: "deferred" }
+];
 
 export const stakeholderTabs = {
   pm: {
-    heading: "WEEK 4 STATUS REPORT",
-    subheading: "SERVICE REQUEST PLATFORM · ACME CORP · 14 MAR 2025",
+    heading: "Manager Delivery Report",
+    subheading: "Tempest AI · Creator Marketplace V1 · Sprint 3",
     sections: [
       {
-        title: "WHAT GOT DONE THIS WEEK",
+        title: "STANDUP SIGNALS",
         content:
-          "Authentication and SSO integration reached 87% — login, session management, and role assignment are all working. Status tracking hit 100% completion and is fully tested. Basic reporting is at 52% with all core metrics rendering correctly."
+          "Creator onboarding is in shape for Friday. Stripe verification is the only founder-owned blocker still affecting revenue testing."
       },
       {
-        title: "WHAT IS BLOCKED",
+        title: "SCOPE WATCH",
         content:
-          "Assignment engine is stalled pending client sign-off on permissions hierarchy. Three tasks (T2.3, T2.5, T2.6) are waiting. This is on the critical path and creates risk for Week 5 delivery targets. Role management is also blocked pending CTO architecture review."
+          "Jack's Pro creator subscription request is now logged as a change sync. The plan shows +12 tasks and +2 weeks if pulled into V1."
       },
       {
-        title: "WHAT CHANGED",
+        title: "NEXT ACTIONS",
         content:
-          "Client delivered a scope change — manager approval gate is now required before assignment. Change sync ran automatically. Two new tasks created (T2.11, T2.12), four existing tasks flagged for revision. Estimated additional effort: 4–6 days."
-      },
-      {
-        title: "DECISIONS NEEDED",
-        content:
-          "1. Client to confirm permissions hierarchy model by EOW — unblocks assignment engine. 2. CTO to complete RBAC architecture review — unblocks role management. 3. Approval gate scope: synchronous vs async — required for T2.11 spec."
-      },
-      {
-        title: "PROJECT HEALTH",
-        content:
-          "ON TRACK with caveats. Delivery health score: 74/100. Two open blockers are critical path items but resolvable within current timeline if decisions arrive by end of week."
+          "Follow up on ABN submission, lock marketplace tag taxonomy, and confirm whether discovery premium placement belongs in the current sprint."
       }
     ]
   },
   cto: {
-    heading: "CTO TECHNICAL BRIEF",
-    subheading: "SERVICE REQUEST PLATFORM · WEEK 4",
+    heading: "CTO Technical Brief",
+    subheading: "Architecture, blockers, and implementation status",
     sections: [
       {
-        title: "DEPENDENCY RISK",
+        title: "TECHNICAL SIGNALS",
         content:
-          "N7 and N8 remain the critical dependency pinch points. The new N12 approval gate introduces an additional branch in the request lifecycle and directly affects delivery sequencing."
-      },
-      {
-        title: "BUILD VELOCITY",
-        content:
-          "Authentication is nearly complete. Request lifecycle work is progressing but exposed to permissions ambiguity. Reporting is moving steadily with the aggregation layer already underway."
+          "Core onboarding and marketplace shell are stable. Revenue and recommendation dependencies remain the main risk pockets."
       }
     ]
   },
   exec: {
-    heading: "EXECUTIVE SUMMARY",
-    subheading: "PLAIN-ENGLISH STATUS FOR LEADERSHIP",
+    heading: "Executive Summary",
+    subheading: "Jack-facing delivery summary for the current sprint",
     sections: [
       {
         title: "STATUS",
         content:
-          "The project is progressing on schedule overall. Core user login and request tracking are in strong shape. One client decision on manager permissions is holding back a small but important part of the build."
+          "Creator Marketplace V1 is 61% complete and still pointed at an 8-week path if the subscription change is pulled in."
       },
       {
         title: "RISK",
         content:
-          "If the permissions decision lands this week, the current delivery date holds. If it slips, the assignment workflow could push into the final week."
+          "The primary external dependency is Stripe Connect verification. The primary product uncertainty is how premium placement should affect discovery."
+      },
+      {
+        title: "IMPACT",
+        content:
+          "Prototype confidence is high, agency execution is structured, and the founder-visible risk is now concentrated in monetisation details."
       }
     ]
   },
   client: {
-    heading: "FOR: James Whitfield · Director of Operations, ACME Corp",
-    subheading: "PROJECT: Service Request Platform · Week 4 Update",
+    heading: "Jack, here's where we are.",
+    subheading: "Creator Marketplace V1 · 08 APR 2026",
     sections: [
       {
-        title: "PROGRESS OVERVIEW",
+        title: "WHAT MOVED THIS WEEK",
         content:
-          "62% complete and still on track. Login and user access are working. Request tracking is complete. Assignment is nearly ready and reporting is in progress."
+          "Creator signup, profile setup, and listing composition are now visually locked. The agency team is focusing on marketplace publish flow and payout readiness."
       },
       {
-        title: "YOUR PLATFORM THIS WEEK",
+        title: "WHAT NEEDS YOUR INPUT",
         content:
-          "Login and user access now work against your existing Active Directory. Requesters can see live updates at every step. Reporting dashboards are functional with the core metrics already visible."
+          "We need your Stripe verification details and a final call on whether premium creator placement belongs in V1 or should wait for V2."
       },
       {
-        title: "ONE ACTION NEEDED FROM YOUR SIDE",
+        title: "WHAT HAPPENS NEXT",
         content:
-          "To keep on schedule, we need you to confirm how manager permissions work in your organisation. Specifically: can any manager approve any request, or are approvals department-specific?"
-      },
-      {
-        title: "NEXT MILESTONE",
-        content:
-          "End of Week 5 — Assignment system fully operational plus reporting complete."
+          "Once the payout blocker clears, the next founder-visible milestone is a working creator dashboard showing publish state and payout status."
       }
     ]
   }
-};
+} as const;
 
-export const clientComments = [
+export const weekUpdates = [
   {
-    screen: "Screen 2 (Dashboard)",
-    body:
-      "Can the stat cards use our brand blue instead of the cyan? Also need 'My Requests' to be the default view, not Overview.",
-    author: "James Whitfield",
-    timestamp: "14 Mar 14:33"
+    label: "Week 2",
+    summary: "The agency locked the creator onboarding concept and clarified the founder approval flow."
   },
   {
-    screen: "Screen 3 (Submit Form)",
-    body:
-      "Looks good. Can we add an 'Urgency' field? Different from Priority — this is about SLA impact.",
-    author: "James Whitfield",
-    timestamp: "14 Mar 14:38"
+    label: "Week 3",
+    summary: "Marketplace listing UI is now stable, search scope is defined, and Stripe setup became the primary blocker."
   },
   {
-    screen: "Screen 5 (Reports)",
-    body: "Perfect. This is exactly what the ops team needs.",
-    author: "James Whitfield",
-    timestamp: "14 Mar 14:41"
+    label: "Week 4",
+    summary: "Execution shifted from pure UX into monetisation plumbing. Jack's Pro subscription request created a scoped plan change."
   }
 ];
 
-export const weekUpdates = [
-  { label: "Week 3", summary: "Login working · Assignment 60% done · No blockers" },
-  { label: "Week 2", summary: "Setup complete · 3 features started" }
-];
-
 export const handoverCards = {
-  pm: [
+  manager: [
     {
-      title: "WHAT WAS BUILT",
-      icon: "Package",
-      tone: "default",
+      title: "DELIVERABLES",
       items: [
-        "SSO Authentication + role-based access",
-        "Service request submission + full lifecycle",
-        "Assignment engine",
-        "Status tracking + SLA",
-        "Basic reporting (5 metrics)",
-        "Responsive web platform",
-        "Webhook support"
+        "Creator marketplace live in Tempest AI",
+        "Stripe payout flow enabled for creators",
+        "Dashboard for publish state and payout readiness",
+        "847 beta creators onboarded in launch cohort"
       ]
     },
     {
-      title: "LIVE LINKS",
-      icon: "Globe",
-      tone: "cyan",
-      items: [
-        "PRODUCTION: app.acmecorp.com/service-requests",
-        "STAGING: staging.acmecorp.com/service-requests",
-        "API DOCS: docs.acmecorp.com/api/v1",
-        "ADMIN: app.acmecorp.com/admin"
-      ]
-    },
-    {
-      title: "ADMIN + CREDENTIALS",
-      icon: "Shield",
-      tone: "amber",
-      items: [
-        "Admin panel login: First login via SSO · auto-granted admin role",
-        "DB access: Shared via 1Password vault (link)",
-        "SSO config: IT contact — devops@acmecorp.com",
-        "API keys: Stored in Vercel environment variables"
-      ]
-    },
-    {
-      title: "KNOWN LIMITATIONS",
-      icon: "AlertTriangle",
-      tone: "red",
-      items: [
-        "Manager approval gate: Deferred to v2 (scope change came late)",
-        "Email notifications: Basic only — full config requires client IT setup",
-        "Advanced analytics: Not in v1 scope",
-        "Mobile: Desktop-first — mobile responsive but not optimised"
-      ]
+      title: "DOCUMENTATION",
+      items: ["API docs", "Creator onboarding guide", "Revenue split spec", "Discovery feed moderation notes"]
     },
     {
       title: "NEXT STEPS",
-      icon: "ArrowRight",
-      tone: "cyan",
-      items: [
-        "V2 Scoping: Manager approval gate + advanced analytics + mobile app",
-        "Performance audit recommended at 500+ concurrent users",
-        "SLA policy configuration (remains an open decision)",
-        "Ongoing maintenance: Monthly retainer proposal sent"
-      ]
-    },
-    {
-      title: "SUPPORT + CONTACTS",
-      icon: "Headphones",
-      tone: "default",
-      items: [
-        "30-day hypercare window: 14 Mar – 14 Apr 2025",
-        "Primary Project Manager: Sarah Chen — sarah@orchestra.io",
-        "Issue tracker: Linear board (link)",
-        "Emergency: +61 400 000 000"
-      ]
+      items: ["V2 planning", "AI recommendations", "Mobile creator tools", "Subscription upsell validation"]
     }
   ],
   client: [
     {
-      title: "WHAT WAS DELIVERED",
-      icon: "Package",
-      tone: "default",
-      items: [
-        "Secure sign-in using your company SSO",
-        "Service request form and request lifecycle tracking",
-        "Automatic assignment workflow",
-        "Status updates for requesters",
-        "Reporting dashboard for operations teams"
-      ]
+      title: "LIVE DELIVERABLES",
+      items: ["Creator marketplace live", "Payout onboarding active", "Publish dashboard deployed"]
     },
     {
-      title: "LIVE LINKS",
-      icon: "Globe",
-      tone: "cyan",
-      items: [
-        "Production: app.acmecorp.com/service-requests",
-        "Staging: staging.acmecorp.com/service-requests",
-        "Support docs: docs.acmecorp.com/service-requests"
-      ]
-    },
-    {
-      title: "ADMIN ACCESS",
-      icon: "Shield",
-      tone: "amber",
-      items: [
-        "Admin access is provisioned through your existing SSO",
-        "SSO configuration contact: devops@acmecorp.com",
-        "Database access provided separately via secure share"
-      ]
-    },
-    {
-      title: "KNOWN LIMITATIONS",
-      icon: "AlertTriangle",
-      tone: "red",
-      items: [
-        "Manager approval gate is planned for the next phase",
-        "Email notifications are basic until SMTP is configured",
-        "Advanced analytics remain out of scope for this release"
-      ]
+      title: "PLAYBOOKS",
+      items: ["Creator onboarding guide", "Ops escalation sheet", "Revenue split policy"]
     },
     {
       title: "NEXT STEPS",
-      icon: "ArrowRight",
-      tone: "cyan",
-      items: [
-        "Decide whether to proceed with Phase 2 scope",
-        "Confirm SLA policy settings",
-        "Book the post-launch performance review"
-      ]
-    },
-    {
-      title: "SUPPORT",
-      icon: "Headphones",
-      tone: "default",
-      items: [
-        "30-day hypercare is included",
-        "Primary contact: Sarah Chen",
-        "Use the client portal for updates and follow-up questions"
-      ]
+      items: ["Plan V2 roadmap", "Validate premium creator tier", "Review discovery ranking"]
     }
   ]
 };
 
-export const devSummary = ["8 TASKS ASSIGNED", "3 IN PROGRESS", "2 BLOCKED", "3 TODO"];
+export const clientComments = [
+  {
+    screen: "Creator Signup",
+    body: "The signup value prop feels right. I want creators to immediately understand Tempest is about publishing and monetising, not just hosting assets.",
+    author: "Jack",
+    timestamp: "08 APR 2026 · 09:12"
+  },
+  {
+    screen: "Asset Marketplace",
+    body: "The listing composer is close. I’d like one more cue that premium creators can earn priority placement later.",
+    author: "Jack",
+    timestamp: "08 APR 2026 · 09:16"
+  },
+  {
+    screen: "Revenue Dashboard",
+    body: "Keep the payout view simple for V1. Verification status and expected payout timing matter more than deep finance controls.",
+    author: "Jack",
+    timestamp: "08 APR 2026 · 09:18"
+  }
+];
+
+export const devSummary = ["Sprint 3 active", "8 tasks on track", "2 blockers", "1 change request live"];
 
 export const devInProgress = [
   {
-    id: "T1.1",
-    title: "Implement SSO Integration",
-    epic: "E1 — Authentication & Access",
-    meta: "FLOWCHART: N4, N1 · JIRA: PROJ-4",
-    status: "in-progress",
-    priority: "p0",
-    progress: 82,
-    acceptance: "SSO login completes with valid token · RBAC roles assigned on first login",
-    footer: "Started: 11 Mar · Est. completion: 15 Mar · 2 subtasks remaining"
+    id: "E2-T2",
+    title: "Asset upload pipeline + CDN integration",
+    summary: "Priya is finishing upload orchestration and preview processing for creator submissions.",
+    epic: "Asset Marketplace",
+    status: "in-progress" as const,
+    owner: "Priya Kapoor"
   },
   {
-    id: "T2.3",
-    title: "Assignment Engine",
-    epic: "E2 — Request Lifecycle",
-    meta: "FLOWCHART: N7 · JIRA: PROJ-18",
-    status: "blocked",
-    priority: "p0",
-    progress: 0,
-    acceptance: "Awaiting client sign-off on permissions hierarchy",
-    footer: "Flagged in Control Tower · STALLED 2 DAYS"
-  },
-  {
-    id: "T1.4",
-    title: "Session Management + Token Refresh",
-    epic: "E1 — Authentication & Access",
-    meta: "FLOWCHART: N1 · JIRA: PROJ-7",
-    status: "in-progress",
-    priority: "p0",
-    progress: 40,
-    acceptance: "Refresh flow and silent re-auth handling are partially complete",
-    footer: "Started: 13 Mar · 3 subtasks remaining"
+    id: "E3-T1",
+    title: "Stripe Connect integration for creator payouts",
+    summary: "Mike is blocked on verification credentials from Jack but the dashboard wiring is ready.",
+    epic: "Revenue & Payouts",
+    status: "blocked" as const,
+    owner: "Mike Torres"
   }
 ];
 
 export const devTodo = [
   {
-    id: "T2.4",
-    title: "Status State Machine",
-    note: "Updated: includes 'pending approval' state from SRS change sync",
-    status: "revised"
+    id: "E2-T3",
+    title: "Search and filter system",
+    note: "Ready once tag taxonomy gets final sign-off from Sarah.",
+    status: "revised" as const
   },
   {
-    id: "T2.5",
-    title: "Request Detail View",
-    note: "Waiting on T2.4 state model finalisation",
-    status: "deferred"
-  },
-  {
-    id: "T1.6",
-    title: "Auth Integration Tests",
-    note: "Blocked on T1.1 completion",
-    status: "deferred"
+    id: "E5-T3",
+    title: "AI-recommended games per player",
+    note: "Deferred until Tempest beta produces enough real player data.",
+    status: "deferred" as const
   }
 ];
 
 export const sprintBoard = {
   todo: [
-    { id: "PROJ-12", title: "Request submission form", dag: "N5", epic: "E2", priority: "p0" },
-    { id: "PROJ-18", title: "Assignment engine", dag: "N7", epic: "E2", priority: "p0" }
+    { id: "E2-T3", title: "Search and filter system", dag: "N17", epic: "Asset Marketplace", priority: "p1" },
+    { id: "E3-T2", title: "Revenue split engine", dag: "N12", epic: "Revenue & Payouts", priority: "p1" }
   ],
   inProgress: [
-    { id: "PROJ-4", title: "SSO integration", dag: "N4", epic: "E1", priority: "p0" },
-    { id: "PROJ-7", title: "Session management", dag: "N1", epic: "E1", priority: "p0" }
+    { id: "E2-T2", title: "Asset upload pipeline", dag: "N5", epic: "Asset Marketplace", priority: "p0" },
+    { id: "E3-T1", title: "Stripe Connect integration", dag: "N13", epic: "Revenue & Payouts", priority: "p0" }
   ],
-  inReview: [{ id: "PROJ-21", title: "Status tracking view", dag: "N9", epic: "E2", priority: "p0" }],
+  inReview: [
+    { id: "E1-T2", title: "Portfolio upload + game linking", dag: "N5", epic: "Creator Onboarding", priority: "p2" },
+    { id: "E2-T1", title: "Listing UI with previews", dag: "N9", epic: "Asset Marketplace", priority: "p1" }
+  ],
   done: [
-    { id: "PROJ-2", title: "Login screen", dag: "N3", epic: "E1", priority: "p0" },
-    { id: "PROJ-26", title: "Reporting shell", dag: "N10", epic: "E3", priority: "p1" }
+    { id: "E1-T1", title: "Creator signup + profile setup", dag: "N2", epic: "Creator Onboarding", priority: "p1" },
+    { id: "E5-T1", title: "Featured games carousel", dag: "N10", epic: "Game Discovery", priority: "p1" }
   ]
 };
+
+export const dashboardStats = [
+  { label: "LIVE LISTINGS", value: "184" },
+  { label: "PENDING REVIEWS", value: "09" },
+  { label: "EST. PAYOUT", value: "$4.2K" }
+];
+
+export const detailTimeline = [
+  { label: "Asset uploaded", meta: "09:02" },
+  { label: "Preview generated", meta: "09:04" },
+  { label: "Awaiting publish", meta: "09:09" }
+];
+
+export const reportsBars = [
+  { label: "Marketplace revenue", value: 74 },
+  { label: "Creator retention", value: 58 },
+  { label: "Discovery engagement", value: 61 }
+];
+
+export const reportsCategories = ["RPG", "Adventure", "Narrative", "Puzzle"];
+
+export const requestTableRows = [
+  { title: "Forest pack", status: "READY", owner: "Jack" },
+  { title: "Dungeon tiles", status: "REVIEW", owner: "Sarah" },
+  { title: "Dialogue kit", status: "LIVE", owner: "Mike" }
+];
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  role: string;
+  avatar: string;
+  color: "cyan" | "violet" | "blue" | "emerald" | "amber" | "rose";
+  utilization: number;
+  projects: string[];
+  hourlyRate: number;
+}
+
+export interface ProjectRecord {
+  id: string;
+  name: string;
+  client: string;
+  clientInitials: string;
+  clientColor: "blue" | "violet" | "amber";
+  status: "active" | "at-risk";
+  health: number;
+  completion: number;
+  budget: number;
+  spent: number;
+  sprint: string;
+  dueDate: string;
+  team: string[];
+  weeklyVelocity: number[];
+  burnData: number[];
+  description: string;
+  riskLevel: "low" | "medium" | "high";
+  stageSlug: "1-intake" | "8-tower";
+}
+
+export interface TruthDocumentRecord {
+  id: string;
+  projectId: string;
+  type: "client-spec" | "recording" | "document" | "slack-export";
+  title: string;
+  source: string;
+  date: string;
+  status: "processed" | "processing";
+  extractedRequirements: number;
+  icon: "FileText" | "Mic" | "Layers" | "Hash" | "Code2";
+  summary: string;
+  tags: string[];
+}
+
+export interface TruthRequirementRecord {
+  id: string;
+  docId: string;
+  text: string;
+  sourceRef: string;
+  priority: "P0" | "P1" | "P2" | "P3";
+  assignee: string;
+  status: "todo" | "in-progress" | "in-review" | "done";
+}
+
+export interface ExtractedTaskRecord {
+  id: string;
+  source: string;
+  task: string;
+  priority: "P0" | "P1" | "P2" | "P3";
+  assignee: string;
+  estimatedHours?: number;
+  status: "TODO" | "IN_PROGRESS" | "IN_REVIEW" | "DONE";
+}
+
+export interface AiTaskQueueItem extends ExtractedTaskRecord {
+  sourceType?: string;
+}
+
+export interface CommsMessageRecord {
+  sender: string;
+  time: string;
+  text: string;
+  platform: "slack" | "whatsapp" | "email" | "discord";
+}
+
+export interface CommsThreadRecord {
+  id: string;
+  projectId: string;
+  platform: "slack" | "whatsapp" | "email" | "discord";
+  platformColor: "violet" | "emerald" | "blue";
+  channel: string;
+  preview: string;
+  timestamp: string;
+  unread: boolean;
+  actionable: boolean;
+  extractedAction: string;
+  socratesAnalysis?: {
+    affectedFlows: number;
+    milestonesShift: number;
+    tasksOutdated: number;
+    newTasksNeeded: number;
+    timeline: string;
+    budget: string;
+    breaksMvp: string;
+    draftReply: string;
+  };
+  participants: string[];
+  summaryBullets: string[];
+  messages: CommsMessageRecord[];
+}
+
+export interface ProjectFinancialRecord {
+  budget: number;
+  spent: number;
+  remaining: number;
+  projected: number;
+  margin: number;
+  invoiced: number;
+  outstanding: number;
+  weeklyBurn: number[];
+  budgetAllocation: Array<{ category: string; allocated: number; spent: number }>;
+  milestones: Array<{ name: string; value: number; paid: boolean; due?: string }>;
+}
+
+export const companyData = {
+  name: "Arrayah Digital",
+  tagline: "Software delivery agency",
+  headcount: 14,
+  monthlyRevenue: 124000,
+  monthlyBurn: 89000,
+  cashRunway: 8.4,
+  activeProjects: 3,
+  utilizationRate: 84
+};
+
+export const teamRoster: TeamMember[] = [
+  {
+    id: "t1",
+    name: "Sarah Chen",
+    role: "Project Manager",
+    avatar: "SC",
+    color: "cyan",
+    utilization: 92,
+    projects: ["p1", "p2"],
+    hourlyRate: 120
+  },
+  {
+    id: "t2",
+    name: "Mike Torres",
+    role: "Lead Engineer",
+    avatar: "MT",
+    color: "violet",
+    utilization: 100,
+    projects: ["p1"],
+    hourlyRate: 150
+  },
+  {
+    id: "t3",
+    name: "Priya Kapoor",
+    role: "Full Stack Dev",
+    avatar: "PK",
+    color: "blue",
+    utilization: 88,
+    projects: ["p1", "p3"],
+    hourlyRate: 130
+  },
+  {
+    id: "t4",
+    name: "James Wu",
+    role: "Frontend Dev",
+    avatar: "JW",
+    color: "emerald",
+    utilization: 75,
+    projects: ["p2"],
+    hourlyRate: 110
+  },
+  {
+    id: "t5",
+    name: "Anika Patel",
+    role: "QA Engineer",
+    avatar: "AP",
+    color: "amber",
+    utilization: 60,
+    projects: ["p2", "p3"],
+    hourlyRate: 100
+  },
+  {
+    id: "t6",
+    name: "Liam Ford",
+    role: "Backend Dev",
+    avatar: "LF",
+    color: "rose",
+    utilization: 95,
+    projects: ["p3"],
+    hourlyRate: 125
+  }
+];
+
+export const projects: ProjectRecord[] = [
+  {
+    id: "p1",
+    name: "Creator Marketplace V1",
+    client: "Jack — Tempest AI",
+    clientInitials: "JT",
+    clientColor: "blue",
+    status: "active",
+    health: 74,
+    completion: 61,
+    budget: 85000,
+    spent: 51000,
+    sprint: "3 of 6",
+    dueDate: "Jun 2026",
+    team: ["t1", "t2", "t3"],
+    weeklyVelocity: [42, 38, 55, 61, 58, 70, 74],
+    burnData: [0, 8500, 17200, 26000, 35800, 51000],
+    description: "Creator monetisation layer — marketplace, payouts, analytics",
+    riskLevel: "medium",
+    stageSlug: "1-intake"
+  },
+  {
+    id: "p2",
+    name: "Studio Dashboard",
+    client: "Elara Games",
+    clientInitials: "EG",
+    clientColor: "violet",
+    status: "active",
+    health: 91,
+    completion: 38,
+    budget: 60000,
+    spent: 22800,
+    sprint: "2 of 8",
+    dueDate: "Aug 2026",
+    team: ["t1", "t4", "t5"],
+    weeklyVelocity: [20, 28, 32, 38, 35, 38, 40],
+    burnData: [0, 5700, 11400, 17100, 22800],
+    description: "Real-time analytics dashboard for game studio ops",
+    riskLevel: "low",
+    stageSlug: "1-intake"
+  },
+  {
+    id: "p3",
+    name: "API Gateway Rebuild",
+    client: "NovaCorp",
+    clientInitials: "NC",
+    clientColor: "amber",
+    status: "at-risk",
+    health: 52,
+    completion: 79,
+    budget: 45000,
+    spent: 41200,
+    sprint: "6 of 7",
+    dueDate: "Apr 2026",
+    team: ["t3", "t5", "t6"],
+    weeklyVelocity: [60, 65, 70, 72, 68, 75, 79],
+    burnData: [0, 7500, 16200, 24800, 32100, 38600, 41200],
+    description: "Full rebuild of legacy REST gateway to GraphQL + gRPC",
+    riskLevel: "high",
+    stageSlug: "8-tower"
+  }
+];
+
+export const revenueTimeline = [
+  { month: "Nov", revenue: 98000, expenses: 82000 },
+  { month: "Dec", revenue: 105000, expenses: 85000 },
+  { month: "Jan", revenue: 112000, expenses: 87000 },
+  { month: "Feb", revenue: 108000, expenses: 86000 },
+  { month: "Mar", revenue: 119000, expenses: 88000 },
+  { month: "Apr", revenue: 124000, expenses: 89000 }
+];
+
+export const truthDocuments: TruthDocumentRecord[] = [
+  {
+    id: "tr1",
+    projectId: "p1",
+    type: "client-spec",
+    title: "Creator Marketplace Product Brief",
+    source: "Jack — Tempest AI",
+    date: "12 Mar 2026",
+    status: "processed",
+    extractedRequirements: 14,
+    icon: "FileText",
+    summary: "End-to-end spec for creator onboarding, asset marketplace, and revenue split engine.",
+    tags: ["onboarding", "marketplace", "payments"]
+  },
+  {
+    id: "tr2",
+    projectId: "p1",
+    type: "recording",
+    title: "Kickoff Call Recording — 45min",
+    source: "Google Meet",
+    date: "15 Mar 2026",
+    status: "processed",
+    extractedRequirements: 8,
+    icon: "Mic",
+    summary: "Jack confirmed Stripe Connect, 70/30 default split, creator tiers as V1 priorities.",
+    tags: ["stripe", "tiers", "V1 scope"]
+  },
+  {
+    id: "tr3",
+    projectId: "p1",
+    type: "document",
+    title: "Figma Design System Export",
+    source: "Figma",
+    date: "18 Mar 2026",
+    status: "processed",
+    extractedRequirements: 22,
+    icon: "Layers",
+    summary: "Full component library and screen flows for creator-facing surfaces.",
+    tags: ["design", "components", "screens"]
+  },
+  {
+    id: "tr4",
+    projectId: "p1",
+    type: "slack-export",
+    title: "Slack Export — #tempestai-project",
+    source: "Slack",
+    date: "01 Apr 2026",
+    status: "processing",
+    extractedRequirements: 6,
+    icon: "Hash",
+    summary: "Thread discussing Pro subscription addition, pricing model debate.",
+    tags: ["scope change", "subscription", "pricing"]
+  },
+  {
+    id: "tr5",
+    projectId: "p1",
+    type: "document",
+    title: "Tempest AI Technical Architecture Doc",
+    source: "Notion",
+    date: "20 Mar 2026",
+    status: "processed",
+    extractedRequirements: 18,
+    icon: "Code2",
+    summary: "Existing platform architecture — auth, CDN, game engine APIs.",
+    tags: ["architecture", "APIs", "constraints"]
+  },
+  {
+    id: "tr6",
+    projectId: "p2",
+    type: "client-spec",
+    title: "Studio Dashboard Requirements Brief",
+    source: "Elara Games",
+    date: "09 Mar 2026",
+    status: "processed",
+    extractedRequirements: 11,
+    icon: "FileText",
+    summary: "Operational analytics dashboard covering retention, crash monitoring, and release health.",
+    tags: ["analytics", "studio ops", "reporting"]
+  },
+  {
+    id: "tr7",
+    projectId: "p2",
+    type: "document",
+    title: "Elara Figma Wireframes",
+    source: "Figma",
+    date: "14 Mar 2026",
+    status: "processed",
+    extractedRequirements: 17,
+    icon: "Layers",
+    summary: "Component layouts and dashboard modules for studio leadership and live-ops teams.",
+    tags: ["design", "charts", "dashboards"]
+  },
+  {
+    id: "tr8",
+    projectId: "p3",
+    type: "document",
+    title: "Gateway Rebuild Technical Constraints",
+    source: "NovaCorp Engineering",
+    date: "04 Feb 2026",
+    status: "processed",
+    extractedRequirements: 13,
+    icon: "Code2",
+    summary: "Migration constraints for GraphQL edge services, gRPC backplane, and auth compatibility.",
+    tags: ["graphql", "grpc", "migration"]
+  },
+  {
+    id: "tr9",
+    projectId: "p3",
+    type: "recording",
+    title: "Incident Review Recording",
+    source: "Zoom",
+    date: "22 Mar 2026",
+    status: "processed",
+    extractedRequirements: 7,
+    icon: "Mic",
+    summary: "Postmortem on gateway instability and outage-driven rebuild priorities.",
+    tags: ["incident", "stability", "sla"]
+  }
+];
+
+export const truthRequirements: TruthRequirementRecord[] = [
+  {
+    id: "rq1",
+    docId: "tr1",
+    text: "Creator onboarding must capture studio identity, creator tier intent, and linked game metadata before publish is unlocked.",
+    sourceRef: "from 'Creator Marketplace Product Brief'",
+    priority: "P1",
+    assignee: "t3",
+    status: "in-progress"
+  },
+  {
+    id: "rq2",
+    docId: "tr1",
+    text: "Marketplace listings need tags, preview media, pricing controls, and a visible publish state for creators.",
+    sourceRef: "from 'Creator Marketplace Product Brief'",
+    priority: "P1",
+    assignee: "t2",
+    status: "todo"
+  },
+  {
+    id: "rq3",
+    docId: "tr1",
+    text: "Revenue split defaults to 70/30 in V1, with room for a later Pro tier override without reworking payout logic.",
+    sourceRef: "from 'Creator Marketplace Product Brief'",
+    priority: "P1",
+    assignee: "t2",
+    status: "todo"
+  },
+  {
+    id: "rq4",
+    docId: "tr1",
+    text: "Creator dashboard needs payout readiness, publish status, and marketplace visibility signals in one surface.",
+    sourceRef: "from 'Creator Marketplace Product Brief'",
+    priority: "P2",
+    assignee: "t3",
+    status: "todo"
+  },
+  {
+    id: "rq5",
+    docId: "tr2",
+    text: "Stripe Connect onboarding is mandatory for creator payouts and must return verification state into the Tempest dashboard.",
+    sourceRef: "from 'Kickoff Call Recording — 45min'",
+    priority: "P0",
+    assignee: "t2",
+    status: "in-progress"
+  },
+  {
+    id: "rq6",
+    docId: "tr2",
+    text: "Creator tiers are explicitly Free / Pro / Studio and messaging must frame them as monetisation unlocks, not just limits.",
+    sourceRef: "from 'Kickoff Call Recording — 45min'",
+    priority: "P1",
+    assignee: "t1",
+    status: "todo"
+  },
+  {
+    id: "rq7",
+    docId: "tr3",
+    text: "Asset cards require hover preview, creator attribution, pricing, and publish badges that match the live marketplace feed.",
+    sourceRef: "from 'Figma Design System Export'",
+    priority: "P1",
+    assignee: "t4",
+    status: "todo"
+  },
+  {
+    id: "rq8",
+    docId: "tr3",
+    text: "Creator dashboard should expose weekly earnings comparison, asset-level revenue, and recent engagement metrics.",
+    sourceRef: "from 'Figma Design System Export'",
+    priority: "P2",
+    assignee: "t3",
+    status: "todo"
+  },
+  {
+    id: "rq9",
+    docId: "tr4",
+    text: "Pro subscription introduces a $29/month plan, 80/20 creator split, and priority marketplace placement.",
+    sourceRef: "from 'Slack Export — #tempestai-project'",
+    priority: "P1",
+    assignee: "t2",
+    status: "todo"
+  },
+  {
+    id: "rq10",
+    docId: "tr4",
+    text: "Discovery feed must support tag-based filtering alongside categories to match how Tempest players find content.",
+    sourceRef: "from 'Slack Export — #tempestai-project'",
+    priority: "P1",
+    assignee: "t3",
+    status: "todo"
+  },
+  {
+    id: "rq11",
+    docId: "tr5",
+    text: "Existing Tempest auth, CDN, and game engine APIs must remain unchanged while the creator monetisation layer is introduced.",
+    sourceRef: "from 'Tempest AI Technical Architecture Doc'",
+    priority: "P1",
+    assignee: "t6",
+    status: "in-review"
+  },
+  {
+    id: "rq12",
+    docId: "tr5",
+    text: "Payout and analytics services must be modular so creator features can expand into recommendations and subscriptions in V2.",
+    sourceRef: "from 'Tempest AI Technical Architecture Doc'",
+    priority: "P2",
+    assignee: "t6",
+    status: "todo"
+  },
+  {
+    id: "rq13",
+    docId: "tr6",
+    text: "Studio Dashboard must surface DAU, revenue, and release health in a single leadership view.",
+    sourceRef: "from 'Studio Dashboard Requirements Brief'",
+    priority: "P1",
+    assignee: "t4",
+    status: "in-progress"
+  },
+  {
+    id: "rq14",
+    docId: "tr7",
+    text: "Analytics widgets should support drill-down from studio-level KPIs into title-level metrics.",
+    sourceRef: "from 'Elara Figma Wireframes'",
+    priority: "P2",
+    assignee: "t5",
+    status: "todo"
+  },
+  {
+    id: "rq15",
+    docId: "tr8",
+    text: "Gateway rebuild must preserve auth compatibility while shifting the edge to GraphQL.",
+    sourceRef: "from 'Gateway Rebuild Technical Constraints'",
+    priority: "P0",
+    assignee: "t6",
+    status: "in-progress"
+  },
+  {
+    id: "rq16",
+    docId: "tr9",
+    text: "Incident telemetry needs to be queryable across both legacy REST and the new gRPC stack during migration.",
+    sourceRef: "from 'Incident Review Recording'",
+    priority: "P1",
+    assignee: "t3",
+    status: "todo"
+  }
+];
+
+export const extractedTasks: ExtractedTaskRecord[] = [
+  {
+    id: "et1",
+    source: "tr1",
+    task: "Creator signup flow with email verification",
+    priority: "P1",
+    assignee: "t3",
+    estimatedHours: 8,
+    status: "IN_PROGRESS"
+  },
+  {
+    id: "et2",
+    source: "tr2",
+    task: "Stripe Connect onboarding for creator payouts",
+    priority: "P0",
+    assignee: "t2",
+    estimatedHours: 14,
+    status: "IN_PROGRESS"
+  },
+  {
+    id: "et3",
+    source: "tr3",
+    task: "Asset card component with preview on hover",
+    priority: "P1",
+    assignee: "t4",
+    estimatedHours: 6,
+    status: "TODO"
+  },
+  {
+    id: "et4",
+    source: "tr1",
+    task: "Creator tier system: Free / Pro / Studio logic",
+    priority: "P1",
+    assignee: "t2",
+    estimatedHours: 10,
+    status: "TODO"
+  },
+  {
+    id: "et5",
+    source: "tr4",
+    task: "Revenue split toggle: 70/30 vs 80/20 for Pro",
+    priority: "P1",
+    assignee: "t2",
+    estimatedHours: 9,
+    status: "TODO"
+  },
+  {
+    id: "et6",
+    source: "tr2",
+    task: "Revenue analytics per asset — chart view",
+    priority: "P2",
+    assignee: "t3",
+    estimatedHours: 7,
+    status: "TODO"
+  },
+  {
+    id: "et7",
+    source: "tr6",
+    task: "Studio KPI hero strip for DAU, revenue, and release health",
+    priority: "P1",
+    assignee: "t4",
+    estimatedHours: 10,
+    status: "IN_PROGRESS"
+  },
+  {
+    id: "et8",
+    source: "tr8",
+    task: "GraphQL edge contract compatible with legacy auth",
+    priority: "P0",
+    assignee: "t6",
+    estimatedHours: 16,
+    status: "IN_PROGRESS"
+  }
+];
+
+export const brainDocuments = truthDocuments;
+
+export const aiTaskQueue: AiTaskQueueItem[] = [
+  {
+    id: "ai-1",
+    source: "tr1",
+    sourceType: "spec",
+    task: "Creator signup flow with email verification",
+    priority: "P1",
+    assignee: "t3",
+    estimatedHours: 8,
+    status: "IN_PROGRESS"
+  },
+  {
+    id: "ai-2",
+    source: "tr2",
+    sourceType: "recording",
+    task: "Stripe Connect onboarding for creator payouts",
+    priority: "P0",
+    assignee: "t2",
+    estimatedHours: 14,
+    status: "IN_PROGRESS"
+  },
+  {
+    id: "ai-3",
+    source: "tr4",
+    sourceType: "chat export",
+    task: "Revenue split toggle: 70/30 vs 80/20 for Pro",
+    priority: "P1",
+    assignee: "t2",
+    estimatedHours: 9,
+    status: "TODO"
+  },
+  {
+    id: "ai-4",
+    source: "tr3",
+    sourceType: "design export",
+    task: "Asset card component with preview on hover",
+    priority: "P1",
+    assignee: "t4",
+    estimatedHours: 6,
+    status: "TODO"
+  }
+];
+
+export const newRBACTasks: AiTaskQueueItem[] = [
+  {
+    id: "rbac-1",
+    source: "tr5",
+    sourceType: "architecture",
+    task: "RBAC permission matrix for creator, studio, and admin roles",
+    priority: "P1",
+    assignee: "t2",
+    estimatedHours: 10,
+    status: "TODO"
+  },
+  {
+    id: "rbac-2",
+    source: "tr5",
+    sourceType: "architecture",
+    task: "Role-aware guardrails for payout dashboard actions",
+    priority: "P1",
+    assignee: "t3",
+    estimatedHours: 8,
+    status: "TODO"
+  },
+  {
+    id: "rbac-3",
+    source: "tr5",
+    sourceType: "architecture",
+    task: "Permission checks for premium marketplace placement controls",
+    priority: "P1",
+    assignee: "t2",
+    estimatedHours: 7,
+    status: "TODO"
+  },
+  {
+    id: "rbac-4",
+    source: "tr5",
+    sourceType: "architecture",
+    task: "Admin override logs for featured placement changes",
+    priority: "P2",
+    assignee: "t3",
+    estimatedHours: 5,
+    status: "TODO"
+  },
+  {
+    id: "rbac-5",
+    source: "tr5",
+    sourceType: "architecture",
+    task: "Studio-tier access gating in creator onboarding",
+    priority: "P1",
+    assignee: "t2",
+    estimatedHours: 6,
+    status: "TODO"
+  },
+  {
+    id: "rbac-6",
+    source: "tr5",
+    sourceType: "architecture",
+    task: "Audit events for creator role changes",
+    priority: "P2",
+    assignee: "t6",
+    estimatedHours: 5,
+    status: "TODO"
+  },
+  {
+    id: "rbac-7",
+    source: "tr5",
+    sourceType: "architecture",
+    task: "Policy engine for internal moderation permissions",
+    priority: "P1",
+    assignee: "t6",
+    estimatedHours: 8,
+    status: "TODO"
+  },
+  {
+    id: "rbac-8",
+    source: "tr5",
+    sourceType: "architecture",
+    task: "RBAC-aware API middleware for creator services",
+    priority: "P0",
+    assignee: "t6",
+    estimatedHours: 12,
+    status: "TODO"
+  },
+  {
+    id: "rbac-9",
+    source: "tr5",
+    sourceType: "architecture",
+    task: "Permission regression test pack for publish and payout flows",
+    priority: "P2",
+    assignee: "t5",
+    estimatedHours: 6,
+    status: "TODO"
+  }
+];
+
+export const commsThreads: CommsThreadRecord[] = [
+  {
+    id: "cm1",
+    projectId: "p1",
+    platform: "slack",
+    platformColor: "violet",
+    channel: "#tempestai-project",
+    preview: "Jack: can we get the subscription model in V1? the 80/20 split is a deal maker for creators",
+    timestamp: "Today 14:22",
+    unread: true,
+    actionable: true,
+    extractedAction: "Add $29/month Pro subscription with 80/20 revenue split — +2 week impact",
+    socratesAnalysis: {
+      affectedFlows: 3,
+      milestonesShift: 2,
+      tasksOutdated: 7,
+      newTasksNeeded: 9,
+      timeline: "+2 weeks",
+      budget: "+$4,200",
+      breaksMvp: "yes",
+      draftReply:
+        "Jack — we can pull the Pro subscription into V1, but it changes payout logic, creator tiers, and discovery placement. Current estimate is +2 weeks and +$4,200. If you want the original date preserved, we should move premium placement to V2."
+    },
+    participants: ["Jack", "Sarah Chen", "Mike Torres"],
+    summaryBullets: [
+      "Jack proposed a Pro subscription to make monetisation more compelling for creators.",
+      "Sarah acknowledged the request and committed to a timeline impact review.",
+      "This request maps directly to Revenue & Payouts plus discovery placement logic."
+    ],
+    messages: [
+      { sender: "Jack", time: "14:18", text: "Hey team — had a thought about monetisation", platform: "slack" },
+      {
+        sender: "Jack",
+        time: "14:19",
+        text: "What if we add a Pro tier for $29/month? creators on Pro get 80/20 instead of 70/30 and priority placement",
+        platform: "slack"
+      },
+      {
+        sender: "Sarah Chen",
+        time: "14:21",
+        text: "That's a solid idea — let me scope it and get back to you on timeline impact",
+        platform: "slack"
+      },
+      {
+        sender: "Jack",
+        time: "14:22",
+        text: "can we get the subscription model in V1? the 80/20 split is a deal maker for creators",
+        platform: "slack"
+      }
+    ]
+  },
+  {
+    id: "cm2",
+    projectId: "p1",
+    platform: "whatsapp",
+    platformColor: "emerald",
+    channel: "Jack (WhatsApp)",
+    preview: "Jack: also forgot to mention — need the discovery feed to support tags not just categories",
+    timestamp: "Yesterday 09:44",
+    unread: true,
+    actionable: true,
+    extractedAction: "Discovery feed: tag-based filtering alongside category browsing — V1 scope",
+    participants: ["Jack", "Sarah Chen"],
+    summaryBullets: [
+      "Jack clarified that player discovery is tag-driven, not category-driven.",
+      "The request changes search and filter assumptions already in execution planning.",
+      "This should be treated as V1 scope, not a later UX enhancement."
+    ],
+    messages: [
+      { sender: "Jack", time: "09:40", text: "Morning! Quick one", platform: "whatsapp" },
+      {
+        sender: "Jack",
+        time: "09:41",
+        text: "also forgot to mention — need the discovery feed to support tags not just categories",
+        platform: "whatsapp"
+      },
+      {
+        sender: "Jack",
+        time: "09:44",
+        text: "it's how our players currently find content so it's kind of important 😅",
+        platform: "whatsapp"
+      }
+    ]
+  },
+  {
+    id: "cm3",
+    projectId: "p1",
+    platform: "email",
+    platformColor: "blue",
+    channel: "jack@tempestai.com",
+    preview: "Re: Prototype Review — looks great! One thing on the creator dashboard...",
+    timestamp: "2 Apr 2026",
+    unread: false,
+    actionable: true,
+    extractedAction: "Creator dashboard: add weekly earnings comparison to previous week",
+    participants: ["Jack", "Sarah Chen"],
+    summaryBullets: [
+      "Jack approved the general prototype direction.",
+      "He specifically wants week-on-week earnings comparison in the creator dashboard.",
+      "This request strengthens the case for revenue analytics visibility in V1."
+    ],
+    messages: [
+      {
+        sender: "Jack",
+        time: "11:02",
+        text: "Hey Sarah — prototype looks great, loving the direction",
+        platform: "email"
+      },
+      {
+        sender: "Jack",
+        time: "11:03",
+        text: "One thing on the creator dashboard — can we add a week-on-week earnings comparison? Creators will obsess over that number",
+        platform: "email"
+      }
+    ]
+  },
+  {
+    id: "cm4",
+    projectId: "p1",
+    platform: "discord",
+    platformColor: "blue",
+    channel: "#product-feedback",
+    preview: "Jack: beta creators are asking about bulk upload for assets",
+    timestamp: "1 Apr 2026",
+    unread: false,
+    actionable: false,
+    extractedAction: "Bulk asset upload — defer to V2",
+    participants: ["Jack", "Mike Torres"],
+    summaryBullets: [
+      "Creators are already asking for faster publishing workflows.",
+      "Bulk asset upload is useful but not a V1 requirement.",
+      "The team agreed it should sit in the V2 backlog."
+    ],
+    messages: [
+      {
+        sender: "Jack",
+        time: "16:30",
+        text: "FYI — beta creators are asking about bulk upload for assets",
+        platform: "discord"
+      },
+      {
+        sender: "Mike Torres",
+        time: "16:45",
+        text: "Makes sense — we can scope it for V2",
+        platform: "discord"
+      }
+    ]
+  },
+  {
+    id: "cm5",
+    projectId: "p2",
+    platform: "email",
+    platformColor: "blue",
+    channel: "product@elaragames.com",
+    preview: "Elara: can we split the dashboard into studio overview and title deep dives?",
+    timestamp: "Today 10:04",
+    unread: true,
+    actionable: true,
+    extractedAction: "Split studio dashboard IA into overview and per-title analytics paths",
+    participants: ["Sarah Chen", "Elara Games"],
+    summaryBullets: [
+      "Client wants a clearer separation between executive overview and title analytics.",
+      "This affects dashboard navigation but not the core metrics layer.",
+      "IA update should be scoped before frontend implementation hardens."
+    ],
+    messages: [
+      {
+        sender: "Elara Games",
+        time: "10:01",
+        text: "Can we split the dashboard into studio overview and title deep dives?",
+        platform: "email"
+      },
+      {
+        sender: "Sarah Chen",
+        time: "10:04",
+        text: "Yes — I’ll update the information architecture before we lock the prototype.",
+        platform: "email"
+      }
+    ]
+  },
+  {
+    id: "cm6",
+    projectId: "p3",
+    platform: "slack",
+    platformColor: "violet",
+    channel: "#novacorp-gateway",
+    preview: "NovaCorp: keep the REST fallback alive for enterprise clients through cutover",
+    timestamp: "Yesterday 17:22",
+    unread: false,
+    actionable: true,
+    extractedAction: "Maintain REST fallback path during GraphQL migration window",
+    participants: ["Sarah Chen", "NovaCorp", "Liam Ford"],
+    summaryBullets: [
+      "Enterprise clients cannot be forced onto the new gateway in one cutover.",
+      "Fallback support increases migration complexity but reduces operational risk.",
+      "This impacts rollout planning more than core implementation."
+    ],
+    messages: [
+      {
+        sender: "NovaCorp",
+        time: "17:18",
+        text: "Please keep the REST fallback alive for enterprise clients through cutover.",
+        platform: "slack"
+      },
+      {
+        sender: "Liam Ford",
+        time: "17:21",
+        text: "Understood — we can stage the fallback behind a traffic rule during rollout.",
+        platform: "slack"
+      }
+    ]
+  }
+];
+
+export const projectFinancials: Record<string, ProjectFinancialRecord> = {
+  p1: {
+    budget: 85000,
+    spent: 51000,
+    remaining: 34000,
+    projected: 82400,
+    margin: 28.5,
+    invoiced: 42500,
+    outstanding: 8500,
+    weeklyBurn: [7200, 8100, 9400, 8800, 9600, 7900],
+    budgetAllocation: [
+      { category: "Engineering", allocated: 55000, spent: 35200 },
+      { category: "Design", allocated: 12000, spent: 8400 },
+      { category: "QA", allocated: 8000, spent: 4200 },
+      { category: "PM", allocated: 10000, spent: 3200 }
+    ],
+    milestones: [
+      { name: "Discovery & Scoping", value: 12000, paid: true },
+      { name: "Prototype Approved", value: 18000, paid: true },
+      { name: "Sprint 3 Delivery", value: 12500, paid: false, due: "15 Apr" },
+      { name: "Final Delivery", value: 42500, paid: false, due: "Jun 2026" }
+    ]
+  },
+  p2: {
+    budget: 60000,
+    spent: 22800,
+    remaining: 37200,
+    projected: 57300,
+    margin: 31.2,
+    invoiced: 18000,
+    outstanding: 4800,
+    weeklyBurn: [4200, 4700, 5100, 4400, 4400],
+    budgetAllocation: [
+      { category: "Engineering", allocated: 34000, spent: 14800 },
+      { category: "Design", allocated: 10000, spent: 4300 },
+      { category: "QA", allocated: 7000, spent: 1900 },
+      { category: "PM", allocated: 9000, spent: 1800 }
+    ],
+    milestones: [
+      { name: "Discovery", value: 10000, paid: true },
+      { name: "Prototype", value: 14000, paid: false, due: "22 Apr" },
+      { name: "Release Candidate", value: 16000, paid: false, due: "Jun 2026" },
+      { name: "Launch", value: 20000, paid: false, due: "Aug 2026" }
+    ]
+  },
+  p3: {
+    budget: 45000,
+    spent: 41200,
+    remaining: 3800,
+    projected: 49800,
+    margin: 14.4,
+    invoiced: 36000,
+    outstanding: 9200,
+    weeklyBurn: [6800, 7200, 6900, 7600, 7100, 7600],
+    budgetAllocation: [
+      { category: "Engineering", allocated: 30000, spent: 28900 },
+      { category: "Design", allocated: 3000, spent: 1200 },
+      { category: "QA", allocated: 5000, spent: 4300 },
+      { category: "PM", allocated: 7000, spent: 6800 }
+    ],
+    milestones: [
+      { name: "Audit Complete", value: 9000, paid: true },
+      { name: "Migration Plan", value: 12000, paid: true },
+      { name: "Cutover Prep", value: 10000, paid: false, due: "11 Apr" },
+      { name: "Final Migration", value: 14000, paid: false, due: "Apr 2026" }
+    ]
+  }
+};
+
+export const intelChartData = {
+  p1: {
+    velocity: [
+      { week: "W1", points: 42 },
+      { week: "W2", points: 38 },
+      { week: "W3", points: 55 },
+      { week: "W4", points: 61 },
+      { week: "W5", points: 58 },
+      { week: "W6", points: 70 }
+    ],
+    featureProgress: [
+      { week: "W1", "Creator Onboarding": 20, "Asset Marketplace": 0, "Revenue & Payouts": 0, "Creator Analytics": 0, "Game Discovery": 10 },
+      { week: "W2", "Creator Onboarding": 45, "Asset Marketplace": 15, "Revenue & Payouts": 0, "Creator Analytics": 0, "Game Discovery": 22 },
+      { week: "W3", "Creator Onboarding": 65, "Asset Marketplace": 35, "Revenue & Payouts": 20, "Creator Analytics": 0, "Game Discovery": 40 },
+      { week: "W4", "Creator Onboarding": 80, "Asset Marketplace": 52, "Revenue & Payouts": 38, "Creator Analytics": 20, "Game Discovery": 55 },
+      { week: "W5", "Creator Onboarding": 87, "Asset Marketplace": 65, "Revenue & Payouts": 45, "Creator Analytics": 38, "Game Discovery": 61 },
+      { week: "W6", "Creator Onboarding": 87, "Asset Marketplace": 72, "Revenue & Payouts": 51, "Creator Analytics": 44, "Game Discovery": 68 }
+    ],
+    burndown: [
+      { day: "Day 0", remaining: 120, ideal: 120 },
+      { day: "Day 5", remaining: 108, ideal: 100 },
+      { day: "Day 10", remaining: 95, ideal: 80 },
+      { day: "Day 15", remaining: 84, ideal: 60 },
+      { day: "Day 20", remaining: 71, ideal: 40 },
+      { day: "Day 25", remaining: 58, ideal: 20 },
+      { day: "Day 30", remaining: 49, ideal: 0 }
+    ]
+  },
+  p2: {
+    velocity: [
+      { week: "W1", points: 20 },
+      { week: "W2", points: 28 },
+      { week: "W3", points: 32 },
+      { week: "W4", points: 38 },
+      { week: "W5", points: 35 },
+      { week: "W6", points: 40 }
+    ],
+    featureProgress: [
+      { week: "W1", "Creator Onboarding": 0, "Asset Marketplace": 18, "Revenue & Payouts": 0, "Creator Analytics": 14, "Game Discovery": 0 },
+      { week: "W2", "Creator Onboarding": 0, "Asset Marketplace": 30, "Revenue & Payouts": 0, "Creator Analytics": 24, "Game Discovery": 0 },
+      { week: "W3", "Creator Onboarding": 0, "Asset Marketplace": 38, "Revenue & Payouts": 0, "Creator Analytics": 32, "Game Discovery": 0 },
+      { week: "W4", "Creator Onboarding": 0, "Asset Marketplace": 46, "Revenue & Payouts": 0, "Creator Analytics": 41, "Game Discovery": 0 },
+      { week: "W5", "Creator Onboarding": 0, "Asset Marketplace": 54, "Revenue & Payouts": 0, "Creator Analytics": 49, "Game Discovery": 0 },
+      { week: "W6", "Creator Onboarding": 0, "Asset Marketplace": 62, "Revenue & Payouts": 0, "Creator Analytics": 58, "Game Discovery": 0 }
+    ],
+    burndown: [
+      { day: "Day 0", remaining: 92, ideal: 92 },
+      { day: "Day 5", remaining: 80, ideal: 76 },
+      { day: "Day 10", remaining: 70, ideal: 61 },
+      { day: "Day 15", remaining: 58, ideal: 46 },
+      { day: "Day 20", remaining: 49, ideal: 31 },
+      { day: "Day 25", remaining: 39, ideal: 15 },
+      { day: "Day 30", remaining: 28, ideal: 0 }
+    ]
+  },
+  p3: {
+    velocity: [
+      { week: "W1", points: 60 },
+      { week: "W2", points: 65 },
+      { week: "W3", points: 70 },
+      { week: "W4", points: 72 },
+      { week: "W5", points: 68 },
+      { week: "W6", points: 79 }
+    ],
+    featureProgress: [
+      { week: "W1", "Creator Onboarding": 0, "Asset Marketplace": 0, "Revenue & Payouts": 22, "Creator Analytics": 0, "Game Discovery": 0 },
+      { week: "W2", "Creator Onboarding": 0, "Asset Marketplace": 0, "Revenue & Payouts": 36, "Creator Analytics": 0, "Game Discovery": 0 },
+      { week: "W3", "Creator Onboarding": 0, "Asset Marketplace": 0, "Revenue & Payouts": 49, "Creator Analytics": 0, "Game Discovery": 0 },
+      { week: "W4", "Creator Onboarding": 0, "Asset Marketplace": 0, "Revenue & Payouts": 61, "Creator Analytics": 0, "Game Discovery": 0 },
+      { week: "W5", "Creator Onboarding": 0, "Asset Marketplace": 0, "Revenue & Payouts": 72, "Creator Analytics": 0, "Game Discovery": 0 },
+      { week: "W6", "Creator Onboarding": 0, "Asset Marketplace": 0, "Revenue & Payouts": 79, "Creator Analytics": 0, "Game Discovery": 0 }
+    ],
+    burndown: [
+      { day: "Day 0", remaining: 84, ideal: 84 },
+      { day: "Day 5", remaining: 74, ideal: 70 },
+      { day: "Day 10", remaining: 61, ideal: 56 },
+      { day: "Day 15", remaining: 50, ideal: 42 },
+      { day: "Day 20", remaining: 40, ideal: 28 },
+      { day: "Day 25", remaining: 28, ideal: 14 },
+      { day: "Day 30", remaining: 19, ideal: 0 }
+    ]
+  }
+};
+
+export function getProjectById(projectId: string) {
+  return projects.find((project) => project.id === projectId) ?? projects[0];
+}
+
+export function getTeamMemberById(memberId: string) {
+  return teamRoster.find((member) => member.id === memberId);
+}
+
+export function getTeamForProject(projectId: string) {
+  const project = getProjectById(projectId);
+  return project.team
+    .map((memberId) => getTeamMemberById(memberId))
+    .filter((member): member is TeamMember => Boolean(member));
+}
+
+export function getTruthDocumentsForProject(projectId: string) {
+  return truthDocuments.filter((document) => document.projectId === projectId);
+}
+
+export function getTruthDocumentById(docId: string) {
+  return truthDocuments.find((document) => document.id === docId) ?? null;
+}
+
+export function getTruthRequirementsForDocument(docId: string) {
+  return truthRequirements.filter((requirement) => requirement.docId === docId);
+}
+
+export function getExtractedTasksForDocument(docId: string) {
+  return extractedTasks.filter((task) => task.source === docId);
+}
+
+export function getCommsThreadsForProject(projectId: string) {
+  return commsThreads.filter((thread) => thread.projectId === projectId);
+}
+
+export function getUnreadCommsCount(projectId: string) {
+  return commsThreads.filter((thread) => thread.projectId === projectId && thread.unread).length;
+}
+
+export function getProjectFinancials(projectId: string) {
+  return projectFinancials[projectId];
+}
+
+export function getProjectIntelData(projectId: string) {
+  return intelChartData[projectId as keyof typeof intelChartData];
+}

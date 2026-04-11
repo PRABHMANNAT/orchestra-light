@@ -4,7 +4,7 @@ import Link from "next/link";
 import { LogOut } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
-import { RoleBadge } from "@/components/shared/RoleBadge";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { projectMeta } from "@/lib/mockData";
 import { type MockUser } from "@/lib/roles";
@@ -16,15 +16,15 @@ export function DevSidebar({ user }: { user: MockUser }) {
   const router = useRouter();
 
   return (
-    <aside className="flex h-full w-[220px] shrink-0 flex-col border-r border-[#e8e8e8] bg-white/80 backdrop-blur-sm">
+    <aside className="glass-sidebar flex h-full w-[240px] shrink-0 flex-col">
       <div className="px-4 pb-4 pt-5">
-        <div className="font-sans text-[18px] font-semibold tracking-tight text-[#111111]">ORCHESTRA</div>
-        <div className="font-mono text-[10px] uppercase tracking-widest text-[#999999]">{projectMeta.version}</div>
-        <div className="mt-4 flex items-center gap-3">
+        <div className="font-title text-[22px] tracking-[0.12em] text-[var(--text-primary)]">ORCHESTRA</div>
+        <div className="font-mono text-[10px] tracking-[0.12em] text-[var(--text-muted)]">{projectMeta.version}</div>
+        <div className="glass-sm mt-4 flex items-center gap-3 rounded-lg px-3 py-3">
           <UserAvatar initials={user.avatar} role={user.role} />
           <div>
-            <div className="font-sans text-[12px] text-[#111111]">{user.name}</div>
-            <RoleBadge role={user.role} />
+            <div className="font-ui text-[12px] text-[var(--text-primary)]">{user.name}</div>
+            <div className="font-mono text-[9px] tracking-[0.12em] text-[var(--text-muted)]">{user.title}</div>
           </div>
         </div>
       </div>
@@ -35,28 +35,31 @@ export function DevSidebar({ user }: { user: MockUser }) {
             href={item.href}
             prefetch={false}
             className={cn(
-              "mb-1 flex min-h-[42px] items-center rounded-lg px-3 font-sans text-[13px] transition-colors",
+              "mb-1 flex min-h-[42px] items-center rounded-md px-3 font-ui text-[13px] transition-colors",
               pathname === item.href
-                ? "border border-[#e8e8e8] bg-white text-[#111111] shadow-sm"
-                : "text-[#999999] hover:bg-[#f5f5f5] hover:text-[#111111]"
+                ? "glass-cyan text-[var(--accent-cyan)]"
+                : "text-[var(--text-muted)] hover:bg-[rgba(255,255,255,0.04)] hover:text-[var(--text-primary)]"
             )}
           >
             {item.label}
           </Link>
         ))}
       </div>
-      <div className="border-t border-[#f0f0f0] px-4 py-4">
-        <div className="font-mono text-[9px] uppercase tracking-widest text-[#999999]">{projectMeta.project}</div>
-        <button
-          type="button"
-          onClick={() => {
-            window.localStorage.removeItem("orchestra_user");
-            router.replace("/login");
-          }}
-          className="mt-3 text-[#999999] hover:text-[#555555]"
-        >
-          <LogOut size={13} strokeWidth={1.5} />
-        </button>
+      <div className="border-t border-[var(--border-subtle)] px-4 py-4">
+        <div className="font-mono text-[9px] tracking-[0.12em] text-[var(--text-muted)]">{projectMeta.project}</div>
+        <div className="mt-3 flex items-center justify-between">
+          <ThemeToggle />
+          <button
+            type="button"
+            onClick={() => {
+              window.localStorage.removeItem("orchestra_user");
+              router.replace("/login");
+            }}
+            className="rounded-sm border border-[rgba(255,255,255,0.06)] p-2 text-[var(--text-muted)] transition-all hover:border-[rgba(239,68,68,0.25)] hover:text-[rgba(239,68,68,0.6)]"
+          >
+            <LogOut size={14} />
+          </button>
+        </div>
       </div>
     </aside>
   );

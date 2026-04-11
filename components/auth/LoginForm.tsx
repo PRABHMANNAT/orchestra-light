@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Code2, Eye, LayoutDashboard } from "lucide-react";
 import { motion } from "framer-motion";
 
+import { chipBounce, staggerContainer } from "@/lib/animations";
 import { RoleCard } from "@/components/auth/RoleCard";
 import { OrchestraButton } from "@/components/shared/OrchestraButton";
 import { type MockUser, findUserByCredentials, MOCK_USERS, type UserRole } from "@/lib/roles";
@@ -35,7 +36,8 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     }
 
     setError("");
-    onSuccess(user);
+    setIsAutoSigning(true);
+    window.setTimeout(() => onSuccess(user), 450);
   };
 
   const signInAsRole = (role: UserRole) => {
@@ -46,63 +48,57 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
     setPassword(user.password);
     setError("");
     setIsAutoSigning(true);
-    window.setTimeout(() => {
-      onSuccess(user);
-    }, 600);
+    window.setTimeout(() => onSuccess(user), 600);
   };
 
   return (
     <div className="space-y-5">
       <div>
-        <label className="mb-1 block font-mono text-[10px] uppercase tracking-[0.12em] text-[#999999]">
-          EMAIL ADDRESS
-        </label>
+        <label className="mb-1 block font-mono text-[10px] tracking-[0.12em] text-text-muted">EMAIL ADDRESS</label>
         <input
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          className="w-full rounded-lg border border-[#e0e0e0] bg-white px-3 py-2.5 font-sans text-[13px] text-[#111111] outline-none"
+          className="tactical-input w-full rounded-lg px-3 py-2.5 font-ui text-[13px] text-white outline-none"
         />
       </div>
       <div>
-        <label className="mb-1 block font-mono text-[10px] uppercase tracking-[0.12em] text-[#999999]">
-          PASSWORD
-        </label>
+        <label className="mb-1 block font-mono text-[10px] tracking-[0.12em] text-text-muted">PASSWORD</label>
         <input
           type="password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          className="w-full rounded-lg border border-[#e0e0e0] bg-white px-3 py-2.5 font-sans text-[13px] text-[#111111] outline-none"
+          className="tactical-input w-full rounded-lg px-3 py-2.5 font-ui text-[13px] text-white outline-none"
         />
       </div>
-      <motion.div animate={isAutoSigning ? { scale: [1, 1.02, 1] } : { scale: 1 }}>
-        <OrchestraButton fullWidth variant="primary" onClick={handleSubmit}>
+      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>
+        <OrchestraButton fullWidth variant="primary" onClick={handleSubmit} isLoading={isAutoSigning}>
           SIGN IN
         </OrchestraButton>
       </motion.div>
-      {error ? <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-[#991b1b]">{error}</p> : null}
+      {error ? <p className="font-mono text-[10px] tracking-[0.08em] text-[#fca5a5]">{error}</p> : null}
       <div>
-        <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-[#999999]">
-          QUICK ACCESS
-        </div>
-        <div className="grid gap-3 md:grid-cols-3">
+        <div className="mb-3 font-mono text-[10px] tracking-[0.18em] text-text-muted">QUICK ACCESS</div>
+        <motion.div variants={staggerContainer(0.06, 0.1)} initial="hidden" animate="show" className="grid gap-3 md:grid-cols-3">
           {roleCardContent.map((card) => {
             const Icon = iconMap[card.role];
             void Icon;
+
             return (
-              <RoleCard
-                key={card.role}
-                role={card.role}
-                title={card.title}
-                name={card.name}
-                access={card.access}
-                onClick={() => signInAsRole(card.role)}
-              />
+              <motion.div key={card.role} variants={chipBounce}>
+                <RoleCard
+                  role={card.role}
+                  title={card.title}
+                  name={card.name}
+                  access={card.access}
+                  onClick={() => signInAsRole(card.role)}
+                />
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       </div>
       {currentRole ? (
-        <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#999999]">
+        <div className="font-mono text-[10px] tracking-[0.12em] text-text-muted">
           Auto-detected role: {currentRole === "pm" ? "manager" : currentRole}
         </div>
       ) : null}

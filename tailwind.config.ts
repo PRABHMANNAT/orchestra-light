@@ -6,74 +6,53 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        title: ["var(--font-title)", ...defaultTheme.fontFamily.sans],
-        display: ["var(--font-ui)", ...defaultTheme.fontFamily.sans],
+        title: ["var(--font-display)", "sans-serif"],
+        display: ["var(--font-display)", "sans-serif"],
         ui: ["var(--font-ui)", ...defaultTheme.fontFamily.sans],
         sans: ["var(--font-ui)", ...defaultTheme.fontFamily.sans],
-        mono: ["var(--font-mono)", ...defaultTheme.fontFamily.mono]
+        mono: ["var(--font-mono)", "monospace"]
       },
       colors: {
-        navy: "#111111",
-        brown: "#5f4411",
-        green: "#6ca956",
-        amber: "#e2b20d",
-        yellow: "#eac42f",
-        ice: "#aec5c3",
-        surface: {
-          "1": "rgba(255,255,255,0.88)",
-          "2": "rgba(255,255,255,0.78)",
-          "3": "rgba(255,255,255,0.58)"
-        },
+        page: "var(--color-bg-page)",
+        sidebar: "var(--color-bg-sidebar)",
         bg: {
-          DEFAULT: "#f5f5f2",
-          "1": "rgba(255,255,255,0.88)",
-          "2": "rgba(255,255,255,0.78)",
-          "3": "rgba(245,245,245,0.92)",
-          "4": "rgba(17,17,17,0.06)"
+          0: "var(--color-bg-page)",
+          1: "var(--color-bg-1)",
+          2: "var(--color-bg-2)",
+          3: "var(--color-bg-3)",
+          4: "var(--color-bg-4)"
         },
         border: {
-          DEFAULT: "rgba(17,17,17,0.08)",
-          hover: "rgba(17,17,17,0.14)",
-          active: "rgba(17,17,17,0.2)"
+          DEFAULT: "var(--color-border)",
+          subtle: "var(--color-border-subtle)",
+          hover: "var(--color-border-hover)",
+          "cyan-glass": "var(--color-border-cyan)"
         },
         text: {
-          primary: "#111111",
-          secondary: "rgba(17,17,17,0.64)",
-          muted: "rgba(17,17,17,0.42)"
+          primary: "var(--color-text-primary)",
+          secondary: "var(--color-text-secondary)",
+          muted: "var(--color-text-muted)",
+          cyan: "var(--color-text-cyan)"
         },
         accent: {
-          cyan: "#334155",
-          amber: "#e2b20d",
-          green: "#6ca956",
-          red: "#f87171",
-          purple: "#5f4411",
-          blue: "#aec5c3"
+          cyan: "var(--color-accent)",
+          dim: "var(--color-accent-dim)",
+          glow: "var(--color-accent-glow)"
         }
       },
       borderRadius: {
-        sm: "8px",
-        md: "12px",
-        lg: "16px",
-        xl: "24px",
-        "2xl": "32px",
-        "3xl": "40px",
-        glass: "24px",
-        "glass-sm": "16px",
-        "glass-xs": "12px"
-      },
-      backdropBlur: {
-        glass: "16px",
-        "glass-sm": "8px"
+        sm: "4px",
+        DEFAULT: "6px",
+        md: "6px",
+        lg: "8px",
+        xl: "12px",
+        "2xl": "16px"
       },
       boxShadow: {
-        "glass-sm":
-          "0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,0.6)",
-        glass:
-          "0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.7)",
-        "glass-lg":
-          "0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8)",
-        "green-glow": "0 0 20px rgba(108,169,86,0.18)",
-        "amber-glow": "0 0 20px rgba(226,178,13,0.18)"
+        glass: "0 4px 24px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.05) inset, 0 -1px 0 rgba(0,0,0,0.3) inset",
+        "glass-sm": "0 2px 12px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.04) inset",
+        "glass-heavy":
+          "0 8px 40px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.07) inset, 0 -1px 0 rgba(0,0,0,0.4) inset, 0 0 0 1px rgba(0,229,204,0.03)"
       }
     }
   },
