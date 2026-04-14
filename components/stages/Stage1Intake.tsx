@@ -11,7 +11,7 @@ import { OrchestraButton } from "@/components/shared/OrchestraButton";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { TerminalOutput } from "@/components/shared/TerminalOutput";
 import { intakeAnalysisLines, intakeUploadFile } from "@/lib/mockData";
-import { getStageRoute } from "@/lib/stageConfig";
+import { getBrainRoute } from "@/lib/stageConfig";
 
 type IntakeState = "idle" | "uploading" | "parsing" | "done";
 
@@ -25,7 +25,7 @@ const nextSteps = [
   },
   {
     title: "Extracts requirements",
-    description: "Creator onboarding, marketplace, revenue, and discovery constraints are separated into buildable work.",
+    description: "Buyer ordering, florist operations, payments, and delivery constraints are separated into buildable work.",
     icon: Cpu
   },
   {
@@ -36,10 +36,10 @@ const nextSteps = [
 ];
 
 const extractedRows = [
-  "PRIMARY GOAL: Build creator monetisation layer for Tempest AI platform",
-  "SCOPE: Creator onboarding, Asset marketplace, Revenue split, Analytics",
-  "STAKEHOLDERS: Jack (founder/client), Sarah Chen (PM), Mike Torres (dev lead)",
-  "DEADLINE: 6-week delivery window, Sprint 3 of 6 active"
+  "PRIMARY GOAL: Build BloomFast on-demand flower marketplace MVP",
+  "SCOPE: Buyer ordering, Florist dashboard, Payments, Driver assignment",
+  "STAKEHOLDERS: Jack (BloomFast), Sarah Chen (PM)",
+  "DEADLINE: 8-week delivery window"
 ];
 
 export function Stage1Intake() {
@@ -82,7 +82,7 @@ export function Stage1Intake() {
                   className="flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-[rgba(167,139,250,0.2)] px-6 py-12 transition-all hover:border-[rgba(167,139,250,0.35)] hover:bg-[rgba(167,139,250,0.02)]"
                 >
                   <UploadCloud size={36} className="text-[var(--violet)]" />
-                  <div className="mt-4 font-ui text-[16px] font-medium text-[var(--text-primary)]">Drop the Tempest AI brief here</div>
+                  <div className="mt-4 font-ui text-[16px] font-medium text-[var(--text-primary)]">Drop the BloomFast brief here</div>
                   <div className="mt-1 font-ui text-[13px] text-[var(--text-secondary)]">PDF, Notion export, Slack thread, or plain text</div>
                 </button>
                 <input ref={fileInputRef} type="file" className="hidden" onChange={beginUpload} />
@@ -184,7 +184,7 @@ export function Stage1Intake() {
                 ))}
               </motion.div>
               <motion.div variants={fadeSlideUp} initial="hidden" animate="show">
-                <OrchestraButton variant="primary" onClick={() => router.push(getStageRoute(projectId, "2-clarification"))}>
+                <OrchestraButton variant="primary" onClick={() => router.push(getBrainRoute(projectId))}>
                   Start Clarification
                 </OrchestraButton>
               </motion.div>

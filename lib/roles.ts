@@ -19,24 +19,6 @@ export const MOCK_USERS: OrchestraUser[] = [
     email: "sarah@orchestra.io",
     password: "demo",
     avatar: "SC"
-  },
-  {
-    id: "u2",
-    role: "developer",
-    name: "Mike Torres",
-    title: "Senior Engineer",
-    email: "mike@orchestra.io",
-    password: "demo",
-    avatar: "MT"
-  },
-  {
-    id: "u3",
-    role: "client",
-    name: "Jack",
-    title: "Founder, Tempest AI",
-    email: "jack@tempest.ai",
-    password: "demo",
-    avatar: "J"
   }
 ];
 
@@ -64,9 +46,8 @@ export function getRouteForRole(role: UserRole): string {
     case "pm":
       return "/pm/dashboard";
     case "developer":
-      return "/dev";
     case "client":
-      return "/client";
+      return "/pm/dashboard";
   }
 }
 

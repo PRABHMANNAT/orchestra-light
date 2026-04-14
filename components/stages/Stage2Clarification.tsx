@@ -20,7 +20,7 @@ import { StageShell } from "@/components/layout/StageShell";
 import { OrchestraButton } from "@/components/shared/OrchestraButton";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { clarifiedBrief, clarificationQuestions } from "@/lib/mockData";
-import { getStageRoute } from "@/lib/stageConfig";
+import { getDagRoute } from "@/lib/stageConfig";
 
 export function Stage2Clarification() {
   const [answers, setAnswers] = useState<string[]>([]);
@@ -61,9 +61,9 @@ export function Stage2Clarification() {
 
   const terminalLines = useMemo(
     () => [
-      "Jack wants creators to succeed first.",
-      "V1 is the creator journey, start to first sale.",
-      "Stripe and tiers are in. Analytics and AI are out.",
+      "Jack wants buyers and florists connected first.",
+      "V1 is the order journey, from checkout to delivery.",
+      "Stripe and Maps are in. Pro subscription is out.",
       "Timeline is fixed. Scope is yours to manage.",
       "Brief locked. ✓"
     ],
@@ -244,7 +244,7 @@ export function Stage2Clarification() {
             </div>
 
             <div className="px-5 pb-5">
-              <OrchestraButton variant="primary" disabled={!complete} onClick={() => router.push(getStageRoute(projectId, "3-dag"))}>
+              <OrchestraButton variant="primary" disabled={!complete} onClick={() => router.push(getDagRoute(projectId))}>
                 Generate Flowchart
               </OrchestraButton>
             </div>

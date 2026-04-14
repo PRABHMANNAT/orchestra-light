@@ -1,3 +1,14 @@
+import type {
+  ChangeRecord,
+  ClarifiedBrief,
+  CommunicationThread,
+  DecisionRecord,
+  Project,
+  SourcePackage,
+  SummaryBundle,
+  WorkflowDAG
+} from "@/lib/types";
+
 export interface TerminalLine {
   text: string;
   delay: number;
@@ -51,11 +62,11 @@ export interface ExecutionEpic {
 }
 
 export const projectMeta = {
-  version: "Creator Marketplace V1",
-  project: "Tempest AI — Creator Marketplace V1",
-  client: "Jack · Tempest AI",
-  activeWindow: "Sprint 3 of 6",
-  health: "61% delivery health"
+  version: "BloomFast MVP",
+  project: "BloomFast — Uber for flowers MVP",
+  client: "Jack · BloomFast",
+  activeWindow: "Project brain active",
+  health: "2 unresolved changes"
 };
 
 export const roleCardContent = [
@@ -63,24 +74,367 @@ export const roleCardContent = [
     role: "pm" as const,
     title: "Manager Workspace",
     name: "Sarah Chen",
-    access: "Full Tempest AI orchestration access"
+    access: "Full BloomFast project brain access"
+  }
+];
+
+export const mockProject: Project = {
+  id: "bloomfast",
+  name: "BloomFast MVP",
+  client: "BloomFast",
+  createdAt: "2026-04-10T09:00:00Z",
+  status: "active"
+};
+
+export const mockSourcePackage: SourcePackage = {
+  id: "sp-001",
+  projectId: "bloomfast",
+  version: 1,
+  summary:
+    "BloomFast is an on-demand flower delivery marketplace connecting buyers to local florists. Client wants an MVP with buyer-facing ordering, florist-facing order management, and driver assignment.",
+  actors: ["Buyer", "Florist", "Delivery Driver", "Platform Admin"],
+  features: [
+    "Buyer browses and orders from local florists",
+    "Florist receives and confirms orders",
+    "Driver is assigned and tracks delivery",
+    "Pro subscription tier with better revenue share for florists",
+    "Manager approval before driver assignment"
+  ],
+  constraints: ["MVP in 8 weeks", "No in-house delivery fleet - driver network is third-party"],
+  integrations: ["Stripe for payments", "Google Maps for delivery tracking", "WhatsApp Business for florist notifications"],
+  knownUnknowns: ["How driver assignment logic works in detail", "Whether Pro subscription is MVP or post-MVP"],
+  risks: ["Driver availability dependency on third-party", "Revenue share model not fully defined"],
+  contradictions: ["Client mentioned Pro subscription in one call but said MVP should be free-tier only in another"],
+  evidenceRefs: ["BloomFast_PRD_v2.pdf", "Discovery call notes 12 March", "WhatsApp thread with Jack 14 April"],
+  confidenceSummary:
+    "High confidence on core buyer/florist flows. Low confidence on subscription model and driver assignment approval.",
+  createdAt: "2026-04-10T09:00:00Z",
+  accepted: true
+};
+
+export const mockClarifiedBrief: ClarifiedBrief = {
+  id: "cb-001",
+  projectId: "bloomfast",
+  version: 1,
+  targetUsers: ["Buyers ordering flowers online", "Florists managing orders"],
+  userRoles: ["Buyer", "Florist", "Driver", "Admin"],
+  primaryJourney: "Buyer places order -> Florist confirms -> Driver is assigned and delivers -> Buyer receives",
+  mvpObjective: "Working end-to-end order flow for buyers and florists. No Pro subscription in MVP.",
+  scopeIn: [
+    "Order placement and confirmation",
+    "Florist order management dashboard",
+    "Basic driver assignment",
+    "Stripe payment integration",
+    "Order tracking page"
+  ],
+  scopeOut: ["Pro subscription tier", "Manager approval gate before assignment", "In-house driver fleet", "Advanced analytics"],
+  constraints: ["8-week delivery window", "React Native for mobile (iOS first)", "Supabase backend"],
+  mustHaveIntegrations: ["Stripe", "Google Maps"],
+  approvalConditions: ["Client must sign off on scope-out list before build begins"],
+  unresolvedDecisions: ["Pro subscription: post-MVP or phase 2?", "Driver assignment: auto-assign or manual florist choice?"],
+  risks: ["Scope creep on subscription feature", "Driver API dependency unclear"],
+  assumptionSummary:
+    "We are assuming no manager approval gate in MVP. Pro subscription is deferred. Driver assignment is auto-assign based on proximity.",
+  createdAt: "2026-04-11T10:30:00Z",
+  accepted: true
+};
+
+export const mockWorkflowDAG: WorkflowDAG = {
+  id: "dag-001",
+  projectId: "bloomfast",
+  version: 1,
+  nodes: [
+    {
+      id: "node-buyer-ordering",
+      label: "Buyer Ordering Flow",
+      type: "flow",
+      description: "Buyer browses local florists, selects a bouquet, pays, and receives tracking.",
+      dependencies: ["node-payments", "node-florist-dashboard"],
+      isCriticalPath: true,
+      isRisky: false,
+      isUnresolved: false
+    },
+    {
+      id: "node-florist-dashboard",
+      label: "Florist Dashboard",
+      type: "module",
+      description: "Florists receive, confirm, and prepare orders before driver assignment.",
+      dependencies: ["node-notifications"],
+      isCriticalPath: true,
+      isRisky: false,
+      isUnresolved: false
+    },
+    {
+      id: "node-driver-assign",
+      label: "Driver Assignment",
+      type: "flow",
+      description: "Auto-assign the nearest available third-party driver after florist confirmation.",
+      dependencies: ["node-florist-dashboard", "node-admin-panel"],
+      isCriticalPath: true,
+      isRisky: true,
+      isUnresolved: false
+    },
+    {
+      id: "node-payments",
+      label: "Payment Integration",
+      type: "integration",
+      description: "Stripe payment capture for card and Apple Pay at checkout.",
+      dependencies: [],
+      isCriticalPath: true,
+      isRisky: false,
+      isUnresolved: false
+    },
+    {
+      id: "node-subscription",
+      label: "Subscription Model",
+      type: "unresolved",
+      description: "Pro florist subscription with alternate revenue share. Scoped out of MVP but re-requested.",
+      dependencies: ["node-payments", "node-florist-dashboard"],
+      isCriticalPath: false,
+      isRisky: true,
+      isUnresolved: true
+    },
+    {
+      id: "node-admin-panel",
+      label: "Admin Panel",
+      type: "approval",
+      description: "Platform admin view for order exceptions, manual overrides, and support.",
+      dependencies: ["node-driver-assign"],
+      isCriticalPath: false,
+      isRisky: false,
+      isUnresolved: false
+    },
+    {
+      id: "node-notifications",
+      label: "Notifications",
+      type: "integration",
+      description: "WhatsApp Business notifications for florists and delivery status updates.",
+      dependencies: [],
+      isCriticalPath: false,
+      isRisky: false,
+      isUnresolved: false
+    },
+    {
+      id: "node-driver-api-risk",
+      label: "Third-party Driver API",
+      type: "risk",
+      description: "Driver availability and API contract are not fully validated.",
+      dependencies: ["node-driver-assign"],
+      isCriticalPath: true,
+      isRisky: true,
+      isUnresolved: true
+    }
+  ],
+  edges: [
+    { id: "edge-001", from: "node-payments", to: "node-buyer-ordering", label: "checkout", isCritical: true },
+    { id: "edge-002", from: "node-buyer-ordering", to: "node-florist-dashboard", label: "creates order", isCritical: true },
+    { id: "edge-003", from: "node-florist-dashboard", to: "node-driver-assign", label: "confirms", isCritical: true },
+    { id: "edge-004", from: "node-notifications", to: "node-florist-dashboard", label: "alerts florist" },
+    { id: "edge-005", from: "node-driver-assign", to: "node-admin-panel", label: "exceptions" },
+    { id: "edge-006", from: "node-payments", to: "node-subscription", label: "billing" },
+    { id: "edge-007", from: "node-driver-api-risk", to: "node-driver-assign", label: "availability", isCritical: true }
+  ],
+  criticalPath: ["node-payments", "node-buyer-ordering", "node-florist-dashboard", "node-driver-assign"],
+  accepted: true,
+  createdAt: "2026-04-11T12:00:00Z"
+};
+
+export const mockThreads: CommunicationThread[] = [
+  {
+    id: "thread-001",
+    projectId: "bloomfast",
+    channel: "whatsapp",
+    subject: "Manager approval before assignment",
+    participants: ["Jack (BloomFast)", "Sarah (Tempest PM)"],
+    messages: [
+      {
+        id: "msg-001",
+        threadId: "thread-001",
+        sender: "Jack (BloomFast)",
+        content:
+          "Hey Sarah - one thing we forgot to mention. We need manager approval before any driver gets assigned to an order. The florist manager has to sign off first.",
+        timestamp: "2026-04-14T09:15:00Z",
+        channel: "whatsapp",
+        insight: {
+          id: "ins-001",
+          classification: "scope_change",
+          mappedProjectArea: "Driver Assignment Flow",
+          mappedDAGNodeId: "node-driver-assign",
+          suggestedAction: "Assess impact on assignment flow and MVP timeline. Flag as scope change candidate.",
+          confidence: 0.91,
+          reviewedByHuman: false
+        }
+      }
+    ],
+    linkedProjectArea: "Driver Assignment Flow",
+    linkedDAGNodeId: "node-driver-assign",
+    createdAt: "2026-04-14T09:15:00Z",
+    updatedAt: "2026-04-14T09:15:00Z"
   },
   {
-    role: "developer" as const,
-    title: "Engineering View",
-    name: "Mike Torres",
-    access: "Sprint board + task ownership"
+    id: "thread-002",
+    projectId: "bloomfast",
+    channel: "slack",
+    subject: "Pro subscription revenue share",
+    participants: ["Jack (BloomFast)", "Sarah (Tempest PM)", "Dev Team"],
+    messages: [
+      {
+        id: "msg-002",
+        threadId: "thread-002",
+        sender: "Jack (BloomFast)",
+        content:
+          "Can we add a Pro subscription for florists with better revenue share? Like 85% instead of 70%? I think it would really help retention.",
+        timestamp: "2026-04-14T11:40:00Z",
+        channel: "slack",
+        insight: {
+          id: "ins-002",
+          classification: "scope_change",
+          mappedProjectArea: "Subscription Model",
+          mappedDAGNodeId: "node-subscription",
+          suggestedAction:
+            "This contradicts the agreed scope-out of Pro subscription. Flag contradiction and request client confirmation.",
+          confidence: 0.96,
+          reviewedByHuman: false
+        }
+      },
+      {
+        id: "msg-003",
+        threadId: "thread-002",
+        sender: "Sarah (Tempest PM)",
+        content: "Jack, we scoped this out of MVP in our brief - do you want to revisit that decision or keep it post-MVP?",
+        timestamp: "2026-04-14T11:55:00Z",
+        channel: "slack"
+      }
+    ],
+    linkedProjectArea: "Subscription Model",
+    linkedDAGNodeId: "node-subscription",
+    createdAt: "2026-04-14T11:40:00Z",
+    updatedAt: "2026-04-14T11:55:00Z"
   },
   {
-    role: "client" as const,
-    title: "Client Portal",
-    name: "Jack",
-    access: "Review, approvals, handover"
+    id: "thread-003",
+    projectId: "bloomfast",
+    channel: "gmail",
+    subject: "RE: BloomFast MVP - Payment flow clarification",
+    participants: ["jack@bloomfast.com", "sarah@tempest.ai"],
+    messages: [
+      {
+        id: "msg-004",
+        threadId: "thread-003",
+        sender: "jack@bloomfast.com",
+        content:
+          "Hi Sarah, just to confirm - the Stripe integration should support both card and Apple Pay at launch. We had a few users mention Apple Pay specifically.",
+        timestamp: "2026-04-13T14:20:00Z",
+        channel: "gmail",
+        insight: {
+          id: "ins-003",
+          classification: "clarification_needed",
+          mappedProjectArea: "Payment Integration",
+          mappedDAGNodeId: "node-payments",
+          suggestedAction: "Confirm Apple Pay support scope with engineering. Update integrations in Clarified Brief if confirmed.",
+          confidence: 0.84,
+          reviewedByHuman: true
+        }
+      }
+    ],
+    linkedProjectArea: "Payment Integration",
+    linkedDAGNodeId: "node-payments",
+    createdAt: "2026-04-13T14:20:00Z",
+    updatedAt: "2026-04-13T14:20:00Z"
+  }
+];
+
+export const mockDecisions: DecisionRecord[] = [
+  {
+    id: "dec-001",
+    projectId: "bloomfast",
+    whatWasDecided: "Pro subscription is deferred to post-MVP. MVP uses flat 70% revenue share for all florists.",
+    decidedBy: "Sarah (PM) + Jack (Client)",
+    decidedAt: "2026-04-11T10:30:00Z",
+    sourceThreadId: "thread-002",
+    affectedProjectArea: "Subscription Model",
+    affectedDAGNodeId: "node-subscription",
+    status: "final",
+    evidenceRefs: ["Clarified Brief v1", "Discovery call 11 April"],
+    createdAt: "2026-04-11T10:30:00Z"
+  },
+  {
+    id: "dec-002",
+    projectId: "bloomfast",
+    whatWasDecided: "Driver assignment is auto-assign based on proximity, not manual florist choice.",
+    decidedBy: "Sarah (PM)",
+    decidedAt: "2026-04-11T11:00:00Z",
+    sourceThreadId: "thread-001",
+    affectedProjectArea: "Driver Assignment Flow",
+    affectedDAGNodeId: "node-driver-assign",
+    status: "pending",
+    evidenceRefs: ["Clarified Brief v1"],
+    createdAt: "2026-04-11T11:00:00Z"
+  }
+];
+
+export const mockChanges: ChangeRecord[] = [
+  {
+    id: "chg-001",
+    projectId: "bloomfast",
+    whatChanged: "Client requesting manager approval gate before driver assignment",
+    previousUnderstanding: "Auto-assign based on proximity, no approval required",
+    newUnderstanding: "Florist manager must approve before driver is assigned to any order",
+    requestedBy: "Jack (BloomFast)",
+    requestedAt: "2026-04-14T09:15:00Z",
+    affectedProjectArea: "Driver Assignment Flow",
+    affectedDAGNodeId: "node-driver-assign",
+    approvalStatus: "pending",
+    riskImplication: "Adds a manual approval step to a flow currently designed as automated. Could affect order speed SLA.",
+    reworkImplication: "Assignment flow, permissions model, and florist dashboard need rework if approved.",
+    evidenceRefs: ["thread-001"],
+    createdAt: "2026-04-14T09:30:00Z"
+  },
+  {
+    id: "chg-002",
+    projectId: "bloomfast",
+    whatChanged: "Client re-requesting Pro subscription feature that was scoped out",
+    previousUnderstanding: "Pro subscription deferred to post-MVP, agreed in Clarified Brief v1",
+    newUnderstanding: "Client wants Pro subscription (85% revenue share) included in MVP",
+    requestedBy: "Jack (BloomFast)",
+    requestedAt: "2026-04-14T11:40:00Z",
+    affectedProjectArea: "Subscription Model",
+    affectedDAGNodeId: "node-subscription",
+    approvalStatus: "unresolved",
+    riskImplication: "Directly contradicts Clarified Brief v1. Could extend MVP timeline by 2-3 weeks.",
+    reworkImplication: "Billing, florist dashboard, and revenue reporting all require new work.",
+    evidenceRefs: ["thread-002", "cb-001"],
+    createdAt: "2026-04-14T11:45:00Z"
+  }
+];
+
+export const mockSummaryBundles: SummaryBundle[] = [
+  {
+    id: "sum-pm-001",
+    projectId: "bloomfast",
+    role: "pm",
+    content:
+      "BloomFast has two live scope questions: manager approval before driver assignment and the re-requested Pro subscription. The brief remains accepted, but both requests need explicit human review before the MVP plan changes.",
+    generatedAt: "2026-04-14T12:00:00Z",
+    sourceDecisionIds: ["dec-001", "dec-002"],
+    sourceChangeIds: ["chg-001", "chg-002"],
+    sourceThreadIds: ["thread-001", "thread-002", "thread-003"]
+  },
+  {
+    id: "sum-engineer-001",
+    projectId: "bloomfast",
+    role: "engineer",
+    content:
+      "Build the accepted MVP flow: buyer order, florist confirmation, auto driver assignment, Stripe payments, Google Maps tracking. Do not implement Pro subscription or manager approval unless approved.",
+    generatedAt: "2026-04-14T12:05:00Z",
+    sourceDecisionIds: ["dec-001", "dec-002"],
+    sourceChangeIds: [],
+    sourceThreadIds: ["thread-003"]
   }
 ];
 
 export const intakeUploadFile = {
-  name: "TempestAI_CreatorMarketplaceV1_Brief.pdf",
+  name: "BloomFast_PRD_v2.pdf",
   size: "2.4 MB"
 };
 
@@ -1033,7 +1387,7 @@ export interface ProjectRecord {
   burnData: number[];
   description: string;
   riskLevel: "low" | "medium" | "high";
-  stageSlug: "1-intake" | "8-tower";
+  stageSlug: "brain" | "changes";
 }
 
 export interface TruthDocumentRecord {
@@ -1196,24 +1550,24 @@ export const teamRoster: TeamMember[] = [
 
 export const projects: ProjectRecord[] = [
   {
-    id: "p1",
-    name: "Creator Marketplace V1",
-    client: "Jack — Tempest AI",
-    clientInitials: "JT",
+    id: "bloomfast",
+    name: "Uber for Flowers MVP",
+    client: "Jack — BloomFast",
+    clientInitials: "BF",
     clientColor: "blue",
     status: "active",
-    health: 74,
-    completion: 61,
+    health: 68,
+    completion: 34,
     budget: 85000,
-    spent: 51000,
-    sprint: "3 of 6",
+    spent: 24000,
+    sprint: "brain active",
     dueDate: "Jun 2026",
     team: ["t1", "t2", "t3"],
-    weeklyVelocity: [42, 38, 55, 61, 58, 70, 74],
-    burnData: [0, 8500, 17200, 26000, 35800, 51000],
-    description: "Creator monetisation layer — marketplace, payouts, analytics",
+    weeklyVelocity: [12, 18, 22, 28, 31, 34, 34],
+    burnData: [0, 4200, 9800, 15000, 19600, 24000],
+    description: "On-demand flower marketplace, florist ops, payments, driver assignment",
     riskLevel: "medium",
-    stageSlug: "1-intake"
+    stageSlug: "brain"
   },
   {
     id: "p2",
@@ -1233,7 +1587,7 @@ export const projects: ProjectRecord[] = [
     burnData: [0, 5700, 11400, 17100, 22800],
     description: "Real-time analytics dashboard for game studio ops",
     riskLevel: "low",
-    stageSlug: "1-intake"
+    stageSlug: "brain"
   },
   {
     id: "p3",
@@ -1253,7 +1607,7 @@ export const projects: ProjectRecord[] = [
     burnData: [0, 7500, 16200, 24800, 32100, 38600, 41200],
     description: "Full rebuild of legacy REST gateway to GraphQL + gRPC",
     riskLevel: "high",
-    stageSlug: "8-tower"
+    stageSlug: "changes"
   }
 ];
 
@@ -2149,6 +2503,14 @@ export function getCommsThreadsForProject(projectId: string) {
 }
 
 export function getUnreadCommsCount(projectId: string) {
+  const newProjectUnread = mockThreads.filter(
+    (thread) =>
+      thread.projectId === projectId &&
+      thread.messages.some((message) => message.insight && !message.insight.reviewedByHuman)
+  ).length;
+
+  if (newProjectUnread > 0) return newProjectUnread;
+
   return commsThreads.filter((thread) => thread.projectId === projectId && thread.unread).length;
 }
 

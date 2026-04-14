@@ -10,6 +10,7 @@ type StatusBadgeVariant =
   | "in-review"
   | "done"
   | "blocked"
+  | "info"
   | "deferred"
   | "new"
   | "revised"
@@ -22,9 +23,10 @@ const variantMap: Record<StatusBadgeVariant, string> = {
   p3: "bg-[var(--violet-dim)] border-[var(--violet-border)] text-[var(--violet)]",
   todo: "bg-[rgba(255,255,255,0.03)] border-[rgba(255,255,255,0.08)] text-[var(--text-muted)]",
   "in-progress": "bg-[var(--cyan-dim)] border-[var(--cyan-border)] text-[var(--cyan)]",
-  "in-review": "bg-[var(--violet-dim)] border-[var(--violet-border)] text-[var(--violet)]",
+  "in-review": "bg-[var(--amber-dim)] border-[var(--amber-border)] text-[var(--amber)]",
   done: "bg-[var(--emerald-dim)] border-[var(--emerald-border)] text-[var(--emerald)]",
   blocked: "bg-[var(--rose-dim)] border-[var(--rose-border)] text-[var(--rose)]",
+  info: "bg-[var(--blue-dim)] border-[var(--blue-border)] text-[var(--blue)]",
   deferred: "bg-[rgba(255,255,255,0.03)] border-[rgba(255,255,255,0.08)] text-[rgba(100,100,120,1)]",
   new: "bg-[var(--cyan-dim)] border-[var(--cyan-border)] text-[var(--cyan)]",
   revised: "bg-[var(--violet-dim)] border-[var(--violet-border)] text-[var(--violet)]",
@@ -56,6 +58,8 @@ export function StatusBadge({
                   ? "DONE"
                   : variant === "blocked"
                     ? "BLOCKED"
+                    : variant === "info"
+                      ? "INFO"
                     : variant === "deferred"
                       ? "DEFERRED"
                       : variant === "new"
