@@ -7,8 +7,10 @@ import { useRouter } from "next/navigation";
 
 import { fadeSlideUp } from "@/lib/animations";
 import { getTeamMemberById, projectFinancials, projects, teamRoster } from "@/lib/mockData";
-import { getStageRoute } from "@/lib/stageConfig";
 import { financialKey, money, pct, Pill, Progress, type ProjectTab, type TeamFilter, type Tone } from "@/components/pm/dashboardShared";
+
+const bloomfastBrainRoute = "/pm/bloomfast/brain";
+const projectLaunchButtons = ["Open Project BloomFast", "Open Project Herclues", "Open Project Saturn"] as const;
 
 export function ProjectPortfolio({ activeTab, setActiveTab }: { activeTab: ProjectTab; setActiveTab: (tab: ProjectTab) => void }) {
   const [expandedId, setExpandedId] = useState(projects[0]?.id ?? "");
@@ -33,6 +35,14 @@ export function ProjectPortfolio({ activeTab, setActiveTab }: { activeTab: Proje
             </button>
           ))}
         </div>
+      </div>
+      <div className="dashboard-project-launch-grid mb-4">
+        {projectLaunchButtons.map((label) => (
+          <button key={label} type="button" className="dashboard-project-launch-button" onClick={() => router.push(bloomfastBrainRoute)}>
+            <span>{label}</span>
+            <ChevronRight size={15} />
+          </button>
+        ))}
       </div>
       <div className="grid gap-4 xl:grid-cols-3">
         {sorted.map((project) => {
@@ -68,7 +78,7 @@ export function ProjectPortfolio({ activeTab, setActiveTab }: { activeTab: Proje
                 <div className="flex -space-x-2">{team.map((member) => <span key={member.id} className="dashboard-team-avatar" title={member.name}>{member.avatar}</span>)}</div>
                 <div className="flex items-center gap-2">
                   <button type="button" className="dashboard-link-button" onClick={() => setExpandedId(expanded ? "" : project.id)}>{expanded ? "Collapse" : "Details"}</button>
-                  <button type="button" className="dashboard-icon-button" onClick={() => router.push(getStageRoute(project.id, project.stageSlug))} aria-label={`Open ${project.name}`}><ChevronRight size={15} /></button>
+                  <button type="button" className="dashboard-icon-button" onClick={() => router.push(bloomfastBrainRoute)} aria-label={`Open ${project.name}`}><ChevronRight size={15} /></button>
                 </div>
               </div>
               <AnimatePresence initial={false}>

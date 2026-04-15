@@ -6,7 +6,6 @@ import { CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { EASE_EXPO, chipBounce, fadeSlideUp, staggerContainer } from "@/lib/animations";
-import { PageRouteDropdown } from "@/components/layout/PageRouteDropdown";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { SignupForm } from "@/components/auth/SignupForm";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
@@ -26,7 +25,6 @@ export default function LoginPage() {
   return (
     <div className="login-theme relative min-h-screen overflow-hidden">
       <div className="login-top-controls fixed right-6 top-6 z-50 flex items-center gap-2">
-        <PageRouteDropdown compact />
         <ThemeToggle />
       </div>
 

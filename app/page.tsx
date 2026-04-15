@@ -6,7 +6,6 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
 import { EASE_EXPO, fadeSlideUp, staggerContainer } from "@/lib/animations";
-import { PageRouteDropdown } from "@/components/layout/PageRouteDropdown";
 import { OrchestraButton } from "@/components/shared/OrchestraButton";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
@@ -36,7 +35,6 @@ export default function HomePage() {
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <PageRouteDropdown compact />
               <ThemeToggle />
               <Link href="/login">
                 <OrchestraButton variant="ghost" size="sm">

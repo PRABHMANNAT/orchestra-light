@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
-import { PageRouteDropdown } from "@/components/layout/PageRouteDropdown";
 import { RoleBadge } from "@/components/shared/RoleBadge";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { EASE_EXPO, SPRING_SNAPPY, livePulse, slideInLeft, staggerContainer } from "@/lib/animations";
@@ -92,9 +91,6 @@ export function PMSidebar({ user, projectId }: { user: MockUser; projectId: stri
         </button>
 
         <div className="mt-2 font-display text-[22px] tracking-[0.08em] text-[var(--text-primary)]">ORCHESTRA</div>
-        <div className="mt-3">
-          <PageRouteDropdown projectId={projectId} align="left" compact />
-        </div>
         <div className="font-mono text-[9px] tracking-[0.1em] text-[var(--text-muted)]">project brain · demo</div>
       </div>
 

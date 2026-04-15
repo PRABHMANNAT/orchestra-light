@@ -16,7 +16,6 @@ import {
 import { motion } from "framer-motion";
 import { AlertTriangle, BarChart3, BrainCircuit, CalendarDays, Filter, Gauge, Search, Settings2, Sparkles, Target, TrendingUp, Users, WalletCards } from "lucide-react";
 
-import { PageRouteDropdown } from "@/components/layout/PageRouteDropdown";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { fadeSlideUp, staggerContainer } from "@/lib/animations";
 import { projects, teamRoster } from "@/lib/mockData";
@@ -56,7 +55,6 @@ export function Header({
             <Search size={15} className="text-[var(--text-muted)]" />
             <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search project, owner, risk..." />
           </div>
-          <PageRouteDropdown compact />
           <ThemeToggle />
           <div className="dashboard-avatar">SC</div>
         </div>
