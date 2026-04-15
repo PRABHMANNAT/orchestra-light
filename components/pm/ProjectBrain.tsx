@@ -203,7 +203,7 @@ function SourcePackageTab() {
         <p className="font-ui text-[16px] leading-7 text-[var(--text-primary)]">{mockSourcePackage.summary}</p>
       </ArtifactCard>
 
-      <div className="grid gap-4 xl:grid-cols-2">
+      <div className="grid gap-4 2xl:grid-cols-2">
         <ArtifactCard title="Actors / User Roles">
           <PillList items={mockSourcePackage.actors} variant="cyan" />
         </ArtifactCard>
@@ -268,7 +268,7 @@ function ClarifiedBriefTab() {
             <MessageSquare size={13} />
             Clarification Flow
           </div>
-          <div className="grid gap-3 xl:grid-cols-3">
+          <div className="grid gap-3 2xl:grid-cols-3">
             {rows.map((row) => (
               <div key={row.q} className="glass-sm rounded-lg px-4 py-4">
                 <div className="font-ui text-[13px] font-medium text-[var(--text-primary)]">{row.q}</div>
@@ -282,7 +282,7 @@ function ClarifiedBriefTab() {
         </motion.div>
       </motion.div>
 
-      <div className="grid gap-4 xl:grid-cols-2">
+      <div className="grid gap-4 2xl:grid-cols-2">
         <ArtifactCard title="Target Users">
           <PillList items={mockClarifiedBrief.targetUsers} variant="cyan" />
         </ArtifactCard>
@@ -301,7 +301,7 @@ function ClarifiedBriefTab() {
         <p className="font-ui text-[16px] leading-7 text-[var(--text-primary)]">{mockClarifiedBrief.mvpObjective}</p>
       </ArtifactCard>
 
-      <div className="grid gap-4 xl:grid-cols-2">
+      <div className="grid gap-4 2xl:grid-cols-2">
         <ArtifactCard title="Scope In" tone="emerald">
           <NumberedList items={mockClarifiedBrief.scopeIn} />
         </ArtifactCard>
@@ -342,7 +342,7 @@ export function ProjectBrain() {
 
   return (
     <StageShell showGrid>
-      <motion.div variants={pageContainer} initial="hidden" animate="show" className="mx-auto max-w-7xl space-y-6 px-8 py-8">
+      <motion.div variants={pageContainer} initial="hidden" animate="show" className="project-page-container">
         <SectionHeader
           label="Brain"
           title="PROJECT BRAIN"

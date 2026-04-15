@@ -98,7 +98,7 @@ export function ClientComms({ projectId }: { projectId: string }) {
 
   return (
     <StageShell showGrid>
-      <motion.div variants={pageContainer} initial="hidden" animate="show" className="mx-auto max-w-7xl space-y-6 px-8 py-8">
+      <motion.div variants={pageContainer} initial="hidden" animate="show" className="project-page-container">
         <SectionHeader
           label="Communications"
           title="CLIENT SIGNALS"
@@ -106,7 +106,7 @@ export function ClientComms({ projectId }: { projectId: string }) {
           accentColor="var(--blue)"
         />
 
-        <div className="grid gap-6 xl:grid-cols-[220px_1fr]">
+        <div className="grid gap-6 2xl:grid-cols-[220px_1fr]">
           <motion.aside variants={fadeSlideUp} className="space-y-4">
             <div className="glass-heavy glass-noise rounded-xl px-4 py-4">
               <div className="mb-3 font-mono text-[9px] uppercase tracking-[0.16em] text-[var(--text-muted)]">Channels</div>

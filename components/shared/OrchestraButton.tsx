@@ -74,15 +74,15 @@ export function OrchestraButton({
             textShadow: "0 0 22px rgba(167,139,250,0.6)"
           }
       : {
-          accent: "#00e5cc",
-          soft: "rgba(0,229,204,0.14)",
-          mid: "rgba(0,229,204,0.07)",
-          strong: "rgba(0,180,160,0.1)",
-          border: "rgba(0,229,204,0.28)",
-          borderTop: "rgba(0,229,204,0.48)",
-          ring: "rgba(0,229,204,0.08)",
-          glow: "rgba(0,229,204,0.18)",
-          textShadow: "0 0 22px rgba(0,229,204,0.65)"
+          accent: "var(--cyan)",
+          soft: "var(--cyan-dim)",
+          mid: "var(--cyan-dim)",
+          strong: "var(--color-accent-dim)",
+          border: "var(--cyan-border)",
+          borderTop: "var(--cyan-border)",
+          ring: "var(--color-accent-dim)",
+          glow: "var(--color-accent-glow)",
+          textShadow: "0 0 22px var(--color-accent-glow)"
         };
 
   if (variant === "ghost") {
@@ -98,14 +98,14 @@ export function OrchestraButton({
           position: "relative",
           overflow: "hidden",
           borderRadius: 6,
-          border: "1px solid rgba(255,255,255,0.09)",
+          border: "1px solid var(--border)",
           background: "transparent",
-          color: "rgba(140,140,165,1)",
+          color: "var(--text-muted)",
           padding: paddings.padding,
           opacity: disabled ? 0.38 : 1,
           pointerEvents: disabled ? "none" : "auto",
           cursor: disabled ? "not-allowed" : "pointer",
-          boxShadow: isHovered ? "0 4px 16px rgba(0,0,0,0.35)" : "none",
+          boxShadow: isHovered ? "0 12px 28px rgba(15,23,42,0.12)" : "none",
           ...(baseTextStyle as object),
           fontSize: paddings.fontSize,
           width: fullWidth ? "100%" : undefined
@@ -118,8 +118,8 @@ export function OrchestraButton({
             position: "absolute",
             inset: 0,
             borderRadius: 6,
-            background: isHovered ? "rgba(255,255,255,0.04)" : "transparent",
-            borderColor: isHovered ? "rgba(255,255,255,0.18)" : "rgba(255,255,255,0.09)",
+            background: isHovered ? "var(--cyan-dim)" : "transparent",
+            borderColor: isHovered ? "var(--cyan-border)" : "var(--border)",
             transition: "all 0.2s ease"
           }}
         />
@@ -130,7 +130,7 @@ export function OrchestraButton({
             display: "inline-flex",
             alignItems: "center",
             gap: 8,
-            color: isHovered ? "rgba(230,230,245,1)" : "rgba(140,140,165,1)"
+            color: isHovered ? "var(--text-primary)" : "var(--text-muted)"
           }}
         >
           {isLoading ? (

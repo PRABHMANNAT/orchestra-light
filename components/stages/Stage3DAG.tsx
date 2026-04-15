@@ -14,10 +14,11 @@ import {
   ReactFlowProvider,
   type Edge,
   type Node,
-  type NodeProps
+  type NodeProps,
+  useNodesState
 } from "@xyflow/react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Lock, X } from "lucide-react";
+import { Lock, Move, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { StageShell } from "@/components/layout/StageShell";
@@ -108,8 +109,8 @@ function nodeMeta(type: DAGNodeType, node: DAGNode) {
 
   return {
     color: node.isCriticalPath ? "var(--cyan)" : "var(--text-muted)",
-    border: node.isCriticalPath ? "var(--cyan-border)" : "rgba(255,255,255,0.08)",
-    bg: node.isCriticalPath ? "var(--cyan-dim)" : "rgba(255,255,255,0.02)",
+    border: node.isCriticalPath ? "var(--cyan-border)" : "var(--dag-node-rest-border)",
+    bg: node.isCriticalPath ? "var(--cyan-dim)" : "var(--dag-node-rest-bg)",
     label: type.toUpperCase(),
     badge: node.isCriticalPath ? ("in-progress" as const) : ("todo" as const),
     dashed: false,
@@ -122,17 +123,18 @@ function NodeCard({ data, selected }: NodeProps<FlowNode>) {
 
   return (
     <motion.div initial={{ opacity: 0, scale: 0.86 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.35, ease: EASE_EXPO }}>
-      <Handle type="target" position={Position.Left} style={{ background: meta.color, width: 8, height: 8, border: "1px solid rgba(0,0,0,0.5)" }} />
+      <Handle type="target" position={Position.Left} style={{ background: meta.color, width: 8, height: 8, border: "1px solid var(--dag-handle-border)" }} />
       <motion.div initial="rest" animate="rest" whileHover="hover" variants={cardHover}>
         <div
-          className="glass-sm rounded-xl px-4 py-4"
+          className="dag-node-card glass-sm cursor-grab rounded-xl px-4 py-4 active:cursor-grabbing"
           style={{
             minWidth: 214,
             minHeight: 92,
             border: `${selected ? "1px" : "1px"} ${meta.dashed ? "dashed" : "solid"} ${selected ? "var(--cyan)" : meta.border}`,
             background: meta.bg,
-            boxShadow: selected ? "0 0 0 1px rgba(0,229,204,0.18), 0 12px 32px rgba(0,0,0,0.45)" : "0 0 20px rgba(0,0,0,0.2)"
+            boxShadow: selected ? "var(--dag-node-selected-shadow)" : "var(--dag-node-shadow)"
           }}
+          title="Drag to reposition this node"
         >
           <div className="flex items-center justify-between">
             <div className="font-mono text-[9px] tracking-[0.12em] text-[var(--text-muted)]">{data.displayId}</div>
@@ -147,9 +149,13 @@ function NodeCard({ data, selected }: NodeProps<FlowNode>) {
             <StatusBadge variant={meta.badge}>{meta.label}</StatusBadge>
             {data.node.isCriticalPath ? <Badge variant="cyan">CRITICAL</Badge> : null}
           </div>
+          <div className="mt-3 flex items-center gap-1.5 border-t border-[var(--dag-node-divider)] pt-2 font-mono text-[8px] uppercase tracking-[0.14em] text-[var(--text-muted)]">
+            <Move size={10} strokeWidth={1.6} />
+            Drag node
+          </div>
         </div>
       </motion.div>
-      <Handle type="source" position={Position.Right} style={{ background: meta.color, width: 8, height: 8, border: "1px solid rgba(0,0,0,0.5)" }} />
+      <Handle type="source" position={Position.Right} style={{ background: meta.color, width: 8, height: 8, border: "1px solid var(--dag-handle-border)" }} />
     </motion.div>
   );
 }
@@ -171,7 +177,7 @@ export function Stage3ProductFlowchart({ projectId = "bloomfast" }: { projectId?
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(mockWorkflowDAG.nodes[0]?.id ?? null);
   const selectedNode = mockWorkflowDAG.nodes.find((node) => node.id === selectedNodeId) ?? null;
 
-  const flowNodes = useMemo<FlowNode[]>(
+  const initialFlowNodes = useMemo<FlowNode[]>(
     () =>
       mockWorkflowDAG.nodes.map((node, index) => ({
         id: node.id,
@@ -182,6 +188,7 @@ export function Stage3ProductFlowchart({ projectId = "bloomfast" }: { projectId?
       })),
     []
   );
+  const [flowNodes, , onNodesChange] = useNodesState(initialFlowNodes);
 
   const flowEdges = useMemo<Edge[]>(
     () =>
@@ -193,7 +200,7 @@ export function Stage3ProductFlowchart({ projectId = "bloomfast" }: { projectId?
         type: "smoothstep",
         animated: Boolean(edge.isCritical),
         style: {
-          stroke: edge.isCritical ? "var(--amber)" : "rgba(0,229,204,0.22)",
+          stroke: edge.isCritical ? "var(--dag-edge-critical)" : "var(--dag-edge-default)",
           strokeWidth: edge.isCritical ? 2 : 1.5
         },
         labelStyle: {
@@ -203,7 +210,7 @@ export function Stage3ProductFlowchart({ projectId = "bloomfast" }: { projectId?
         },
         markerEnd: {
           type: MarkerType.ArrowClosed,
-          color: edge.isCritical ? "#fbbf24" : "rgba(0,229,204,0.42)"
+          color: edge.isCritical ? "var(--dag-edge-critical)" : "var(--dag-edge-default)"
         }
       })),
     []
@@ -222,7 +229,7 @@ export function Stage3ProductFlowchart({ projectId = "bloomfast" }: { projectId?
 
   return (
     <StageShell showGrid>
-      <motion.div variants={pageContainer} initial="hidden" animate="show" className="mx-auto max-w-7xl space-y-6 px-8 py-8">
+      <motion.div variants={pageContainer} initial="hidden" animate="show" className="project-page-container">
         <SectionHeader
           label="DAG"
           title="WORKFLOW DAG"
@@ -263,37 +270,42 @@ export function Stage3ProductFlowchart({ projectId = "bloomfast" }: { projectId?
 
         <motion.div
           variants={fadeSlideUp}
-          className="glass relative overflow-hidden rounded-xl"
-          style={{ height: 660, background: "radial-gradient(circle at top left, rgba(0,229,204,0.05) 0%, rgba(0,0,0,0) 32%), #080808" }}
+          className="dag-canvas glass relative overflow-hidden rounded-xl"
+          style={{ height: "min(72vh, 700px)", minHeight: 560 }}
         >
+          <div className="pointer-events-none absolute left-4 top-4 z-10 rounded-md border border-[var(--dag-toolbar-border)] bg-[var(--dag-toolbar-bg)] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.14em] text-[var(--text-muted)] shadow-sm">
+            Drag nodes · scroll to zoom · click for evidence
+          </div>
           <ReactFlowProvider>
             <ReactFlow
               nodes={flowNodes}
               edges={flowEdges}
               nodeTypes={nodeTypes}
+              onNodesChange={onNodesChange}
               fitView
               fitViewOptions={{ padding: 0.18 }}
               nodesDraggable
-              zoomOnScroll={false}
-              panOnScroll={false}
+              zoomOnScroll
+              panOnScroll
               panOnDrag
+              selectNodesOnDrag={false}
               minZoom={0.35}
               maxZoom={1.6}
               onNodeClick={(_, node) => setSelectedNodeId(node.id)}
               nodesConnectable={false}
               proOptions={{ hideAttribution: true }}
             >
-              <Background variant={BackgroundVariant.Dots} color="rgba(255,255,255,0.06)" gap={28} size={1.1} />
+              <Background variant={BackgroundVariant.Dots} color="var(--dag-dot-color)" gap={28} size={1.1} />
               <MiniMap
                 pannable
-                style={{ background: "rgba(8,8,8,0.92)", border: "1px solid rgba(255,255,255,0.08)" }}
+                style={{ background: "var(--dag-minimap-bg)", border: "1px solid var(--dag-minimap-border)" }}
                 nodeColor={(node) => {
                   const current = (node.data as FlowNodeData)?.node;
                   return current ? nodeMeta(current.type, current).color : "rgba(255,255,255,0.25)";
                 }}
-                className="!bottom-4 !right-4 !top-auto"
+                className="dag-minimap !bottom-4 !right-4 !top-auto"
               />
-              <Controls className="!bottom-4 !left-4 !top-auto" />
+              <Controls className="dag-controls !bottom-4 !left-4 !top-auto" />
             </ReactFlow>
 
             <AnimatePresence>
@@ -304,7 +316,7 @@ export function Stage3ProductFlowchart({ projectId = "bloomfast" }: { projectId?
                   initial="hidden"
                   animate="show"
                   exit="exit"
-                  className="glass-heavy glass-noise absolute bottom-4 right-4 top-4 z-20 flex w-[340px] flex-col overflow-y-auto rounded-xl"
+                  className="glass-heavy glass-noise absolute bottom-4 right-4 top-4 z-20 flex w-[320px] max-w-[calc(100%-32px)] flex-col overflow-y-auto rounded-xl"
                 >
                   <div className="border-b border-[rgba(255,255,255,0.05)] px-5 py-4">
                     <div className="flex items-start justify-between gap-3">

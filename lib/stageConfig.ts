@@ -40,10 +40,10 @@ export const pmSurfaces = [
   },
   {
     slug: "intel",
-    label: "Intelligence",
+    label: "Intel Archive",
     number: "04",
     icon: "Sparkles",
-    description: "Classifications, contradictions, and Socrates"
+    description: "Socrates summaries, history, and reviewed insights"
   },
   {
     slug: "decisions",

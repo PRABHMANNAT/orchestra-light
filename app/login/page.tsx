@@ -5,9 +5,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { EASE_EXPO, chipBounce, fadeSlideUp, pageContainer, staggerContainer } from "@/lib/animations";
+import { EASE_EXPO, chipBounce, fadeSlideUp, staggerContainer } from "@/lib/animations";
+import { PageRouteDropdown } from "@/components/layout/PageRouteDropdown";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { SignupForm } from "@/components/auth/SignupForm";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { type MockUser, roleRouteMap } from "@/lib/roles";
 import { projectMeta } from "@/lib/mockData";
 import { cn } from "@/lib/utils";
@@ -22,19 +24,21 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="login-theme relative min-h-screen overflow-hidden bg-[#050505] text-white">
-      <div className="orb-container">
-        <div className="orb orb-1" />
-        <div className="orb orb-2" />
-        <div className="orb orb-3" />
+    <div className="login-theme relative min-h-screen overflow-hidden">
+      <div className="login-top-controls fixed right-6 top-6 z-50 flex items-center gap-2">
+        <PageRouteDropdown compact />
+        <ThemeToggle />
       </div>
-      <div className="scanlines" />
-      <div className="grain" />
 
-      <div className="relative z-20 grid min-h-screen md:grid-cols-2">
-        <motion.div variants={staggerContainer(0.08, 0.02)} initial="hidden" animate="show" className="relative flex h-full min-w-0 flex-col justify-between overflow-hidden px-12 py-12">
+      <div className="login-content relative z-20 grid min-h-screen md:grid-cols-2">
+        <motion.div
+          variants={staggerContainer(0.08, 0.02)}
+          initial="hidden"
+          animate="show"
+          className="login-brand-side relative flex h-full min-w-0 flex-col justify-between overflow-hidden px-8 py-24 sm:px-12 md:py-12"
+        >
           <motion.div variants={fadeSlideUp} className="relative z-10">
-            <span className="font-mono text-[10px] tracking-[0.2em] text-accent-cyan">{projectMeta.version}</span>
+            <span className="login-version font-mono text-[10px] tracking-[0.2em] text-accent-cyan">{projectMeta.version}</span>
           </motion.div>
 
           <div className="relative z-10 min-w-0">
@@ -42,17 +46,17 @@ export default function LoginPage() {
               initial={{ opacity: 0, letterSpacing: "0.5em" }}
               animate={{ opacity: 1, letterSpacing: "0.05em" }}
               transition={{ duration: 0.8, ease: EASE_EXPO }}
-              className="whitespace-nowrap font-title text-[80px] leading-none text-white lg:text-[96px]"
+              className="login-wordmark whitespace-nowrap font-title text-[64px] leading-none text-[var(--text-primary)] sm:text-[80px] lg:text-[96px]"
             >
               ORCHESTRA
             </motion.h1>
-            <motion.div variants={fadeSlideUp} className="mt-6 h-[2px] w-16 bg-accent-cyan" />
-            <motion.p variants={fadeSlideUp} className="mt-5 font-mono text-[11px] tracking-[0.18em] text-accent-cyan">
+            <motion.div variants={fadeSlideUp} className="login-accent-rule mt-6 h-[2px] w-16 bg-accent-cyan" />
+            <motion.p variants={fadeSlideUp} className="login-kicker mt-5 font-mono text-[11px] tracking-[0.18em] text-accent-cyan">
               AI PROJECT MANAGER
               <br />
               FOR SOFTWARE DELIVERY
             </motion.p>
-            <motion.p variants={fadeSlideUp} className="mt-5 max-w-[340px] font-ui text-[13px] leading-relaxed text-text-muted">
+            <motion.p variants={fadeSlideUp} className="login-copy mt-5 max-w-[360px] font-ui text-[13px] leading-relaxed text-text-secondary">
               From Jack&apos;s founder brief to the Tempest AI delivery handover in one connected operating surface.
             </motion.p>
           </div>
@@ -64,8 +68,8 @@ export default function LoginPage() {
                 { number: "3", label: "ROLES" },
                 { number: "1", label: "SOURCE OF TRUTH" }
               ].map((stat) => (
-                <div key={stat.label}>
-                  <div className="font-title text-[44px] leading-none text-white">{stat.number}</div>
+                <div key={stat.label} className="login-stat">
+                  <div className="font-title text-[44px] leading-none text-[var(--text-primary)]">{stat.number}</div>
                   <div className="mt-1 font-mono text-[9px] tracking-[0.15em] text-text-muted">{stat.label}</div>
                 </div>
               ))}
@@ -74,10 +78,10 @@ export default function LoginPage() {
             <motion.div variants={staggerContainer(0.05, 0.5)} initial="hidden" animate="show" className="flex flex-wrap items-center gap-1">
               {["INTAKE", "FLOWCHART", "PROTOTYPE", "DELIVERY", "HANDOVER"].map((step, index, arr) => (
                 <div key={step} className="flex items-center gap-1">
-                  <motion.span variants={chipBounce} className="glass-sm rounded-md px-2 py-1 font-mono text-[9px] tracking-[0.12em] text-text-muted">
+                  <motion.span variants={chipBounce} className="login-chip glass-sm rounded-md px-2 py-1 font-mono text-[9px] tracking-[0.12em] text-text-muted">
                     {step}
                   </motion.span>
-                  {index < arr.length - 1 ? <span className="font-mono text-[10px] text-text-muted">→</span> : null}
+                  {index < arr.length - 1 ? <span className="font-mono text-[10px] text-text-muted">-&gt;</span> : null}
                 </div>
               ))}
             </motion.div>
@@ -90,7 +94,7 @@ export default function LoginPage() {
                   "Auto-generated standups. Never chase status again.",
                   "Scope changes calculated in real time. No surprises."
                 ].map((item) => (
-                  <div key={item} className="flex items-start gap-2">
+                  <div key={item} className="login-benefit flex items-start gap-2">
                     <CheckCircle2 size={12} strokeWidth={1.7} className="mt-0.5 shrink-0 text-accent-cyan" />
                     <div className="font-ui text-[12px] text-text-secondary">{item}</div>
                   </div>
@@ -104,10 +108,10 @@ export default function LoginPage() {
           initial={{ opacity: 0, x: 40, scale: 0.97 }}
           animate={{ opacity: 1, x: 0, scale: 1 }}
           transition={{ duration: 0.5, ease: EASE_EXPO, delay: 0.2 }}
-          className="flex h-full flex-col justify-center border-l border-[#1b1b1b] px-12 py-12"
+          className="login-form-column flex h-full flex-col justify-center border-l px-8 py-24 sm:px-12 md:py-12"
         >
-          <div className="glass-heavy glass-noise w-full max-w-[580px] rounded-xl p-8">
-            <div className="mb-8 flex gap-6 border-b border-[rgba(255,255,255,0.06)]">
+          <div className="login-panel glass-noise w-full max-w-[580px] rounded-lg p-6 sm:p-8">
+            <div className="login-tabs mb-8 flex gap-6 border-b">
               {[
                 ["signin", "SIGN IN"],
                 ["signup", "CREATE ACCOUNT"]
@@ -117,7 +121,7 @@ export default function LoginPage() {
                   type="button"
                   onClick={() => setTab(value as "signin" | "signup")}
                   className={cn(
-                    "border-b-2 pb-3 font-mono text-[11px] tracking-[0.1em]",
+                    "login-tab border-b-2 pb-3 font-mono text-[11px] tracking-[0.1em]",
                     tab === value ? "border-accent-cyan text-accent-cyan" : "border-transparent text-text-muted"
                   )}
                 >

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
+import { ProjectContextPanel } from "@/components/layout/ProjectContextPanel";
 import { PMSidebar } from "@/components/layout/PMSidebar";
 import { useRoleGuard } from "@/hooks/useRoleGuard";
 
@@ -23,48 +24,13 @@ export default function ProjectPmLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex h-screen overflow-hidden bg-page">
-      <div
-        style={{
-          position: "fixed",
-          top: "5%",
-          left: "320px",
-          width: "500px",
-          height: "500px",
-          background: "radial-gradient(circle, rgba(167,139,250,0.03) 0%, transparent 70%)",
-          pointerEvents: "none",
-          zIndex: 0
-        }}
-      />
-      <div
-        style={{
-          position: "fixed",
-          top: "40%",
-          right: "5%",
-          width: "600px",
-          height: "600px",
-          background: "radial-gradient(circle, rgba(0,229,204,0.02) 0%, transparent 70%)",
-          pointerEvents: "none",
-          zIndex: 0
-        }}
-      />
-      <div
-        style={{
-          position: "fixed",
-          bottom: "10%",
-          left: "340px",
-          width: "400px",
-          height: "400px",
-          background: "radial-gradient(circle, rgba(96,165,250,0.025) 0%, transparent 70%)",
-          pointerEvents: "none",
-          zIndex: 0
-        }}
-      />
+      <div className="project-shell-grid" />
 
       <PMSidebar user={user} projectId={projectId} />
 
       <main
         style={{ marginLeft: "260px" }}
-        className="relative z-10 flex-1 overflow-y-auto"
+        className="relative z-10 flex-1 overflow-y-auto xl:pr-[340px]"
         onScroll={(event) => {
           const element = event.currentTarget;
           const maxScroll = element.scrollHeight - element.clientHeight;
@@ -83,6 +49,8 @@ export default function ProjectPmLayout({ children }: { children: React.ReactNod
         </div>
         {children}
       </main>
+
+      <ProjectContextPanel projectId={projectId} />
     </div>
   );
 }

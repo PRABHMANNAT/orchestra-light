@@ -28,7 +28,7 @@ export function RoleCard({ role, title, name, access, onClick }: RoleCardProps) 
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className="glass w-full rounded-xl p-4 text-left"
+      className="login-role-card glass w-full rounded-lg p-4 text-left"
     >
       <div className="mb-2 flex items-center gap-3">
         <Icon size={18} className="text-[var(--accent-cyan)]" />

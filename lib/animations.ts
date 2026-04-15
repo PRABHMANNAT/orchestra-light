@@ -51,12 +51,12 @@ export const staggerContainer = (stagger = 0.07, delay = 0): Variants => ({
   show: { transition: { staggerChildren: stagger, delayChildren: delay } }
 });
 
-export const cardHover = {
-  rest: { y: 0, boxShadow: "0 2px 8px rgba(0,0,0,0.2)" },
+export const cardHover: Variants = {
+  rest: { y: 0, boxShadow: "0 8px 22px rgba(0,0,0,0.22)" },
   hover: {
-    y: -4,
-    boxShadow: "0 12px 32px rgba(0,229,204,0.12)",
-    transition: SPRING_SOFT
+    y: -2,
+    boxShadow: "0 14px 34px rgba(0,229,204,0.1)",
+    transition: { type: "spring", stiffness: 260, damping: 28 }
   }
 };
 

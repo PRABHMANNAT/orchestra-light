@@ -14,7 +14,7 @@ export function SignupForm() {
       {["FULL NAME", "EMAIL ADDRESS"].map((label) => (
         <div key={label}>
           <label className="mb-1 block font-mono text-[10px] tracking-[0.12em] text-text-muted">{label}</label>
-          <input className="tactical-input w-full rounded-lg px-3 py-2.5 font-ui text-[13px] text-white outline-none" />
+          <input className="tactical-input w-full rounded-lg px-3 py-2.5 font-ui text-[13px] text-[var(--text-primary)] outline-none" />
         </div>
       ))}
       <div>
@@ -26,7 +26,7 @@ export function SignupForm() {
               type="button"
               onClick={() => setRole(item)}
               className={cn(
-                "rounded-md border px-3 py-2 font-mono text-[10px] tracking-[0.12em]",
+                "login-role-pill rounded-md border px-3 py-2 font-mono text-[10px] tracking-[0.12em]",
                 role === item
                   ? "glass-cyan text-[var(--accent-cyan)]"
                   : "glass-sm text-[var(--text-secondary)]"
@@ -40,13 +40,13 @@ export function SignupForm() {
       {["PASSWORD", "CONFIRM PASSWORD"].map((label) => (
         <div key={label}>
           <label className="mb-1 block font-mono text-[10px] tracking-[0.12em] text-text-muted">{label}</label>
-          <input type="password" className="tactical-input w-full rounded-lg px-3 py-2.5 font-ui text-[13px] text-white outline-none" />
+          <input type="password" className="tactical-input w-full rounded-lg px-3 py-2.5 font-ui text-[13px] text-[var(--text-primary)] outline-none" />
         </div>
       ))}
       <OrchestraButton fullWidth variant="primary">
         CREATE ACCOUNT
       </OrchestraButton>
-      <p className="text-center font-mono text-[10px] text-text-muted">This is a demo — no real accounts are created</p>
+      <p className="text-center font-mono text-[10px] text-text-muted">This is a demo - no real accounts are created</p>
     </div>
   );
 }

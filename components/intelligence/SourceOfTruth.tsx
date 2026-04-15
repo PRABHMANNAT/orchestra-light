@@ -13,9 +13,7 @@ import {
   mockClarifiedBrief,
   mockDecisions,
   mockSourcePackage,
-  mockThreads,
-  truthDocuments,
-  truthRequirements
+  mockThreads
 } from "@/lib/mockData";
 
 type ResultGroup = "Source Material" | "Decisions" | "Changes" | "Messages" | "Briefs";
@@ -107,12 +105,45 @@ export function SourceOfTruth({ projectId }: { projectId: string }) {
     }
   );
 
-  const defaultDocuments = truthDocuments.slice(0, 5);
-  const defaultRequirements = truthRequirements.slice(0, 6);
+  const defaultDocuments = [
+    {
+      id: mockSourcePackage.id,
+      title: `Source Package v${mockSourcePackage.version}`,
+      source: mockSourcePackage.evidenceRefs[0] ?? "BloomFast source package",
+      date: formatDate(mockSourcePackage.createdAt),
+      summary: mockSourcePackage.summary
+    },
+    {
+      id: mockClarifiedBrief.id,
+      title: `Clarified Brief v${mockClarifiedBrief.version}`,
+      source: "Sarah Chen",
+      date: formatDate(mockClarifiedBrief.createdAt),
+      summary: mockClarifiedBrief.mvpObjective
+    },
+    ...mockThreads.slice(0, 3).map((thread) => ({
+      id: thread.id,
+      title: thread.subject ?? thread.id,
+      source: thread.participants.join(", "),
+      date: formatDate(thread.updatedAt),
+      summary: thread.messages[0]?.content ?? "No message preview"
+    }))
+  ];
+  const defaultRequirements = [
+    ...mockClarifiedBrief.scopeIn.map((text, index) => ({
+      id: `scope-in-${index}`,
+      text,
+      sourceRef: "Clarified Brief - Scope In"
+    })),
+    ...mockClarifiedBrief.mustHaveIntegrations.map((text, index) => ({
+      id: `integration-${index}`,
+      text,
+      sourceRef: "Clarified Brief - Integrations"
+    }))
+  ].slice(0, 6);
 
   return (
     <StageShell showGrid>
-      <motion.div variants={pageContainer} initial="hidden" animate="show" className="mx-auto max-w-7xl space-y-6 px-8 py-8">
+      <motion.div variants={pageContainer} initial="hidden" animate="show" className="project-page-container">
         <SectionHeader
           label="Memory"
           title="PROJECT MEMORY"
@@ -141,7 +172,7 @@ export function SourceOfTruth({ projectId }: { projectId: string }) {
               return (
                 <motion.section key={group} variants={fadeSlideUp} className="space-y-3">
                   <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--violet)]">{group}</div>
-                  <div className="grid gap-3 xl:grid-cols-2">
+                  <div className="grid gap-3 2xl:grid-cols-2">
                     {items.map((result) => (
                       <motion.div key={result.id} initial="rest" animate="rest" whileHover="hover" variants={cardHover} className="glass glass-noise rounded-xl px-5 py-4">
                         <div className="flex flex-wrap items-center gap-2">
@@ -163,7 +194,7 @@ export function SourceOfTruth({ projectId }: { projectId: string }) {
             ) : null}
           </motion.div>
         ) : (
-          <div className="grid gap-6 xl:grid-cols-[0.82fr_1.18fr]">
+          <div className="grid gap-6 2xl:grid-cols-[0.82fr_1.18fr]">
             <motion.section variants={fadeSlideUp} className="space-y-3">
               <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">Source Documents</div>
               {defaultDocuments.map((document) => (

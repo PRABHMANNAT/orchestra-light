@@ -58,7 +58,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         <input
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          className="tactical-input w-full rounded-lg px-3 py-2.5 font-ui text-[13px] text-white outline-none"
+          className="tactical-input w-full rounded-lg px-3 py-2.5 font-ui text-[13px] text-[var(--text-primary)] outline-none"
         />
       </div>
       <div>
@@ -67,7 +67,7 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
           type="password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          className="tactical-input w-full rounded-lg px-3 py-2.5 font-ui text-[13px] text-white outline-none"
+          className="tactical-input w-full rounded-lg px-3 py-2.5 font-ui text-[13px] text-[var(--text-primary)] outline-none"
         />
       </div>
       <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}>

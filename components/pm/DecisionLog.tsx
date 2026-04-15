@@ -66,7 +66,7 @@ export function DecisionLog() {
 
   return (
     <StageShell showGrid>
-      <motion.div variants={pageContainer} initial="hidden" animate="show" className="mx-auto max-w-7xl space-y-6 px-8 py-8">
+      <motion.div variants={pageContainer} initial="hidden" animate="show" className="project-page-container">
         <SectionHeader
           label="Decisions"
           title="DECISION LOG"

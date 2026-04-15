@@ -43,7 +43,7 @@ export function Stage7ChangeSync() {
 
   return (
     <StageShell showGrid>
-      <motion.div variants={pageContainer} initial="hidden" animate="show" className="mx-auto max-w-7xl space-y-6 px-8 py-8">
+      <motion.div variants={pageContainer} initial="hidden" animate="show" className="project-page-container">
         <SectionHeader
           label="Changes"
           title="CHANGE LOG"
@@ -55,7 +55,7 @@ export function Stage7ChangeSync() {
           <TerminalOutput label="CHANGE PROCESSOR" lines={processingLines} compact tone="amber" />
         </motion.div>
 
-        <div className="grid gap-6 xl:grid-cols-[0.78fr_1.22fr]">
+        <div className="grid gap-6 2xl:grid-cols-[0.78fr_1.22fr]">
           <motion.section variants={staggerContainer(0.06, 0.02)} initial="hidden" animate="show" className="space-y-3">
             {mockChanges.map((change) => {
               const isActive = change.id === selectedChange.id;

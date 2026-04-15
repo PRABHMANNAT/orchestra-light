@@ -12,7 +12,7 @@ export function StageShell({
   showGrid?: boolean;
 }) {
   return (
-    <div className={cn("relative min-h-screen w-full px-0 py-0 text-text-primary", className)}>
+    <div className={cn("relative min-h-screen w-full overflow-x-hidden px-0 py-0 text-text-primary", className)}>
       {showGrid ? <div className="page-grid" /> : null}
       <div className="relative z-10 min-h-screen">{children}</div>
     </div>

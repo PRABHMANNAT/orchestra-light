@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { AlertTriangle, CheckCircle2, HelpCircle, MessageSquare, Search, Sparkles } from "lucide-react";
+import { AlertTriangle, CheckCircle2, HelpCircle, History, MessageSquare, Search, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 import { StageShell } from "@/components/layout/StageShell";
@@ -17,6 +17,7 @@ import {
   mockClarifiedBrief,
   mockDecisions,
   mockSourcePackage,
+  mockSummaryBundles,
   mockThreads,
   type TerminalLine
 } from "@/lib/mockData";
@@ -130,7 +131,7 @@ export function ProductIntel({ projectId }: { projectId: string }) {
   const [input, setInput] = useState("");
   const [answer, setAnswer] = useState<TerminalLine[]>([
     {
-      text: "Ask Socrates about BloomFast decisions, changes, risks, or what Jack last said.",
+      text: "Use this archive for deeper Socrates queries. The side panel handles quick questions while you work.",
       delay: 100
     }
   ]);
@@ -231,15 +232,15 @@ Answer as Sarah's project-brain assistant. Be direct, cite what record or thread
 
   return (
     <StageShell showGrid>
-      <motion.div variants={pageContainer} initial="hidden" animate="show" className="mx-auto max-w-7xl space-y-8 px-8 py-8">
+      <motion.div variants={pageContainer} initial="hidden" animate="show" className="project-page-container">
         <SectionHeader
           label="Intelligence"
-          title="SOCRATES"
-          subtitle="Classifies messages against the accepted brief, flags contradictions, and answers questions with project context."
+          title="INTELLIGENCE ARCHIVE"
+          subtitle="Reviewed classifications, Socrates query history, and project-health evidence. Quick Socrates access stays in the side panel on every project screen."
           accentColor="var(--violet)"
         />
 
-        <motion.section variants={staggerContainer(0.06, 0.02)} initial="hidden" animate="show" className="grid gap-4 xl:grid-cols-6">
+        <motion.section variants={staggerContainer(0.06, 0.02)} initial="hidden" animate="show" className="grid gap-4 md:grid-cols-2 2xl:grid-cols-6">
           <StatCard label="Scope Changes" value={stats.scope} tone="amber" />
           <StatCard label="Decisions Made" value={stats.decisions} tone="emerald" />
           <StatCard label="Blockers" value={stats.blockers} tone="rose" />
@@ -338,11 +339,11 @@ Answer as Sarah's project-brain assistant. Be direct, cite what record or thread
           </motion.div>
         </motion.section>
 
-        <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+        <div className="grid gap-6 2xl:grid-cols-[1.05fr_0.95fr]">
           <motion.section variants={fadeSlideUp} className="glass-violet glass-noise rounded-xl px-5 py-5">
             <div className="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--violet)]">
               <Sparkles size={14} />
-              Socrates Query
+              Deep Socrates Query
             </div>
             <textarea
               ref={inputRef}
@@ -376,6 +377,29 @@ Answer as Sarah's project-brain assistant. Be direct, cite what record or thread
 
           <motion.section variants={fadeSlideUp} className="glass glass-noise rounded-xl px-5 py-5">
             <div className="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+              <History size={14} />
+              Socrates Summary History
+            </div>
+            <div className="space-y-3">
+              {mockSummaryBundles.map((bundle) => (
+                <motion.div key={bundle.id} initial="rest" animate="rest" whileHover="hover" variants={cardHover} className="glass-sm rounded-lg px-4 py-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <Badge variant={bundle.role === "pm" ? "cyan" : "green"}>{bundle.role}</Badge>
+                    <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[var(--text-muted)]">
+                      {new Intl.DateTimeFormat("en-US", {
+                        month: "short",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit"
+                      }).format(new Date(bundle.generatedAt))}
+                    </span>
+                  </div>
+                  <div className="mt-3 font-ui text-[12px] leading-6 text-[var(--text-primary)]">{bundle.content}</div>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="mt-5 mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
               <Search size={14} />
               Project Health
             </div>

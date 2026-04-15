@@ -63,20 +63,14 @@ export function ThemeToggle() {
       whileHover={{ scale: 1.04 }}
       whileTap={{ scale: 0.96 }}
       transition={{ duration: 0.2 }}
-      className="flex h-8 w-8 items-center justify-center rounded-sm border"
-      style={{
-        background: "transparent",
-        borderColor: "rgba(255,255,255,0.07)",
-        color: "rgba(160,160,192,0.7)",
-        transition: "all 0.2s ease"
-      }}
+      className="theme-toggle flex h-8 w-8 items-center justify-center rounded-sm border"
       onMouseEnter={(event) => {
-        event.currentTarget.style.borderColor = "rgba(0,229,204,0.3)";
-        event.currentTarget.style.color = "#00e5cc";
+        event.currentTarget.style.borderColor = "var(--cyan-border)";
+        event.currentTarget.style.color = "var(--cyan)";
       }}
       onMouseLeave={(event) => {
-        event.currentTarget.style.borderColor = "rgba(255,255,255,0.07)";
-        event.currentTarget.style.color = "rgba(160,160,192,0.7)";
+        event.currentTarget.style.borderColor = "var(--border)";
+        event.currentTarget.style.color = "var(--text-muted)";
       }}
       title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
       aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}

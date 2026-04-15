@@ -121,7 +121,7 @@ function PMTab() {
   const handoff = mockSummaryBundles.find((bundle) => bundle.role === "pm")?.content ?? "";
 
   return (
-    <div className="grid gap-4 xl:grid-cols-2">
+    <div className="grid gap-4 2xl:grid-cols-2">
       <OutputBlock title="Open Questions" tone="blue">
         <ItemList items={openQuestions} tone="blue" />
       </OutputBlock>
@@ -174,7 +174,7 @@ function EngineeringTab() {
   }, {});
 
   return (
-    <div className="grid gap-4 xl:grid-cols-2">
+    <div className="grid gap-4 2xl:grid-cols-2">
       <OutputBlock title="What the Client Actually Wants" tone="cyan">
         <div className="font-ui text-[13px] leading-7 text-[var(--text-primary)]">
           {mockClarifiedBrief.mvpObjective} Scope includes {mockClarifiedBrief.scopeIn.join(", ")}.
@@ -205,7 +205,7 @@ function EngineeringTab() {
 
 function FounderTab() {
   return (
-    <div className="grid gap-4 xl:grid-cols-2">
+    <div className="grid gap-4 2xl:grid-cols-2">
       <OutputBlock title="Major Changes" tone="amber">
         <ItemList items={mockChanges.map((change) => change.whatChanged)} tone="amber" />
       </OutputBlock>
@@ -225,7 +225,7 @@ function FounderTab() {
 
 function ClientTab() {
   return (
-    <div className="grid gap-4 xl:grid-cols-2">
+    <div className="grid gap-4 2xl:grid-cols-2">
       <OutputBlock title="What Was Discussed" tone="blue">
         <div className="font-ui text-[13px] leading-7 text-[var(--text-primary)]">
           We discussed driver assignment approval, Pro subscription timing, and Apple Pay support for launch payments.
@@ -280,7 +280,7 @@ function EngineerTab() {
         ))}
       </motion.div>
 
-      <div className="grid gap-4 xl:grid-cols-2">
+      <div className="grid gap-4 2xl:grid-cols-2">
         <OutputBlock title={`Build Brief - ${selectedModule.label}`} tone="cyan">
           <EngineerBrief module={selectedModule} />
         </OutputBlock>
@@ -341,7 +341,7 @@ export function Stage9StakeholderUpdates() {
 
   return (
     <StageShell showGrid>
-      <motion.div variants={pageContainer} initial="hidden" animate="show" className="mx-auto max-w-7xl space-y-6 px-8 py-8">
+      <motion.div variants={pageContainer} initial="hidden" animate="show" className="project-page-container">
         <SectionHeader
           label="Outputs"
           title="ROLE-BASED OUTPUTS"
