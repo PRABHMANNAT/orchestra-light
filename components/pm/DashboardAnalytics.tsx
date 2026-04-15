@@ -14,7 +14,8 @@ import {
   YAxis
 } from "recharts";
 import { motion } from "framer-motion";
-import { AlertTriangle, BarChart3, BrainCircuit, CalendarDays, Filter, Gauge, Search, Settings2, Sparkles, Target, TrendingUp, Users, WalletCards } from "lucide-react";
+import { AlertTriangle, BarChart3, BrainCircuit, CalendarDays, ChevronRight, Filter, Gauge, Search, Settings2, Sparkles, Target, TrendingUp, Users, WalletCards } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { fadeSlideUp, staggerContainer } from "@/lib/animations";
@@ -23,6 +24,9 @@ import { activity, expenseMix, money, Pill, Progress, ranges, scenario, toneColo
 import { cn } from "@/lib/utils";
 
 type ChartPoint = { month: string; revenue: number; burn: number; profit: number; forecast: number; previous: number };
+
+const bloomfastBrainRoute = "/pm/bloomfast/brain";
+const projectLaunchButtons = ["Open Project BloomFast", "Open Project Herclues", "Open Project Saturn"] as const;
 
 export function Header({
   range,
@@ -35,6 +39,8 @@ export function Header({
   search: string;
   setSearch: (value: string) => void;
 }) {
+  const router = useRouter();
+
   return (
     <motion.header variants={fadeSlideUp} className="dashboard-header">
       <div className="flex flex-col gap-5 2xl:flex-row 2xl:items-end 2xl:justify-between">
@@ -58,6 +64,14 @@ export function Header({
           <ThemeToggle />
           <div className="dashboard-avatar">SC</div>
         </div>
+      </div>
+      <div className="dashboard-project-launch-grid mt-5">
+        {projectLaunchButtons.map((label) => (
+          <button key={label} type="button" className="dashboard-project-launch-button" onClick={() => router.push(bloomfastBrainRoute)}>
+            <span>{label}</span>
+            <ChevronRight size={15} />
+          </button>
+        ))}
       </div>
       <div className="dashboard-filter-bar">
         <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--text-muted)]">
