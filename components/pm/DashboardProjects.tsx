@@ -10,7 +10,7 @@ import { getTeamMemberById, projectFinancials, projects, teamRoster } from "@/li
 import { financialKey, money, pct, Pill, Progress, type ProjectTab, type TeamFilter, type Tone } from "@/components/pm/dashboardShared";
 
 const bloomfastBrainRoute = "/pm/bloomfast/brain";
-const projectLaunchButtons = ["Open Project BloomFast", "Open Project Herclues", "Open Project Saturn"] as const;
+const projectLaunchButtons = ["Open Project Bloomfast", "Open Project Herius", "Open Project Orion"] as const;
 
 export function ProjectPortfolio({ activeTab, setActiveTab }: { activeTab: ProjectTab; setActiveTab: (tab: ProjectTab) => void }) {
   const [expandedId, setExpandedId] = useState(projects[0]?.id ?? "");
